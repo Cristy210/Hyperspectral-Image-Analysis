@@ -96,24 +96,27 @@ Img1 = [ArchGDAL.read(tif_file) do dataset band = ArchGDAL.getband(dataset, 1); 
 Img2 = [ArchGDAL.read(tif_file) do dataset band = ArchGDAL.getband(dataset, 1); data = ArchGDAL.read(band) end for tif_file in I2]
 
 # ╔═╡ 551bccd4-54e0-4f7e-af41-a6063889e464
-tens1 = cat(Img1..., dims=3)
+tens1 = cat(Img1..., dims=3);
+
+# ╔═╡ a2d1e360-b7b0-4301-9375-11fba3ecf911
+@bind Band PlutoUI.Slider(1:13, show_value=true)
 
 # ╔═╡ cde91b75-74ff-45d9-b3c0-46873e8a8be7
 with_theme() do
 	fig = Figure(; size=(800, 600))
 	ax = Axis(fig[1, 1], aspect = DataAspect(), yreversed=true)
-	image!(ax, tens1[:, :, 2])
+	image!(ax, tens1[:, :, Band])
 	fig
 end
 
 # ╔═╡ 82770fa3-323b-4d7c-b8e8-2aad72c89858
-tens2 = cat(Img2..., dims=3)
+tens2 = cat(Img2..., dims=3);
 
 # ╔═╡ bb5b4703-eb92-47ae-9d23-c1db7c096e6f
 with_theme() do
 	fig = Figure(; size=(800, 600))
 	ax = Axis(fig[1, 1], aspect = DataAspect(), yreversed=true)
-	image!(ax, tens2[:, :, 2])
+	image!(ax, tens2[:, :, Band])
 	fig
 end
 
@@ -165,6 +168,7 @@ end
 # ╠═f893213d-ef21-4b33-84de-8e3a51cd71f4
 # ╠═4e390cf0-016e-4b83-b3ef-6c66ee325c69
 # ╠═551bccd4-54e0-4f7e-af41-a6063889e464
+# ╠═a2d1e360-b7b0-4301-9375-11fba3ecf911
 # ╠═cde91b75-74ff-45d9-b3c0-46873e8a8be7
 # ╠═82770fa3-323b-4d7c-b8e8-2aad72c89858
 # ╠═bb5b4703-eb92-47ae-9d23-c1db7c096e6f
