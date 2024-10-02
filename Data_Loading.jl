@@ -120,35 +120,6 @@ with_theme() do
 	fig
 end
 
-# ╔═╡ a82836bc-fba3-4aad-b56f-14ec2f866417
-GT1 = load(GT1_Path)
-
-# ╔═╡ 80474dfe-0bf6-408d-8431-3d55612c6411
-GT2 = load(GT2_Path)
-
-# ╔═╡ e1e2606e-1c2c-4ea9-8227-b3f93a2412af
-bw1_gt = Gray.(GT1)
-
-# ╔═╡ 5c9157e0-f1d8-4e39-b4aa-2e482366e053
-bw2_gt = Gray.(GT2)
-
-# ╔═╡ 56ba9e6b-8dba-4f83-8ca2-20aa26b9571e
-diff_img = abs.(bw2_gt .- bw1_gt)
-
-# ╔═╡ 9df61fab-d8ab-4712-9f0f-bb428e119d3f
-binary_change_map = diff_img .> 0.8
-
-# ╔═╡ d193adf7-eead-4572-972b-d90bfebc482c
-
-
-# ╔═╡ 91ae7529-fcea-45c7-89f3-16e8795f0013
-with_theme() do
-	fig = Figure(; size=(600, 600))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true)
-	image!(ax, binary_change_map)
-	fig
-end
-
 # ╔═╡ Cell order:
 # ╠═8376c0c9-7030-4425-83ad-be7c99609b7d
 # ╟─fa6f6013-1ce6-4c0d-9d8e-c60a81987c41
@@ -172,11 +143,3 @@ end
 # ╠═cde91b75-74ff-45d9-b3c0-46873e8a8be7
 # ╠═82770fa3-323b-4d7c-b8e8-2aad72c89858
 # ╠═bb5b4703-eb92-47ae-9d23-c1db7c096e6f
-# ╠═a82836bc-fba3-4aad-b56f-14ec2f866417
-# ╠═80474dfe-0bf6-408d-8431-3d55612c6411
-# ╠═e1e2606e-1c2c-4ea9-8227-b3f93a2412af
-# ╠═5c9157e0-f1d8-4e39-b4aa-2e482366e053
-# ╠═56ba9e6b-8dba-4f83-8ca2-20aa26b9571e
-# ╠═9df61fab-d8ab-4712-9f0f-bb428e119d3f
-# ╠═d193adf7-eead-4572-972b-d90bfebc482c
-# ╠═91ae7529-fcea-45c7-89f3-16e8795f0013
