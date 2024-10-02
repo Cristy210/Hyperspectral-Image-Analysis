@@ -98,6 +98,14 @@ Tif2_Path = [glob("*.tif", Img2_Path) for Img2_Path in data_path_T2]
 # ╔═╡ a7c27379-0cd3-4667-8c79-6d519b34084a
 T1 = [[ArchGDAL.read(tif_file) do dataset band = ArchGDAL.getband(dataset, 1); data = ArchGDAL.read(band) end for tif_file in I1] for I1 in Tif1_Path]
 
+# ╔═╡ 50c3dae3-1893-46a0-9bd6-19f1de54a5f0
+with_theme() do
+	fig = Figure(; size=(600, 400))
+	ax = Axis(fig[1, 1], aspect = DataAspect(), yreversed=true)
+	image!(ax, T1[1][2])
+	fig
+end
+
 # ╔═╡ 13728c51-6d86-4494-b984-6ae06c731b71
 T2 = [[ArchGDAL.read(tif_file) do dataset band = ArchGDAL.getband(dataset, 1); data = ArchGDAL.read(band) end for tif_file in I2] for I2 in Tif2_Path]
 
@@ -170,6 +178,7 @@ test_gt = [[ArchGDAL.read(tif_file) do dataset band = ArchGDAL.getband(dataset, 
 # ╠═8fcfb326-41b2-49b9-9968-f122434a7874
 # ╠═f833aa65-ed88-400f-bb9a-4a6531885c41
 # ╠═a7c27379-0cd3-4667-8c79-6d519b34084a
+# ╠═50c3dae3-1893-46a0-9bd6-19f1de54a5f0
 # ╠═13728c51-6d86-4494-b984-6ae06c731b71
 # ╠═95ae8f14-363c-493c-a7ee-3e5c0a38b883
 # ╠═8e424cd0-c424-485d-959c-4c7cb4c16a06
