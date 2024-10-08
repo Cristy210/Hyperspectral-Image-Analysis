@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.46
+# v0.19.40
 
 using Markdown
 using InteractiveUtils
@@ -158,8 +158,8 @@ test_gt = [[ArchGDAL.read(tif_file) do dataset band = ArchGDAL.getband(dataset, 
 
 
 # ╔═╡ Cell order:
-# ╟─e9b02eb0-7c82-11ef-36cd-b7cf22cfd23c
-# ╟─1a119f4c-880c-46e5-a528-a673adbcc11e
+# ╠═e9b02eb0-7c82-11ef-36cd-b7cf22cfd23c
+# ╠═1a119f4c-880c-46e5-a528-a673adbcc11e
 # ╠═67862dcc-aa79-46af-998b-7c023a7a3164
 # ╠═6173b170-62fe-4a15-8520-20fe7ba06c5d
 # ╟─52f6d430-ed43-48d8-9670-599fc125ec95
