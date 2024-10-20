@@ -35,8 +35,14 @@ main {
 # ╔═╡ 65f13a2e-8adc-4122-aedc-a59499f64a6e
 folder = joinpath(@__DIR__, "Onera Satellite Change Detection dataset - Images", City, "imgs_1_rect")
 
+# ╔═╡ a9b97b5b-084a-4d50-95fc-5f87fbeff5f4
+folder_2 = joinpath(@__DIR__, "Onera Satellite Change Detection dataset - Images", City, "imgs_2_rect")
+
 # ╔═╡ 1629ede1-f080-436d-8bc8-f2275e004e62
 Images = glob("*.tif", folder)
+
+# ╔═╡ 27985b03-2c6d-4394-857b-3c300019e205
+Images_2 = glob("*.tif", folder_2)
 
 # ╔═╡ 5a78fada-7122-4050-a776-1aa0de1db594
 CACHEDIR = joinpath(@__DIR__, "cache_files", "Aerial Datasets")
@@ -130,7 +136,7 @@ function embedding(A, k; seed=0)
 end
 
 # ╔═╡ 554696b7-f9cb-4319-92f0-80ae067da104
-n_clusters = 6
+n_clusters = 8
 
 # ╔═╡ 6180ed8d-9cf6-495a-b0c5-b7c2aaa04583
 V = embedding(A, n_clusters)
@@ -191,7 +197,9 @@ end
 # ╠═3424d249-3fd1-4186-89a5-9fa351997ffe
 # ╠═5a271a02-e5eb-494d-9f1c-c3861f25e7c6
 # ╠═65f13a2e-8adc-4122-aedc-a59499f64a6e
+# ╠═a9b97b5b-084a-4d50-95fc-5f87fbeff5f4
 # ╠═1629ede1-f080-436d-8bc8-f2275e004e62
+# ╠═27985b03-2c6d-4394-857b-3c300019e205
 # ╠═5a78fada-7122-4050-a776-1aa0de1db594
 # ╠═d3b76210-6d80-4059-a2f9-6ad8d1a9e150
 # ╠═e7447239-82fe-4cb8-b168-e173b51b537e
