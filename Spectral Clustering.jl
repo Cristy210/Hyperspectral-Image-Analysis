@@ -34,8 +34,17 @@ md"""
 ## Loading and Pre-processing Data
 """
 
+# ╔═╡ f6818837-f0ec-4f78-a4ab-c6808033dcac
+@bind City Select(["barbara", "Bay_Area_"])
+
+# ╔═╡ cbd4c307-7271-4305-b5c7-5f5d0e02ac27
+@bind Time Select(["T1", "T2"])
+
 # ╔═╡ 21bd809b-779e-4b55-8039-c863bea04bf1
-filepath = joinpath(@__DIR__, "MAT Files", "barbara", "barbara_2013.mat")
+filepath = joinpath(@__DIR__, "MAT Files", "$City", "$(City)$(Time).mat")
+
+# ╔═╡ 529374f8-6ead-478c-bb9a-9fc9a432270b
+gt_filepath = joinpath(@__DIR__, "MAT Files", "$City", "$(City)gtChanges.mat")
 
 # ╔═╡ 9c041d1e-eba9-4ca2-be18-70637b1c9c17
 CACHEDIR = joinpath(@__DIR__, "cache_files", "Aerial Datasets")
@@ -51,6 +60,9 @@ end
 
 # ╔═╡ eec929ed-6280-476e-8d23-ea1c45071151
 vars = matread(filepath)
+
+# ╔═╡ 580373ac-b42f-43a4-910f-4296ccfc83c9
+# gt_vars = matread(gt_filepath)
 
 # ╔═╡ 5ee71c45-4165-4dff-999d-fdeaa13e3feb
 data = vars["HypeRvieW"]
@@ -104,10 +116,10 @@ function affinity(cube; max_nz=10, chunksize=minimum(size(cube)[1:2]),
 end
 
 # ╔═╡ 7b029e3a-673a-4f64-a24e-6f9d0eca37d8
-max_nz = 20
+max_nz = 100
 
 # ╔═╡ 9a3791cf-5d01-4306-822e-74326c1d4450
-A = cachet(joinpath(CACHEDIR, "Affinity_$max_nz.bson")) do
+A = cachet(joinpath(CACHEDIR, "Affinity_$City$Time$max_nz.bson")) do
 	affinity(data; max_nz)
 end
 
@@ -189,10 +201,14 @@ end
 # ╟─1cbfe5ab-13c2-4926-bc0c-a142339cc8c0
 # ╠═bd04ff16-a2dd-4ac8-a230-872a81322e44
 # ╠═1c6be7eb-be86-479f-9af7-93cef151c8df
+# ╠═f6818837-f0ec-4f78-a4ab-c6808033dcac
+# ╠═cbd4c307-7271-4305-b5c7-5f5d0e02ac27
 # ╠═21bd809b-779e-4b55-8039-c863bea04bf1
+# ╠═529374f8-6ead-478c-bb9a-9fc9a432270b
 # ╠═9c041d1e-eba9-4ca2-be18-70637b1c9c17
 # ╠═917ccf7f-43c2-4756-afa3-673e7993c405
 # ╠═eec929ed-6280-476e-8d23-ea1c45071151
+# ╠═580373ac-b42f-43a4-910f-4296ccfc83c9
 # ╠═5ee71c45-4165-4dff-999d-fdeaa13e3feb
 # ╠═b9262c01-3733-49c8-b4cf-9ce0bb158563
 # ╠═ccfee2de-5e2a-49a7-8551-2e3832780fb9
