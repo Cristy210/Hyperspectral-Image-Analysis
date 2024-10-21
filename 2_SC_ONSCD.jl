@@ -69,7 +69,7 @@ data = cat(Array..., dims=3)
 with_theme() do
 	fig = Figure(; size=(600, 800))
 	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true)
-	image!(ax, permutedims(data[:, :, band]))
+	image!(ax, data[:, :, band])
 	fig
 end
 
@@ -192,7 +192,7 @@ end
 
 
 # ╔═╡ Cell order:
-# ╟─7d0ad20a-8cbe-11ef-192f-91f4358aeef8
+# ╠═7d0ad20a-8cbe-11ef-192f-91f4358aeef8
 # ╠═51e8bf67-4e0c-4b93-81e7-04c2b72e9b5d
 # ╠═3424d249-3fd1-4186-89a5-9fa351997ffe
 # ╠═5a271a02-e5eb-494d-9f1c-c3861f25e7c6
