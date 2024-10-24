@@ -188,9 +188,6 @@ with_theme() do
 	fig
 end
 
-# ╔═╡ cdc37739-fd88-46db-8f3c-e7728e3dbf0c
-
-
 # ╔═╡ Cell order:
 # ╠═5afddd44-8f0f-11ef-0e66-0f1b667bc230
 # ╠═aee13d96-3951-4d27-8558-304264cbb260
@@ -219,4 +216,3 @@ end
 # ╠═68ae31a0-dadb-43e2-93b8-6b18f39c855e
 # ╠═93df754c-bacb-48f8-87b6-dd877e328f7c
 # ╠═6555baf8-5e80-4872-bbd6-4acc4ff711f7
-# ╠═cdc37739-fd88-46db-8f3c-e7728e3dbf0c
