@@ -190,7 +190,7 @@ function affinity(cube; max_nz=10, chunksize=minimum(size(cube)[1:2]),
 end
 
 # ╔═╡ db91d85b-d880-44ba-b794-f957f56fc18b
-max_nz = 3000
+max_nz = 1000
 
 # ╔═╡ 0d47164f-b858-4f3a-9fa7-d89b64ceef38
 A = cachet(joinpath(CACHEDIR, "spec-aff-max_nz-$(item)_$max_nz.bson")) do
