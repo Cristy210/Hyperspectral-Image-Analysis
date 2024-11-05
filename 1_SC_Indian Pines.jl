@@ -32,6 +32,9 @@ main {
 # ╔═╡ eebc3353-4d70-4c26-96e6-3d272b6c9e18
 filepath = joinpath(@__DIR__, "MAT Files", "Indian_pines.mat")
 
+# ╔═╡ dd210b3f-ab97-44fd-be4f-0a678269a3fc
+gt_filepath = joinpath(@__DIR__, "GT Files", "Indian_pines_gt.mat")
+
 # ╔═╡ a5861a6a-b446-4e07-86ac-e3ff501e86e4
 CACHEDIR = joinpath(@__DIR__, "cache_files", "Aerial Datasets")
 
@@ -44,11 +47,70 @@ function cachet(@nospecialize(f), path)
 	timed_results.value
 end
 
+# ╔═╡ 61d062b0-5499-45f4-ac15-8bc9cf35fede
+function hsi2rgb(hsicube, wavelengths)
+	# Identify wavelengths for RGB
+	rgb_idx = [
+		findmin(w -> abs(w-615), wavelengths)[2],
+		findmin(w -> abs(w-520), wavelengths)[2],
+		findmin(w -> abs(w-450), wavelengths)[2],
+	]
+
+	# Extract bands and clamp
+	rgbcube = clamp!(hsicube[:, :, rgb_idx], 0, 1)
+
+	# Form matrix of RGB values
+	return Makie.RGB.(
+		view(rgbcube, :, :, 1),
+		view(rgbcube, :, :, 2),
+		view(rgbcube, :, :, 3),
+	)
+end
+
+# ╔═╡ a8029e87-7eaa-4b8d-bdb6-fa97904813b7
+begin
+hsi2rgba(alpha, hsicube, wavelengths) = Makie.RGBA.(hsi2rgb(hsicube, wavelengths), alpha)
+hsi2rgba(alpha_func::Function, hsicube, wavelengths) = hsi2rgba(
+	map(alpha_func, eachslice(hsicube; dims=(1,2))),
+	hsicube, wavelengths,
+)
+end
+
+# ╔═╡ ff0a7bfe-aae0-485d-aedb-1049bef12cc0
+THEME = Theme(; backgroundcolor=(:black, 0), textcolor=:white, Legend=(; backgroundcolor=(:black, 0), framevisible=false))
+
+# ╔═╡ 2c3296e2-d9dc-4154-8bf4-0060eae950a3
+wavelengths = vcat(400:10:2390)
+
 # ╔═╡ 5288ebf7-aa71-4c04-b110-3cf11d781732
 vars = matread(filepath)
 
+# ╔═╡ 33fe9156-bc8f-4f08-baf0-68597f2c1871
+gt_vars = matread(gt_filepath)
+
+# ╔═╡ 396f50d9-76eb-4240-b1bd-f92cdd23b65c
+exclude_bands = vcat(104:108, 150:163, 220)
+
 # ╔═╡ e40b38c3-b281-48a7-8e75-2b92943068bf
-data = vars["indian_pines"]
+org_data = vars["indian_pines"]
+
+# ╔═╡ facfbff8-b74e-4b67-b004-d0044369959b
+data = org_data[:, :, setdiff(1:size(org_data, 3), exclude_bands)]
+
+# ╔═╡ 34edfb51-a33e-48e4-a0c9-355bccaf80a1
+gt_mat = gt_vars["indian_pines_gt"]
+
+# ╔═╡ d04155a4-4498-4ba4-93af-eba744e3245e
+bg_indices = findall(gt_mat .== 0)
+
+# ╔═╡ 5debc84b-5da3-4e30-9884-af56c9d65e3a
+begin
+	mask = trues(size(data, 1), size(data, 2))
+	for idx in bg_indices
+		x, y = Tuple(idx)
+		mask[x, y] = false
+	end
+end
 
 # ╔═╡ 63758011-fc1d-4ab3-ba2a-63f2a197bc10
 @bind band PlutoUI.Slider(1:size(data, 3), show_value=true)
@@ -61,33 +123,35 @@ with_theme() do
 	fig
 end
 
+# ╔═╡ ca54a647-831e-4edd-ad36-8f7461c10217
+md"""
+### Compute Affinity Matrix
+"""
+
 # ╔═╡ f8c4a5ce-ae28-4850-a3a4-b0b36adaa5e6
-function affinity(cube; max_nz=10, chunksize=minimum(size(cube)[1:2]),
+begin
+function affinity(X::Matrix; max_nz=10, chunksize=isqrt(size(X,2)),
 	func = c -> exp(-2*acos(clamp(c,-1,1))))
 
-	# Verify that chunksize divides the total number of pixels
-	mod(prod(size(cube)[1:2]), chunksize) == 0 ||
-		error("chunksize must divide the total number of pixels")
-
 	# Compute normalized spectra (so that inner product = cosine of angle)
-	X = permutedims(reshape(cube, :, size(cube,3)))
 	X = mapslices(normalize, X; dims=1)
 
 	# Find nonzero values (in chunks)
 	C_buf = similar(X, size(X,2), chunksize)    # pairwise cosine buffer
 	s_buf = Vector{Int}(undef, size(X,2))       # sorting buffer
 	nz_list = @withprogress mapreduce(vcat, enumerate(Iterators.partition(1:size(X,2), chunksize))) do (chunk_idx, chunk)
-		# Compute cosine angles (for chunk) and store in buffer
-		mul!(C_buf, X', view(X, :, chunk))
+		# Compute cosine angles (for chunk) and store in appropriate buffer
+		C_chunk = length(chunk) == chunksize ? C_buf : similar(X, size(X,2), length(chunk))
+		mul!(C_chunk, X', view(X, :, chunk))
 
 		# Zero out all but `max_nz` largest values
-		nzs = map(chunk, eachcol(C_buf)) do col, c
+		nzs = map(chunk, eachcol(C_chunk)) do col, c
 			idx = partialsortperm!(s_buf, c, 1:max_nz; rev=true)
 			collect(idx), fill(col, max_nz), func.(view(c,idx))
 		end
 
 		# Log progress and return
-		@logprogress chunk_idx/(size(X,2) ÷ chunksize)
+		@logprogress chunk_idx/cld(size(X,2),chunksize)
 		return nzs
 	end
 
@@ -97,17 +161,28 @@ function affinity(cube; max_nz=10, chunksize=minimum(size(cube)[1:2]),
 	vals = reduce(vcat, getindex.(nz_list, 3))
 	return sparse([rows; cols],[cols; rows],[vals; vals])
 end
+affinity(cube::Array{<:Real,3}; kwargs...) =
+	affinity(permutedims(reshape(cube, :, size(cube,3))); kwargs...)
+end
+
+# ╔═╡ ee54d8a4-3c3d-4036-9f2c-c83615f26ed9
+permutedims(data[mask, :])
 
 # ╔═╡ 945195d5-c8b2-41cf-8168-a258c0931b0d
-max_nz = 500
+max_nz =800
 
 # ╔═╡ 6a619ce3-e96c-4b9f-9a69-d814e6fd523d
-
+maximum(size(mask)[1:2])
 
 # ╔═╡ fb58b609-43e1-4147-88a4-fa6481c1de6d
 A = cachet(joinpath(CACHEDIR, "Affinity_Indian_Pines$max_nz.bson")) do
-	affinity(data; max_nz)
+	affinity(permutedims(data[mask, :]); max_nz)
 end
+
+# ╔═╡ 3e899dfc-f362-4bff-92fb-e848a6738dea
+# A_orig = cachet(joinpath(CACHEDIR, "Affinity_Indian_Pines_Orig$max_nz.bson")) do
+# 	affinity(org_data; max_nz)
+# end
 
 # ╔═╡ 6fdd3eeb-1431-4ee4-be44-ce63c3b384db
 function embedding(A, k; seed=0)
@@ -157,24 +232,56 @@ end
 # ╔═╡ cfe45636-b031-43e1-b24f-5d6f7cd36270
 spec_clusterings = batchkmeans(permutedims(V), n_clusters; maxiter=1000)
 
-# ╔═╡ d14656fe-db86-4c6d-89f8-e5e71bb81d8d
-costs = [spec_clusterings[i].totalcost for i in 1:100]
+# ╔═╡ 6d0dd512-6e42-4f8e-a9db-619089f7f647
+aligned_assignments(clusterings, baseperm=1:maximum(first(clusterings).assignments)) = map(clusterings) do clustering
+	# New labels determined by simple heuristic that aims to align different clusterings
+	thresh! = a -> (a[a .< 0.2*sum(a)] .= 0; a)
+	alignments = [thresh!(a) for a in eachrow(counts(clusterings[1], clustering))]
+	new_labels = sortperm(alignments[baseperm]; rev=true)
 
-# ╔═╡ 4163dac3-4f19-4ec9-95de-fa247aa76343
-min_index = argmin(costs)
+	# Return assignments with new labels
+	return [new_labels[l] for l in clustering.assignments]
+end
 
-# ╔═╡ 702a652f-ae61-4fc6-bc51-370f58820554
-clusters = spec_clusterings[min_index].assignments
+# ╔═╡ 5a906a79-58e4-430d-ab74-a7ce73aa6065
+spec_aligned = aligned_assignments(spec_clusterings)
 
-# ╔═╡ 9cc90b24-c6c6-4b9d-ae0f-26a0b189a90c
-mat = reshape(clusters, size(data, 1), size(data, 2))
+# ╔═╡ 8c228975-6ac6-4f08-95b4-d51d48a66cdc
+@bind spec_clustering_idx PlutoUI.Slider(1:length(spec_clusterings); show_value=true)
 
-# ╔═╡ 3b74a158-3a4c-49d3-95ae-d00d25f005ad
+# ╔═╡ 7cb48e29-8dc3-4b1e-af74-9827392eccef
 with_theme() do
-	fig = Figure(; size=(600, 700))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true)
+	assignments, idx = spec_aligned, spec_clustering_idx
+
+	# Create figure
+	fig = Figure(; size=(900, 450))
 	colors = Makie.Colors.distinguishable_colors(n_clusters)
-	hm = heatmap!(ax, permutedims(mat); colormap=Makie.Categorical(colors))
+
+	# Show data
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true)
+	hm = heatmap!(ax, permutedims(gt_mat); colormap=Makie.Categorical(colors))
+
+	# Show cluster map
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true)
+	clustermap = fill(NaN32, size(data)[1:2])
+	clustermap[mask] .= assignments[idx]
+	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors))
+	# Colorbar(fig[1,3], hm)
+
+	fig
+end
+
+# ╔═╡ 97c6fdb0-40f0-4b9e-9a31-f08bfea9538d
+md"""
+### Ground Truth
+"""
+
+# ╔═╡ fb83420c-6bc2-4c96-b918-216ebb015e13
+with_theme() do
+	fig = Figure(; size=(800, 600))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true)
+	colors = Makie.Colors.distinguishable_colors(16)
+	hm = heatmap!(ax, permutedims(gt_mat); colormap=Makie.Categorical(colors))
 	Colorbar(fig[1, 2], hm)
 	fig
 end
@@ -184,23 +291,38 @@ end
 # ╠═87fd60b2-523c-42a6-9d9a-2d8bef3a94b1
 # ╠═5bca1910-6390-44c1-8c0f-4ac814068281
 # ╠═eebc3353-4d70-4c26-96e6-3d272b6c9e18
+# ╠═dd210b3f-ab97-44fd-be4f-0a678269a3fc
 # ╠═a5861a6a-b446-4e07-86ac-e3ff501e86e4
 # ╠═093097d9-8da8-47c6-afb1-2dc25e59706e
+# ╠═61d062b0-5499-45f4-ac15-8bc9cf35fede
+# ╠═a8029e87-7eaa-4b8d-bdb6-fa97904813b7
+# ╠═ff0a7bfe-aae0-485d-aedb-1049bef12cc0
+# ╠═2c3296e2-d9dc-4154-8bf4-0060eae950a3
 # ╠═5288ebf7-aa71-4c04-b110-3cf11d781732
+# ╠═33fe9156-bc8f-4f08-baf0-68597f2c1871
+# ╠═396f50d9-76eb-4240-b1bd-f92cdd23b65c
 # ╠═e40b38c3-b281-48a7-8e75-2b92943068bf
+# ╠═facfbff8-b74e-4b67-b004-d0044369959b
+# ╠═34edfb51-a33e-48e4-a0c9-355bccaf80a1
+# ╠═d04155a4-4498-4ba4-93af-eba744e3245e
+# ╠═5debc84b-5da3-4e30-9884-af56c9d65e3a
 # ╠═63758011-fc1d-4ab3-ba2a-63f2a197bc10
 # ╠═63b15af3-bff6-4af6-8fe9-adf135f781bd
+# ╟─ca54a647-831e-4edd-ad36-8f7461c10217
 # ╠═f8c4a5ce-ae28-4850-a3a4-b0b36adaa5e6
+# ╠═ee54d8a4-3c3d-4036-9f2c-c83615f26ed9
 # ╠═945195d5-c8b2-41cf-8168-a258c0931b0d
 # ╠═6a619ce3-e96c-4b9f-9a69-d814e6fd523d
 # ╠═fb58b609-43e1-4147-88a4-fa6481c1de6d
+# ╠═3e899dfc-f362-4bff-92fb-e848a6738dea
 # ╠═6fdd3eeb-1431-4ee4-be44-ce63c3b384db
 # ╠═9e5df265-4e36-4725-b2da-25bde7fb7b84
 # ╠═7afab580-3863-4627-938f-17f6e77e3d5c
 # ╠═2012faed-16b8-41eb-9dee-a47ede2f641b
 # ╠═cfe45636-b031-43e1-b24f-5d6f7cd36270
-# ╠═d14656fe-db86-4c6d-89f8-e5e71bb81d8d
-# ╠═4163dac3-4f19-4ec9-95de-fa247aa76343
-# ╠═702a652f-ae61-4fc6-bc51-370f58820554
-# ╠═9cc90b24-c6c6-4b9d-ae0f-26a0b189a90c
-# ╠═3b74a158-3a4c-49d3-95ae-d00d25f005ad
+# ╠═6d0dd512-6e42-4f8e-a9db-619089f7f647
+# ╠═5a906a79-58e4-430d-ab74-a7ce73aa6065
+# ╠═8c228975-6ac6-4f08-95b4-d51d48a66cdc
+# ╠═7cb48e29-8dc3-4b1e-af74-9827392eccef
+# ╟─97c6fdb0-40f0-4b9e-9a31-f08bfea9538d
+# ╠═fb83420c-6bc2-4c96-b918-216ebb015e13
