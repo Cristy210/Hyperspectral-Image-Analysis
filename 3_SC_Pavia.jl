@@ -50,9 +50,6 @@ function cachet(@nospecialize(f), path)
 	timed_results.value
 end
 
-# ╔═╡ fdc7db80-04e9-4d6d-81c7-f6fa15d25279
-
-
 # ╔═╡ f83ea28c-4afb-48a2-aa62-1bd101ffe866
 vars = matread(filepath)
 
@@ -75,12 +72,12 @@ data = vars[data_key]
 gt_data = vars_gt[gt_key]
 
 # ╔═╡ 22645d58-fb95-4acf-a3df-95626d5e3e75
-gt_labels = unique(gt_data)
+gt_labels = sort(unique(gt_data))
 
 # ╔═╡ 33fb2f5f-ba50-4448-a435-6c20231d704a
 bg_indices = findall(gt_data .== 0)
 
-# ╔═╡ 69bc85f1-93a3-4dd6-8169-75b2b72c253b
+# ╔═╡ 1ac794f2-0a43-4de5-b181-5869cb285a16
 begin
 	mask = trues(size(data, 1), size(data, 2))
 	for idx in bg_indices
@@ -220,18 +217,6 @@ end
 # ╔═╡ 0661eea8-3c09-49cd-aa3e-8a50c2864f08
 spec_aligned = aligned_assignments(spec_clusterings)
 
-# ╔═╡ 0ffd41f7-bc9c-4d45-8c41-d3914f5d5131
-clu_map = fill(NaN32, size(data)[1:2])
-
-# ╔═╡ 6686efae-71e8-4d65-a871-bea33454e556
-clu_map[mask] .= spec_aligned[1]
-
-# ╔═╡ 70547615-7bbf-44d4-a62d-60996b1005e7
-clu_map
-
-# ╔═╡ 7d0c3354-09fe-4adb-9595-e6727e12cab9
-spec_aligned[1]
-
 # ╔═╡ c38adb1c-3f7b-4741-aa3c-193c82d851c3
 @bind spec_clustering_idx PlutoUI.Slider(1:length(spec_clusterings); show_value=true)
 
@@ -254,7 +239,7 @@ with_theme() do
 	clustermap = fill(NaN32, size(data)[1:2])
 	clustermap[mask] .= assignments[idx]
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors))
-	# Colorbar(fig[1,3], hm)
+	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false)
 
 	fig
 end
@@ -265,7 +250,43 @@ md"""
 """
 
 # ╔═╡ 355e84c9-3fcb-4634-9436-815fe65680d5
+begin
+	ground_labels = filter(x -> x != 0, gt_labels) #Filter out the background pixel label
+	true_labels = length(ground_labels)
+	predicted_labels = n_clusters
 
+	confusion_matrix = zeros(Float64, true_labels, predicted_labels) #Initialize a confusion matrix filled with zeros
+	cluster_results = fill(NaN32, size(data)[1:2]) #Clusteirng algorithm results
+
+	clu_assign, idx = spec_aligned, spec_clustering_idx
+
+	cluster_results[mask] .= clu_assign[idx]
+
+	for (label_idx, label) in enumerate(ground_labels)
+	
+		label_indices = findall(gt_data .== label)
+	
+		cluster_values = [cluster_results[idx] for idx in label_indices]
+		t_pixels = length(cluster_values)
+		cluster_counts = [count(==(cluster), cluster_values) for cluster in 1:n_clusters]
+		confusion_matrix[label_idx, :] .= [count / t_pixels * 100 for count in cluster_counts]
+	end
+end
+
+# ╔═╡ 58084ada-1773-463c-bacd-0478cbfbd5a1
+with_theme() do
+	fig = Figure(; size=(900, 800))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels, yticks = 1:true_labels)
+	hm = heatmap!(ax, confusion_matrix, colormap=:viridis)
+	pm = permutedims(confusion_matrix)
+
+	for i in 1:true_labels, j in 1:predicted_labels
+        value = round(pm[i, j], digits=1)
+        text!(ax, i - 0.02, j - 0.1, text = "$value", color=:white, align = (:center, :center), fontsize=14)
+    end
+	Colorbar(fig[1, 2], hm)
+	fig
+end
 
 # ╔═╡ Cell order:
 # ╠═7c16bf70-8d7d-11ef-23e6-f9d6b2d61dd3
@@ -276,16 +297,15 @@ md"""
 # ╠═0469353b-46d0-4110-a5c9-5d8efb543786
 # ╠═4183d79c-e9fd-44bc-8030-efeb1a63997b
 # ╠═0cfd16eb-9569-4243-b2c5-b8a951ee363a
-# ╠═fdc7db80-04e9-4d6d-81c7-f6fa15d25279
 # ╠═f83ea28c-4afb-48a2-aa62-1bd101ffe866
 # ╠═ec4ee7f9-0bfb-4d46-a18f-592f70020f5d
 # ╠═eb0578da-69a3-4957-981e-1a628f340a90
-# ╠═69bc85f1-93a3-4dd6-8169-75b2b72c253b
 # ╠═369f49bf-6379-4525-aa50-99f60d8e734f
 # ╠═31e0d145-cfd2-4a3e-9e88-9b36043fbce3
 # ╠═629b21f2-5e8c-413c-8518-a0bd3a5dc3d4
 # ╠═22645d58-fb95-4acf-a3df-95626d5e3e75
 # ╠═33fb2f5f-ba50-4448-a435-6c20231d704a
+# ╠═1ac794f2-0a43-4de5-b181-5869cb285a16
 # ╠═e4152df8-46ed-453a-bef7-e20212b9a48c
 # ╠═32898a09-a236-477a-a946-3debd3931420
 # ╠═43fb9331-3469-4849-b029-56404f69cd77
@@ -301,11 +321,8 @@ md"""
 # ╠═09f90731-1263-4668-8c72-eb14c94a6d6b
 # ╠═3ca576aa-3ed3-491e-b53d-349cec5e0690
 # ╠═0661eea8-3c09-49cd-aa3e-8a50c2864f08
-# ╠═0ffd41f7-bc9c-4d45-8c41-d3914f5d5131
-# ╠═6686efae-71e8-4d65-a871-bea33454e556
-# ╠═70547615-7bbf-44d4-a62d-60996b1005e7
-# ╠═7d0c3354-09fe-4adb-9595-e6727e12cab9
 # ╠═c38adb1c-3f7b-4741-aa3c-193c82d851c3
-# ╠═3353e446-d2d8-46c1-a909-c819626db269
+# ╟─3353e446-d2d8-46c1-a909-c819626db269
 # ╟─fe5dfa09-ffd3-4512-89a3-4834b790dabe
-# ╠═355e84c9-3fcb-4634-9436-815fe65680d5
+# ╟─355e84c9-3fcb-4634-9436-815fe65680d5
+# ╠═58084ada-1773-463c-bacd-0478cbfbd5a1
