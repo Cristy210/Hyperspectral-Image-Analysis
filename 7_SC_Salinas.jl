@@ -232,71 +232,36 @@ with_theme() do
 	fig
 end
 
-# ╔═╡ 1c27672e-4216-453b-ab75-d8e19143ff12
+# ╔═╡ aad82e02-9466-48a9-b314-a6561be75a16
 md"""
 ### Confusion Matrix
 """
 
-# ╔═╡ 8ae43452-1f71-4440-9b08-56d57a0f4424
-ground_labels = filter(x -> x != 0, gt_labels)
+# ╔═╡ 9f2dd747-767b-4bb1-8ad6-2e1037687fc2
+begin
+	ground_labels = filter(x -> x != 0, gt_labels) #Filter out the background pixel label
+	true_labels = length(ground_labels)
+	predicted_labels = n_clusters
 
-# ╔═╡ a9646e81-b0e6-4b04-a191-3021309ebb78
-true_labels = length(ground_labels)
+	confusion_matrix = zeros(Float64, true_labels, predicted_labels) #Initialize a confusion matrix filled with zeros
+	cluster_results = fill(NaN32, size(data)[1:2]) #Clusteirng algorithm results
 
-# ╔═╡ 81932d2b-b075-43fa-af5e-3fbc2045774d
-cluster_results = fill(NaN32, size(data)[1:2]);
+	clu_assign, idx = spec_aligned, spec_clustering_idx
 
-# ╔═╡ 228c9083-0264-42a4-a47f-fe842c1ff850
-assignments, idx = spec_aligned, spec_clustering_idx
+	cluster_results[mask] .= clu_assign[idx]
 
-# ╔═╡ fc0d44fe-062a-4af0-af6d-fcee7edca62d
-cluster_results[mask] .= assignments[idx]
-
-# ╔═╡ acd3c027-2283-4d66-9642-891caf332a01
-predicted_labels = n_clusters
-
-# ╔═╡ 31bfc63c-e722-414c-9253-6840be5c34ce
-confusion_matrix = zeros(Float64, true_labels, predicted_labels);
-
-# ╔═╡ 2ee36828-4c7b-4a9f-bae4-2d138cf96988
-for (label_idx, label) in enumerate(ground_labels)
+	for (label_idx, label) in enumerate(ground_labels)
 	
-	label_indices = findall(gt_data .== label)
-
-	cluster_values = [cluster_results[idx] for idx in label_indices]
-	t_pixels = length(cluster_values)
-	cluster_counts = [count(==(cluster), cluster_values) for cluster in 1:n_clusters]
-	confusion_matrix[label_idx, :] .= [count / t_pixels * 100 for count in cluster_counts]
+		label_indices = findall(gt_data .== label)
+	
+		cluster_values = [cluster_results[idx] for idx in label_indices]
+		t_pixels = length(cluster_values)
+		cluster_counts = [count(==(cluster), cluster_values) for cluster in 1:n_clusters]
+		confusion_matrix[label_idx, :] .= [count / t_pixels * 100 for count in cluster_counts]
+	end
 end
 
-# ╔═╡ 4eedfb19-0fdd-4e5b-b2f5-ec38d5b2b03a
-confusion_matrix
-
-# ╔═╡ e1efb7a4-fa5e-478a-942d-4986cf0db9d2
-with_theme() do
-	assignments, idx = spec_aligned, spec_clustering_idx
-
-	# Create figure
-	fig = Figure(; size=(800, 550))
-	colors = Makie.Colors.distinguishable_colors(n_clusters)
-
-	# Show data
-	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth")
-	
-	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors))
-	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
-
-	# Show cluster map
-	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results")
-	clustermap = fill(NaN32, size(data)[1:2])
-	clustermap[mask] .= assignments[idx]
-	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors))
-	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
-
-	fig
-end
-
-# ╔═╡ 75895597-36d7-4ab8-b4b7-2e1b2fb5cb01
+# ╔═╡ 841ee5e1-278b-4ebe-be33-744ce6bd7abc
 with_theme() do
 	fig = Figure(; size=(900, 800))
 	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels, yticks = 1:true_labels)
@@ -342,16 +307,7 @@ end
 # ╠═883cf099-8b07-4dac-8cde-ab0e8cd3a97f
 # ╠═6cc95f84-a545-40f3-8ade-ecc3432c41c0
 # ╠═3894966f-662e-4296-8c89-87cfe06eebab
-# ╟─23f2afbf-7635-4827-9a8f-2dc1c98e2d8e
-# ╟─1c27672e-4216-453b-ab75-d8e19143ff12
-# ╠═8ae43452-1f71-4440-9b08-56d57a0f4424
-# ╠═a9646e81-b0e6-4b04-a191-3021309ebb78
-# ╠═81932d2b-b075-43fa-af5e-3fbc2045774d
-# ╠═228c9083-0264-42a4-a47f-fe842c1ff850
-# ╠═fc0d44fe-062a-4af0-af6d-fcee7edca62d
-# ╠═acd3c027-2283-4d66-9642-891caf332a01
-# ╠═31bfc63c-e722-414c-9253-6840be5c34ce
-# ╠═2ee36828-4c7b-4a9f-bae4-2d138cf96988
-# ╠═4eedfb19-0fdd-4e5b-b2f5-ec38d5b2b03a
-# ╟─e1efb7a4-fa5e-478a-942d-4986cf0db9d2
-# ╠═75895597-36d7-4ab8-b4b7-2e1b2fb5cb01
+# ╠═23f2afbf-7635-4827-9a8f-2dc1c98e2d8e
+# ╟─aad82e02-9466-48a9-b314-a6561be75a16
+# ╠═9f2dd747-767b-4bb1-8ad6-2e1037687fc2
+# ╠═841ee5e1-278b-4ebe-be33-744ce6bd7abc
