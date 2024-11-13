@@ -200,7 +200,7 @@ end
 spec_aligned = aligned_assignments(spec_clusterings)
 
 # ╔═╡ 883cf099-8b07-4dac-8cde-ab0e8cd3a97f
-
+min_index = argmin(spec_clusterings[i].totalcost for i in 1:100)
 
 # ╔═╡ 6cc95f84-a545-40f3-8ade-ecc3432c41c0
 @bind spec_clustering_idx PlutoUI.Slider(1:length(spec_clusterings); show_value=true)
@@ -209,8 +209,35 @@ spec_aligned = aligned_assignments(spec_clusterings)
 # clu_map = fill(NaN32, size(data)[1:2])
 
 # ╔═╡ 23f2afbf-7635-4827-9a8f-2dc1c98e2d8e
+# with_theme() do
+# 	assignments, idx = spec_aligned, spec_clustering_idx
+
+# 	# Create figure
+# 	fig = Figure(; size=(800, 650))
+# 	colors = Makie.Colors.distinguishable_colors(n_clusters)
+
+# 	# Show data
+# 	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth")
+	
+# 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors))
+# 	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
+
+# 	# Show cluster map
+# 	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results")
+# 	clustermap = fill(NaN32, size(data)[1:2])
+# 	clustermap[mask] .= assignments[idx]
+# 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors))
+# 	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
+
+# 	fig
+# end
+
+# ╔═╡ 4ce4c122-2d70-46a8-a4f7-c9c730548a77
+spec_clusterings[min_index].assignments
+
+# ╔═╡ 47a2d47c-0b8d-48c3-800e-ac119c084dbc
 with_theme() do
-	assignments, idx = spec_aligned, spec_clustering_idx
+	# assignments, idx = spec_aligned, spec_clustering_idx
 
 	# Create figure
 	fig = Figure(; size=(800, 650))
@@ -224,8 +251,8 @@ with_theme() do
 
 	# Show cluster map
 	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results")
-	clustermap = fill(NaN32, size(data)[1:2])
-	clustermap[mask] .= assignments[idx]
+	clustermap = fill(0, size(data)[1:2])
+	clustermap[mask] .= spec_clusterings[min_index].assignments
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors))
 	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 
@@ -265,16 +292,111 @@ end
 with_theme() do
 	fig = Figure(; size=(900, 800))
 	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels, yticks = 1:true_labels)
-	hm = heatmap!(ax, confusion_matrix, colormap=:viridis)
+	hm = heatmap!(ax, permutedims(confusion_matrix), colormap=:viridis)
 	pm = permutedims(confusion_matrix)
 
 	for i in 1:true_labels, j in 1:predicted_labels
         value = round(pm[i, j], digits=1)
-        text!(ax, i - 0.02, j - 0.1, text = "$value", color=:white, align = (:center, :center), fontsize=14)
+        text!(ax, i - 0.02, j - 0.1, text = "$value", color=:black, align = (:center, :center), fontsize=14)
+    end
+	Colorbar(fig[1, 2], hm)
+	fig
+end;
+
+# ╔═╡ d5c7b00a-9156-44f3-a908-24cea4f121f3
+md"""
+#### Cluster Relabel
+"""
+
+# ╔═╡ 6c6bcbb6-469c-4860-95e7-78ec97ac230c
+relabel_map = Dict(
+	0 => 0,
+	1 => 5,
+	2 => 12,
+	3 => 3,
+	4 => 8,
+	5 => 11,
+	6 => 9,
+	7 => 14,
+	8 => 7,
+	9 => 16,
+	10 => 6,
+	11 => 2,
+	12 => 10,
+	13 => 13,
+	14 => 15,
+	15 => 1,
+	16 => 4,
+)
+
+# ╔═╡ 9e49c81a-777f-4f5d-8ea9-ff4d178894c9
+D_relabel = [relabel_map[label] for label in spec_aligned[min_index]]
+
+# ╔═╡ cbf023b5-0a95-4bb1-98bb-328430b50aec
+with_theme() do
+	# assignments, idx = spec_aligned, spec_clustering_idx
+
+	# Create figure
+	fig = Figure(; size=(800, 650))
+	colors = Makie.Colors.distinguishable_colors(n_clusters)
+
+	# Show data
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth")
+	
+	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors))
+	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
+
+	# Show cluster map
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results")
+	clustermap = fill(0, size(data)[1:2])
+	clustermap[mask] .= D_relabel
+	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors))
+	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
+
+	fig
+end
+
+# ╔═╡ 8ece88c9-477c-4275-8df3-d7b4b7d3d953
+begin
+	ground_labels_re = filter(x -> x != 0, gt_labels) #Filter out the background pixel label
+	true_labels_re = length(ground_labels_re)
+	predicted_labels_re = n_clusters
+
+	confusion_matrix_re = zeros(Float64, true_labels_re, predicted_labels_re) #Initialize a confusion matrix filled with zeros
+	cluster_results_re = fill(NaN32, size(data)[1:2]) #Clustering algorithm results
+
+	# clu_assign, idx = spec_aligned, spec_clustering_idx
+
+	cluster_results_re[mask] .= D_relabel
+
+	for (label_idx, label) in enumerate(ground_labels_re)
+	
+		label_indices = findall(gt_data .== label)
+	
+		cluster_values = [cluster_results_re[idx] for idx in label_indices]
+		t_pixels = length(cluster_values)
+		cluster_counts = [count(==(cluster), cluster_values) for cluster in 1:n_clusters]
+		confusion_matrix_re[label_idx, :] .= [count / t_pixels * 100 for count in cluster_counts]
+	end
+end
+
+# ╔═╡ ef60113d-fa13-4e9f-8e77-4545ca6d4f36
+with_theme() do
+	fig = Figure(; size=(800, 700))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re)
+	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
+	pm = permutedims(confusion_matrix_re)
+
+	for i in 1:true_labels_re, j in 1:predicted_labels_re
+        value = round(pm[i, j], digits=1)
+        text!(ax, i - 0.02, j - 0.1, text = "$value", color=:black, align = (:center, :center), fontsize=14)
     end
 	Colorbar(fig[1, 2], hm)
 	fig
 end
+
+# ╔═╡ 1504b566-e3e4-4d37-8665-4fbbab1cc884
+
 
 # ╔═╡ Cell order:
 # ╟─86b2daa8-4ed6-4235-bbd0-a9d88a1a207e
@@ -308,6 +430,15 @@ end
 # ╠═6cc95f84-a545-40f3-8ade-ecc3432c41c0
 # ╠═3894966f-662e-4296-8c89-87cfe06eebab
 # ╠═23f2afbf-7635-4827-9a8f-2dc1c98e2d8e
+# ╠═4ce4c122-2d70-46a8-a4f7-c9c730548a77
+# ╠═47a2d47c-0b8d-48c3-800e-ac119c084dbc
 # ╟─aad82e02-9466-48a9-b314-a6561be75a16
-# ╠═9f2dd747-767b-4bb1-8ad6-2e1037687fc2
+# ╟─9f2dd747-767b-4bb1-8ad6-2e1037687fc2
 # ╠═841ee5e1-278b-4ebe-be33-744ce6bd7abc
+# ╟─d5c7b00a-9156-44f3-a908-24cea4f121f3
+# ╠═6c6bcbb6-469c-4860-95e7-78ec97ac230c
+# ╠═9e49c81a-777f-4f5d-8ea9-ff4d178894c9
+# ╠═cbf023b5-0a95-4bb1-98bb-328430b50aec
+# ╠═8ece88c9-477c-4275-8df3-d7b4b7d3d953
+# ╠═ef60113d-fa13-4e9f-8e77-4545ca6d4f36
+# ╠═1504b566-e3e4-4d37-8665-4fbbab1cc884
