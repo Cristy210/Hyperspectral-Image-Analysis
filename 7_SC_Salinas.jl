@@ -208,6 +208,9 @@ min_index = argmin(spec_clusterings[i].totalcost for i in 1:100)
 # ╔═╡ 3894966f-662e-4296-8c89-87cfe06eebab
 # clu_map = fill(NaN32, size(data)[1:2])
 
+# ╔═╡ 0e454066-a32b-4ca4-9c43-4ce15ad8c834
+
+
 # ╔═╡ 23f2afbf-7635-4827-9a8f-2dc1c98e2d8e
 # with_theme() do
 # 	assignments, idx = spec_aligned, spec_clustering_idx
@@ -237,7 +240,7 @@ spec_clusterings[min_index].assignments
 
 # ╔═╡ 47a2d47c-0b8d-48c3-800e-ac119c084dbc
 with_theme() do
-	# assignments, idx = spec_aligned, spec_clustering_idx
+	assignments, idx = spec_aligned, spec_clustering_idx
 
 	# Create figure
 	fig = Figure(; size=(800, 650))
@@ -252,7 +255,7 @@ with_theme() do
 	# Show cluster map
 	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results")
 	clustermap = fill(0, size(data)[1:2])
-	clustermap[mask] .= spec_clusterings[min_index].assignments
+	clustermap[mask] .= assignments[idx]
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors))
 	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 
@@ -429,7 +432,8 @@ end
 # ╠═883cf099-8b07-4dac-8cde-ab0e8cd3a97f
 # ╠═6cc95f84-a545-40f3-8ade-ecc3432c41c0
 # ╠═3894966f-662e-4296-8c89-87cfe06eebab
-# ╠═23f2afbf-7635-4827-9a8f-2dc1c98e2d8e
+# ╠═0e454066-a32b-4ca4-9c43-4ce15ad8c834
+# ╟─23f2afbf-7635-4827-9a8f-2dc1c98e2d8e
 # ╠═4ce4c122-2d70-46a8-a4f7-c9c730548a77
 # ╠═47a2d47c-0b8d-48c3-800e-ac119c084dbc
 # ╟─aad82e02-9466-48a9-b314-a6561be75a16
