@@ -373,9 +373,6 @@ begin
 	end
 end
 
-# ╔═╡ b33136c7-f3b5-44eb-8c2f-0b53159111a9
-
-
 # ╔═╡ a062718a-2f67-4864-aa7e-0129cb5f6f58
 with_theme() do
 	fig = Figure(; size=(600, 700))
@@ -433,7 +430,6 @@ end
 # ╠═c3b78785-cd3a-413b-8396-063bad7f3d13
 # ╠═3ca21e15-d7e5-4582-8da3-5aba521fb937
 # ╟─dba9ea3e-d226-4b68-84e4-54fdcb76de62
-# ╠═0cd5fa6d-fa11-4279-a71b-ae414b353aed
-# ╠═ce41f7df-d3fe-4c5f-8194-84c33bc36619
-# ╠═b33136c7-f3b5-44eb-8c2f-0b53159111a9
+# ╟─0cd5fa6d-fa11-4279-a71b-ae414b353aed
+# ╟─ce41f7df-d3fe-4c5f-8194-84c33bc36619
 # ╠═a062718a-2f67-4864-aa7e-0129cb5f6f58
