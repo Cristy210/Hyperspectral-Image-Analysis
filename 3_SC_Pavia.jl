@@ -146,9 +146,6 @@ affinity(cube::Array{<:Real,3}; kwargs...) =
 	affinity(permutedims(reshape(cube, :, size(cube,3))); kwargs...)
 end
 
-# ╔═╡ 06d247a7-9d7f-4ed6-adc7-5922aa0a865e
-permutedims(data[mask, :])
-
 # ╔═╡ 388af406-2e65-408d-9b9d-ebd6080172b6
 max_nz = 10
 
@@ -388,6 +385,77 @@ with_theme() do
 	fig
 end
 
+# ╔═╡ b3ce2cbd-471f-4bef-899d-6d85511a2539
+md"""
+## Plot Clustering Results vs Spectrum
+"""
+
+# ╔═╡ f7a4d6ab-9b9c-428b-957d-bce064e88eed
+masked_2darray = permutedims(data[mask, :])
+
+# ╔═╡ 85db2fc6-525a-490c-8356-1b9bee82e37c
+masked_gt = dropdims(gt_data[mask, :], dims=2)
+
+# ╔═╡ cd820309-ae1a-4fd1-9bf1-08f74c8fda3e
+div(3 - 1, 4) + 1
+
+# ╔═╡ e41053f8-a432-46e5-a5b0-1427f1169036
+with_theme() do
+	fig = Figure(; size=(1200, 700))
+
+	colors = Makie.Colors.distinguishable_colors(n_clusters)
+	colors_spec = Makie.Colors.distinguishable_colors(n_clusters)[2:end]
+	
+	ax_hm = Axis(fig[1:4, 1], aspect=DataAspect(), yreversed=true, title="Clustering Results")
+	clustermap = fill(0, size(data)[1:2])
+	clustermap[mask] .= D_relabel
+	hm = heatmap!(ax_hm, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, 9))
+	Colorbar(fig[5,1], hm, tellwidth=false, vertical=false)
+	ax_hm1 = Axis(fig[1:4, 4], aspect=DataAspect(), yreversed=true, title="Ground Truth")
+	hm1 = heatmap!(ax_hm1, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, 9))
+	Colorbar(fig[5,4], hm1, tellwidth=false, vertical=false)
+
+	for label in 1:8
+		row = (label - 1) % 4 + 1
+		col = div(label - 1, 4) + 2
+
+		ax = Axis(fig[row, col], title="Cluster $label")
+
+		cluster_indices = findall(D_relabel .== label)
+		selected_indices = cluster_indices[randperm(length(cluster_indices))[1:20]]
+
+		selected_spectra = masked_2darray[:, selected_indices]
+		selected_colors = [colors_spec[masked_gt[idx]] for idx in selected_indices]
+
+		for i in 1:length(selected_indices)
+			lines!(ax, selected_spectra[:, i], color=selected_colors[i])
+		end
+	end
+
+	fig
+end
+
+# ╔═╡ daba6c97-3c2d-4ef7-9f3d-45931f3eb62e
+cluster_indices = findall(D_relabel .== 8)
+
+# ╔═╡ 2177d761-8781-4631-9c30-db495626f0a0
+selected_indices = cluster_indices[randperm(length(cluster_indices))[1:20]]
+
+# ╔═╡ c636bb30-4320-4f6b-81ce-4b5bcd4fbe6a
+selected_colors = [colors[masked_gt[idx]] for idx in selected_indices]
+
+# ╔═╡ 38a49d7b-d975-4ea3-9901-44f789c202e7
+
+
+# ╔═╡ 4efef491-8e4f-4308-a563-5b0e3d0a105a
+ colors = Makie.Colors.distinguishable_colors(9)[2:end]
+
+# ╔═╡ 6abba135-3dac-4be9-bdf9-e12953104387
+# ╠═╡ disabled = true
+#=╠═╡
+colors =Makie.Colors.distinguishable_colors(9)[2:end]
+  ╠═╡ =#
+
 # ╔═╡ Cell order:
 # ╠═7c16bf70-8d7d-11ef-23e6-f9d6b2d61dd3
 # ╠═ac175796-3e1b-4d8c-ad1b-9c67b521c13c
@@ -411,7 +479,6 @@ end
 # ╠═32898a09-a236-477a-a946-3debd3931420
 # ╠═43fb9331-3469-4849-b029-56404f69cd77
 # ╠═ed2b2f3b-f485-4a97-bf8c-2420cc670a3f
-# ╠═06d247a7-9d7f-4ed6-adc7-5922aa0a865e
 # ╠═388af406-2e65-408d-9b9d-ebd6080172b6
 # ╠═e26cbff7-556d-4b91-bbfc-506c652073de
 # ╠═6668fae0-e208-4765-b5ec-efb95add8043
@@ -430,6 +497,17 @@ end
 # ╠═c3b78785-cd3a-413b-8396-063bad7f3d13
 # ╠═3ca21e15-d7e5-4582-8da3-5aba521fb937
 # ╟─dba9ea3e-d226-4b68-84e4-54fdcb76de62
-# ╟─0cd5fa6d-fa11-4279-a71b-ae414b353aed
+# ╠═0cd5fa6d-fa11-4279-a71b-ae414b353aed
 # ╟─ce41f7df-d3fe-4c5f-8194-84c33bc36619
 # ╠═a062718a-2f67-4864-aa7e-0129cb5f6f58
+# ╟─b3ce2cbd-471f-4bef-899d-6d85511a2539
+# ╠═f7a4d6ab-9b9c-428b-957d-bce064e88eed
+# ╠═85db2fc6-525a-490c-8356-1b9bee82e37c
+# ╠═cd820309-ae1a-4fd1-9bf1-08f74c8fda3e
+# ╠═4efef491-8e4f-4308-a563-5b0e3d0a105a
+# ╠═e41053f8-a432-46e5-a5b0-1427f1169036
+# ╠═daba6c97-3c2d-4ef7-9f3d-45931f3eb62e
+# ╠═2177d761-8781-4631-9c30-db495626f0a0
+# ╠═6abba135-3dac-4be9-bdf9-e12953104387
+# ╠═c636bb30-4320-4f6b-81ce-4b5bcd4fbe6a
+# ╠═38a49d7b-d975-4ea3-9901-44f789c202e7
