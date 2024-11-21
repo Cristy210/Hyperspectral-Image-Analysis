@@ -1,6 +1,6 @@
-# Remote Sensing Change Detection - MSI/HSI Datasets
+# Remote Sensing Images - HSI Datasets
 
-Convolutional Neural Networks - Urban Change Detection - Julia & Python Implementation 
+### Implementation of Unsupervised learning algorithms on Hyperspectral Image datasets - Julia & Python Implementation 
 
 
 
