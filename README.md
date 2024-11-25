@@ -1,7 +1,5 @@
 # Remote Sensing Images - HSI Datasets
 
-### Implementation of Unsupervised learning algorithms on Hyperspectral Image datasets - Julia & Python Implementation 
+Hyperspectral Image Analysis is an important technique in remote sensing applications for identifying materials and detecting changes in the environment. This repository demonstrates the application of machine learning algorithms to analyze and interpret hyperspectral datasets, providing insights into land cover, vegetation, and more. 
 
 
-
-Data Source Credits: https://ieee-dataport.org/open-access/oscd-onera-satellite-change-detection
