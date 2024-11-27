@@ -49,3 +49,12 @@ This project explores unsupervised learning techniques to segment and cluster hy
 
 ## Data Credits
 This Dataset is downloaded from [Hyperspectral Remote Sensing Scenes](https://www.ehu.eus/ccwintco/index.php/Hyperspectral_Remote_Sensing_Scenes)
+
+---
+
+## Clustering Results
+
+### Spectral Clustering
+Below Image shows the clustering results obtained from Spectral Clustering algorithm
+
+![Ground Truth Vs Clustering Results](Clustering%20Results/Pavia/Pavia_GT_Res.png)
