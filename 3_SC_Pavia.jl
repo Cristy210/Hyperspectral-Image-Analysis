@@ -390,7 +390,7 @@ md"""
 ## Plot Clustering Results vs Spectrum
 """
 
-# ╔═╡ f7a4d6ab-9b9c-428b-957d-bce064e88eed
+# ╔═╡ 57eeec35-8bb0-4879-929b-b5599c733f84
 masked_2darray = permutedims(data[mask, :])
 
 # ╔═╡ 85db2fc6-525a-490c-8356-1b9bee82e37c
@@ -403,21 +403,25 @@ div(3 - 1, 4) + 1
 with_theme() do
 	fig = Figure(; size=(1200, 700))
 
-	colors = Makie.Colors.distinguishable_colors(n_clusters)
-	colors_spec = Makie.Colors.distinguishable_colors(n_clusters)[2:end]
+	colors = Makie.Colors.distinguishable_colors(n_clusters+1)
+	colors_spec = Makie.Colors.distinguishable_colors(n_clusters+1)[2:end]
 	
 	ax_hm = Axis(fig[1:4, 1], aspect=DataAspect(), yreversed=true, title="Clustering Results")
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
-	hm = heatmap!(ax_hm, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, 9))
+	hm = heatmap!(ax_hm, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
 	Colorbar(fig[5,1], hm, tellwidth=false, vertical=false)
 	ax_hm1 = Axis(fig[1:4, 4], aspect=DataAspect(), yreversed=true, title="Ground Truth")
-	hm1 = heatmap!(ax_hm1, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, 9))
+	hm1 = heatmap!(ax_hm1, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
 	Colorbar(fig[5,4], hm1, tellwidth=false, vertical=false)
 
-	for label in 1:8
-		row = (label - 1) % 4 + 1
-		col = div(label - 1, 4) + 2
+	
+
+	for label in 1:n_clusters
+		row, col = fldmod1(label, 2)
+		col += 1
+		# row = (label - 1) % 4 + 1
+		# col = div(label - 1, 4) + 2
 
 		ax = Axis(fig[row, col], title="Cluster $label")
 
@@ -435,26 +439,29 @@ with_theme() do
 	fig
 end
 
+# ╔═╡ 2ae11a46-e3ee-4e25-be1e-f50d3c83d065
+colors_spec = Makie.Colors.distinguishable_colors(n_clusters)[2:end]
+
+# ╔═╡ ca46c630-60f4-4928-9333-94b5c712d165
+colors = Makie.Colors.distinguishable_colors(n_clusters+1)
+
 # ╔═╡ daba6c97-3c2d-4ef7-9f3d-45931f3eb62e
 cluster_indices = findall(D_relabel .== 8)
 
 # ╔═╡ 2177d761-8781-4631-9c30-db495626f0a0
 selected_indices = cluster_indices[randperm(length(cluster_indices))[1:20]]
 
-# ╔═╡ c636bb30-4320-4f6b-81ce-4b5bcd4fbe6a
-selected_colors = [colors[masked_gt[idx]] for idx in selected_indices]
-
-# ╔═╡ 38a49d7b-d975-4ea3-9901-44f789c202e7
-
-
-# ╔═╡ 4efef491-8e4f-4308-a563-5b0e3d0a105a
- colors = Makie.Colors.distinguishable_colors(9)[2:end]
-
 # ╔═╡ 6abba135-3dac-4be9-bdf9-e12953104387
 # ╠═╡ disabled = true
 #=╠═╡
 colors =Makie.Colors.distinguishable_colors(9)[2:end]
   ╠═╡ =#
+
+# ╔═╡ c636bb30-4320-4f6b-81ce-4b5bcd4fbe6a
+selected_colors = [colors[masked_gt[idx]] for idx in selected_indices]
+
+# ╔═╡ 38a49d7b-d975-4ea3-9901-44f789c202e7
+
 
 # ╔═╡ Cell order:
 # ╠═7c16bf70-8d7d-11ef-23e6-f9d6b2d61dd3
@@ -499,13 +506,14 @@ colors =Makie.Colors.distinguishable_colors(9)[2:end]
 # ╟─dba9ea3e-d226-4b68-84e4-54fdcb76de62
 # ╠═0cd5fa6d-fa11-4279-a71b-ae414b353aed
 # ╟─ce41f7df-d3fe-4c5f-8194-84c33bc36619
-# ╠═a062718a-2f67-4864-aa7e-0129cb5f6f58
+# ╟─a062718a-2f67-4864-aa7e-0129cb5f6f58
 # ╟─b3ce2cbd-471f-4bef-899d-6d85511a2539
-# ╠═f7a4d6ab-9b9c-428b-957d-bce064e88eed
+# ╟─57eeec35-8bb0-4879-929b-b5599c733f84
 # ╠═85db2fc6-525a-490c-8356-1b9bee82e37c
 # ╠═cd820309-ae1a-4fd1-9bf1-08f74c8fda3e
-# ╠═4efef491-8e4f-4308-a563-5b0e3d0a105a
 # ╠═e41053f8-a432-46e5-a5b0-1427f1169036
+# ╠═2ae11a46-e3ee-4e25-be1e-f50d3c83d065
+# ╠═ca46c630-60f4-4928-9333-94b5c712d165
 # ╠═daba6c97-3c2d-4ef7-9f3d-45931f3eb62e
 # ╠═2177d761-8781-4631-9c30-db495626f0a0
 # ╠═6abba135-3dac-4be9-bdf9-e12953104387
