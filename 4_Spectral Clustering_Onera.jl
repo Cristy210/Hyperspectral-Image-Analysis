@@ -30,7 +30,7 @@ main {
 """
 
 # ╔═╡ 7897afad-fd3f-4ee6-9c1b-b28f6e509ecb
-@bind City Select(["abudhabi", "mumbai", "aguasclaras", "beihai", "beirut", "bercy", "bordeaux", "cupertino", "hongkong", "nantes", "paris", "pisa", "rennes", "saclay_e"])
+@bind City Select(["abudhabi", "mumbai", "aguasclaras", "beihai", "beirut", "bercy", "bordeaux", "cupertino", "dubai", "hongkong", "nantes", "paris", "pisa", "rennes", "saclay_e"])
 
 # ╔═╡ 0fc5bb5c-8bf0-4b4a-bc06-29b82845806a
 Path = Dict("_T1" => joinpath(@__DIR__, "Onera Satellite Change Detection dataset - Images", City, "imgs_1_rect"), "_T2" => joinpath(@__DIR__, "Onera Satellite Change Detection dataset - Images", City, "imgs_2_rect"))
@@ -112,6 +112,9 @@ end
 
 # ╔═╡ 39ee3ec6-6b76-484d-9677-a02aa95e2528
 max_nz = 20
+
+# ╔═╡ b8142f55-8f0c-4937-8da2-9b557b9be8fc
+
 
 # ╔═╡ 50e12d02-2bc8-4913-a917-b54874b6a182
 A = cachet(joinpath(CACHEDIR, "Affinity_$City$Selected_Time$max_nz.bson")) do
@@ -205,6 +208,7 @@ end
 # ╠═b94b1aef-14d7-4a5b-9882-6173377db62c
 # ╠═a4800ac6-e069-4e4c-baf0-d0b4111fad26
 # ╠═39ee3ec6-6b76-484d-9677-a02aa95e2528
+# ╠═b8142f55-8f0c-4937-8da2-9b557b9be8fc
 # ╠═50e12d02-2bc8-4913-a917-b54874b6a182
 # ╠═7c83722e-1cec-46f0-bb3e-efe529a3deaf
 # ╠═7ceabfaf-2a78-470c-9aea-c891763e9478
