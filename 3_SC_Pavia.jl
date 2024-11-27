@@ -326,18 +326,18 @@ with_theme() do
 	assignments, idx = spec_aligned, spec_clustering_idx
 
 	# Create figure
-	fig = Figure(; size=(600, 750))
+	fig = Figure(; size=(900, 750))
 	colors = Makie.Colors.distinguishable_colors(n_clusters)
 	# colors_re = Makie.Colors.distinguishable_colors(length(re_labels))
 
 	# Show data
-	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth")
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=20)
 	
 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, 9))
 	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
 
 	# Show cluster map
-	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results")
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results", titlesize=20)
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, 9))
@@ -373,7 +373,7 @@ end
 # ╔═╡ a062718a-2f67-4864-aa7e-0129cb5f6f58
 with_theme() do
 	fig = Figure(; size=(600, 700))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re)
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix", titlesize=20)
 	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
 	pm = permutedims(confusion_matrix_re)
 
@@ -381,7 +381,7 @@ with_theme() do
         value = round(pm[i, j], digits=1)
         text!(ax, i - 0.02, j - 0.1, text = "$value", color=:black, align = (:center, :center), fontsize=14)
     end
-	Colorbar(fig[1, 2], hm)
+	Colorbar(fig[1, 2], hm; height=Relative(0.8))
 	fig
 end
 
@@ -506,7 +506,7 @@ selected_colors = [colors[masked_gt[idx]] for idx in selected_indices]
 # ╟─dba9ea3e-d226-4b68-84e4-54fdcb76de62
 # ╠═0cd5fa6d-fa11-4279-a71b-ae414b353aed
 # ╟─ce41f7df-d3fe-4c5f-8194-84c33bc36619
-# ╟─a062718a-2f67-4864-aa7e-0129cb5f6f58
+# ╠═a062718a-2f67-4864-aa7e-0129cb5f6f58
 # ╟─b3ce2cbd-471f-4bef-899d-6d85511a2539
 # ╟─57eeec35-8bb0-4879-929b-b5599c733f84
 # ╠═85db2fc6-525a-490c-8356-1b9bee82e37c
