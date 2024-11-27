@@ -30,7 +30,7 @@ main {
 """
 
 # ╔═╡ 9abb2611-c08b-4307-8cc2-911302598f12
-@bind City Select(["abudhabi", "mumbai", "aguasclaras", "beihai", "beirut", "bercy", "bordeaux", "cupertino", "hongkong", "nantes", "paris", "pisa", "rennes", "saclay_e"])
+@bind City Select(["abudhabi", "mumbai", "aguasclaras", "beihai", "beirut", "bercy", "bordeaux", "brasilia","chongqing", "cupertino", "dubai", "hongkong", "lasvegas", "nantes", "paris", "pisa", "rennes", "saclay_e"])
 
 # ╔═╡ 383efc0f-b775-4851-8a55-0ede19c78239
 Path = Dict("_T1" => joinpath(@__DIR__, "Onera Satellite Change Detection dataset - Images", City, "imgs_1_rect"), "_T2" => joinpath(@__DIR__, "Onera Satellite Change Detection dataset - Images", City, "imgs_2_rect"))
@@ -66,7 +66,7 @@ Array_1 = [ArchGDAL.read(tif_file) do dataset band = ArchGDAL.getband(dataset, 1
 Array_2 = [ArchGDAL.read(tif_file) do dataset band = ArchGDAL.getband(dataset, 1); data = ArchGDAL.read(band) end for tif_file in Images_2]
 
 # ╔═╡ 3c98b6d2-f598-49dd-bdeb-000b06a25083
-data_1 = cat(Array_1..., dims=3);
+data_1 = cat(Array_1..., dims=3)
 
 # ╔═╡ 4e9b9724-218d-498b-a33c-12d49d5c8887
 data_2 = cat(Array_2..., dims=3);
@@ -85,29 +85,32 @@ with_theme() do
 end
 
 # ╔═╡ 432bd598-d170-43cc-8519-d0f2758fb083
-begin
-function affinity(X::Matrix; max_nz=10, chunksize=isqrt(size(X,2)),
+function affinity(cube; max_nz=10, chunksize=minimum(size(cube)[1:2]),
 	func = c -> exp(-2*acos(clamp(c,-1,1))))
 
+	# Verify that chunksize divides the total number of pixels
+	mod(prod(size(cube)[1:2]), chunksize) == 0 ||
+		error("chunksize must divide the total number of pixels")
+
 	# Compute normalized spectra (so that inner product = cosine of angle)
+	X = permutedims(reshape(cube, :, size(cube,3)))
 	X = mapslices(normalize, X; dims=1)
 
 	# Find nonzero values (in chunks)
 	C_buf = similar(X, size(X,2), chunksize)    # pairwise cosine buffer
 	s_buf = Vector{Int}(undef, size(X,2))       # sorting buffer
 	nz_list = @withprogress mapreduce(vcat, enumerate(Iterators.partition(1:size(X,2), chunksize))) do (chunk_idx, chunk)
-		# Compute cosine angles (for chunk) and store in appropriate buffer
-		C_chunk = length(chunk) == chunksize ? C_buf : similar(X, size(X,2), length(chunk))
-		mul!(C_chunk, X', view(X, :, chunk))
+		# Compute cosine angles (for chunk) and store in buffer
+		mul!(C_buf, X', view(X, :, chunk))
 
 		# Zero out all but `max_nz` largest values
-		nzs = map(chunk, eachcol(C_chunk)) do col, c
+		nzs = map(chunk, eachcol(C_buf)) do col, c
 			idx = partialsortperm!(s_buf, c, 1:max_nz; rev=true)
 			collect(idx), fill(col, max_nz), func.(view(c,idx))
 		end
 
 		# Log progress and return
-		@logprogress chunk_idx/cld(size(X,2),chunksize)
+		@logprogress chunk_idx/(size(X,2) ÷ chunksize)
 		return nzs
 	end
 
@@ -117,21 +120,18 @@ function affinity(X::Matrix; max_nz=10, chunksize=isqrt(size(X,2)),
 	vals = reduce(vcat, getindex.(nz_list, 3))
 	return sparse([rows; cols],[cols; rows],[vals; vals])
 end
-affinity(cube::Array{<:Real,3}; kwargs...) =
-	affinity(permutedims(reshape(cube, :, size(cube,3))); kwargs...)
-end
 
 # ╔═╡ 6f1b577a-6042-4fcc-a21b-0b351e829dfd
 max_nz = 20
 
 # ╔═╡ 7a59cab0-8ba4-4c6b-8627-696c22fe0218
 A_1 = cachet(joinpath(CACHEDIR, "Affinity_$(City)_T1$max_nz.bson")) do
-	affinity(data; max_nz)
+	affinity(data_1; max_nz)
 end
 
 # ╔═╡ 876cc0e8-2880-4591-b212-1eac3d2c0b9a
 A_2 = cachet(joinpath(CACHEDIR, "Affinity_$(City)_T2$max_nz.bson")) do
-	affinity(data; max_nz)
+	affinity(data_2; max_nz)
 end
 
 # ╔═╡ 48267064-d704-439f-bd9e-f2f620a902e3
@@ -222,7 +222,7 @@ mat_1 = reshape(spec_aligned_1[spec_clustering_idx], size(data_1, 1), size(data_
 
 # ╔═╡ 3e909260-73a7-4529-bb97-5427cba6e2ad
 with_theme() do
-	fig = Figure(; size=(900, 600))
+	fig = Figure(; size=(1000, 800))
 	ax_1 = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true)
 	ax_2 = Axis(fig[1, 2], aspect=DataAspect(), yreversed=true)
 	colors = Makie.Colors.distinguishable_colors(n_clusters)
