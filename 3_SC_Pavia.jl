@@ -391,17 +391,14 @@ md"""
 """
 
 # ╔═╡ 57eeec35-8bb0-4879-929b-b5599c733f84
-masked_2darray = permutedims(data[mask, :])
+masked_2darray = permutedims(data[mask, :]);
 
 # ╔═╡ 85db2fc6-525a-490c-8356-1b9bee82e37c
-masked_gt = dropdims(gt_data[mask, :], dims=2)
-
-# ╔═╡ cd820309-ae1a-4fd1-9bf1-08f74c8fda3e
-div(3 - 1, 4) + 1
+masked_gt = dropdims(gt_data[mask, :], dims=2);
 
 # ╔═╡ e41053f8-a432-46e5-a5b0-1427f1169036
 with_theme() do
-	fig = Figure(; size=(1200, 700))
+	fig = Figure(; size=(1300, 700))
 
 	colors = Makie.Colors.distinguishable_colors(n_clusters+1)
 	colors_spec = Makie.Colors.distinguishable_colors(n_clusters+1)[2:end]
@@ -438,6 +435,20 @@ with_theme() do
 
 	fig
 end
+
+# ╔═╡ 473c1586-df91-4ccb-992c-b98aad3f61e6
+
+
+# ╔═╡ 6c4c0af5-5820-46c9-aa53-0eb74fdf8038
+
+
+# ╔═╡ 1f96c203-8a00-4fef-bfcb-554c08ed09ab
+
+
+# ╔═╡ 79f5e435-e43b-4dd2-81a0-0ac1d611b218
+md"""
+### Rough Work
+"""
 
 # ╔═╡ 2ae11a46-e3ee-4e25-be1e-f50d3c83d065
 colors_spec = Makie.Colors.distinguishable_colors(n_clusters)[2:end]
@@ -508,10 +519,13 @@ selected_colors = [colors[masked_gt[idx]] for idx in selected_indices]
 # ╟─ce41f7df-d3fe-4c5f-8194-84c33bc36619
 # ╠═a062718a-2f67-4864-aa7e-0129cb5f6f58
 # ╟─b3ce2cbd-471f-4bef-899d-6d85511a2539
-# ╟─57eeec35-8bb0-4879-929b-b5599c733f84
+# ╠═57eeec35-8bb0-4879-929b-b5599c733f84
 # ╠═85db2fc6-525a-490c-8356-1b9bee82e37c
-# ╠═cd820309-ae1a-4fd1-9bf1-08f74c8fda3e
 # ╠═e41053f8-a432-46e5-a5b0-1427f1169036
+# ╠═473c1586-df91-4ccb-992c-b98aad3f61e6
+# ╠═6c4c0af5-5820-46c9-aa53-0eb74fdf8038
+# ╠═1f96c203-8a00-4fef-bfcb-554c08ed09ab
+# ╟─79f5e435-e43b-4dd2-81a0-0ac1d611b218
 # ╠═2ae11a46-e3ee-4e25-be1e-f50d3c83d065
 # ╠═ca46c630-60f4-4928-9333-94b5c712d165
 # ╠═daba6c97-3c2d-4ef7-9f3d-45931f3eb62e
