@@ -326,7 +326,7 @@ with_theme() do
 	assignments, idx = spec_aligned, spec_clustering_idx
 
 	# Create figure
-	fig = Figure(; size=(900, 750))
+	fig = Figure(; size=(700, 750))
 	colors = Makie.Colors.distinguishable_colors(n_clusters)
 	# colors_re = Makie.Colors.distinguishable_colors(length(re_labels))
 
