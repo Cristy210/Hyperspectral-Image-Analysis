@@ -8,7 +8,7 @@ The Salinas Dataset was collected using the 224-band AVIRIS sensor over Salinas 
 - **Spatial Dimensions**: 512 x 217 pixels
 - **Number of Spectral Bands**: 204
 
-## Groundtruth Classes for the Dataset
+## Groundtruth Classes for the Salinas Dataset
 
 | #   | Class                       | Samples |
 |-----|-----------------------------|---------|
@@ -40,3 +40,13 @@ This project explores unsupervised learning techniques to segment and cluster hy
 
 ## Data Credits
 This Dataset is downloaded from [Hyperspectral Remote Sensing Scenes](https://www.ehu.eus/ccwintco/index.php/Hyperspectral_Remote_Sensing_Scenes)
+
+## Clustering Results
+#### Spectral Clustering Results:
+Below Image shows the clustering results obtained from Spectral Clustering algorithm -- Plotted against the Ground Truth
+
+![Ground Truth Vs Clustering Results](/Clustering%20Results/Salinas/Salinas_GT_CluRes_800.png)
+
+#### Confusion Matrix:
+Below Confusion Matrix helps evaluate clustering algorithm's  accuracy against ground truth labels
+![Confusion Matrix](/Clustering%20Results/Salinas/Salinas_Conf_Mat.png)
