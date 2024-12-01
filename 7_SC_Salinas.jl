@@ -386,7 +386,7 @@ end
 # ╔═╡ ef60113d-fa13-4e9f-8e77-4545ca6d4f36
 with_theme() do
 	fig = Figure(; size=(800, 700))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re)
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix")
 	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
 	pm = permutedims(confusion_matrix_re)
 
