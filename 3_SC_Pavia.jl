@@ -423,7 +423,7 @@ with_theme() do
 		ax = Axis(fig[row, col], title="Cluster $label")
 
 		cluster_indices = findall(D_relabel .== label)
-		selected_indices = cluster_indices[randperm(length(cluster_indices))[1:20]]
+		selected_indices = cluster_indices[randperm(length(cluster_indices))[1:200]]
 
 		selected_spectra = masked_2darray[:, selected_indices]
 		selected_colors = [colors_spec[masked_gt[idx]] for idx in selected_indices]
@@ -437,6 +437,44 @@ with_theme() do
 end
 
 # ╔═╡ 473c1586-df91-4ccb-992c-b98aad3f61e6
+with_theme() do
+    fig = Figure(; size=(1300, 700))
+    grid = GridLayout(fig[1, 1]; nrow=5, ncol=4)  
+
+    # Define Colors
+    colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
+    colors_spec = Makie.Colors.distinguishable_colors(n_clusters + 1)[2:end]
+
+    # Heatmaps
+    ax_hm = Axis(grid[1:4, 1], aspect=DataAspect(), yreversed=true, title="Clustering Results")
+    clustermap = fill(0, size(data)[1:2])
+    clustermap[mask] .= D_relabel
+    hm = heatmap!(ax_hm, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+    Colorbar(grid[5, 1], hm, vertical=false, label="Clustering Results")
+
+    ax_hm1 = Axis(grid[1:4, 4], aspect=DataAspect(), yreversed=true, title="Ground Truth")
+    hm1 = heatmap!(ax_hm1, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+    Colorbar(grid[5, 4], hm1, vertical=false, label="Ground Truth")
+
+    # Spectrum Plots
+    for label in 1:n_clusters
+        row, col = fldmod1(label, 2)   
+        col += 1    
+
+        ax = Axis(grid[row, col], title="Cluster $label")
+        cluster_indices = findall(D_relabel .== label)
+        selected_indices = cluster_indices[randperm(length(cluster_indices))[1:200]]
+
+        selected_spectra = masked_2darray[:, selected_indices]
+        selected_colors = [colors_spec[masked_gt[idx]] for idx in selected_indices]
+
+        for i in 1:length(selected_indices)
+            lines!(ax, selected_spectra[:, i], color=selected_colors[i])
+        end
+    end
+
+    fig
+end
 
 
 # ╔═╡ 6c4c0af5-5820-46c9-aa53-0eb74fdf8038
