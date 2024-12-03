@@ -301,9 +301,9 @@ with_theme() do
 	fig
 end;
 
-# ╔═╡ c3b78785-cd3a-413b-8396-063bad7f3d13
-# relabel_map = Dict(3 => 1, 4 => 6, 5 => 7, 6 => 2, 7 => 9, 8 => 5, 9 => 1, 1 => 8, 2 => 8, 0 => 0)
-relabel_map = Dict(
+# ╔═╡ 81b128d2-b7cc-4493-bc19-4035f79d5935
+relabel_maps = Dict(
+	"Pavia" => Dict(
 	0 => 0,
 	1 => 8,
 	2 => 3,
@@ -314,10 +314,26 @@ relabel_map = Dict(
 	7 => 9,
 	8 => 5,
 	9 => 4,
+),
+	"PaviaUni" => Dict(
+	0 => 0,
+	1 => 3,
+	2 => 4,
+	3 => 1,
+	4 => 9,
+	5 => 7,
+	6 => 6,
+	7 => 5,
+	8 => 8,
+	9 => 2,
+)
 )
 
+# ╔═╡ ea9c42bd-218c-4d6a-962d-1fc13f82408b
+relabel_keys = relabel_maps[Location]
+
 # ╔═╡ 3ca21e15-d7e5-4582-8da3-5aba521fb937
-D_relabel = [relabel_map[label] for label in spec_aligned[1]]
+D_relabel = [relabel_keys[label] for label in spec_aligned[1]]
 
 # ╔═╡ dba9ea3e-d226-4b68-84e4-54fdcb76de62
 md"""
@@ -505,27 +521,6 @@ md"""
 ### Rough Work
 """
 
-# ╔═╡ 2ae11a46-e3ee-4e25-be1e-f50d3c83d065
-colors_spec = Makie.Colors.distinguishable_colors(n_clusters)[2:end]
-
-# ╔═╡ ca46c630-60f4-4928-9333-94b5c712d165
-colors = Makie.Colors.distinguishable_colors(n_clusters+1)
-
-# ╔═╡ daba6c97-3c2d-4ef7-9f3d-45931f3eb62e
-cluster_indices = findall(D_relabel .== 8)
-
-# ╔═╡ 2177d761-8781-4631-9c30-db495626f0a0
-selected_indices = cluster_indices[randperm(length(cluster_indices))[1:20]]
-
-# ╔═╡ 6abba135-3dac-4be9-bdf9-e12953104387
-# ╠═╡ disabled = true
-#=╠═╡
-colors =Makie.Colors.distinguishable_colors(9)[2:end]
-  ╠═╡ =#
-
-# ╔═╡ c636bb30-4320-4f6b-81ce-4b5bcd4fbe6a
-selected_colors = [colors[masked_gt[idx]] for idx in selected_indices]
-
 # ╔═╡ 38a49d7b-d975-4ea3-9901-44f789c202e7
 
 
@@ -568,7 +563,8 @@ selected_colors = [colors[masked_gt[idx]] for idx in selected_indices]
 # ╟─fe5dfa09-ffd3-4512-89a3-4834b790dabe
 # ╠═355e84c9-3fcb-4634-9436-815fe65680d5
 # ╠═58084ada-1773-463c-bacd-0478cbfbd5a1
-# ╠═c3b78785-cd3a-413b-8396-063bad7f3d13
+# ╠═81b128d2-b7cc-4493-bc19-4035f79d5935
+# ╠═ea9c42bd-218c-4d6a-962d-1fc13f82408b
 # ╠═3ca21e15-d7e5-4582-8da3-5aba521fb937
 # ╟─dba9ea3e-d226-4b68-84e4-54fdcb76de62
 # ╠═0cd5fa6d-fa11-4279-a71b-ae414b353aed
@@ -582,10 +578,4 @@ selected_colors = [colors[masked_gt[idx]] for idx in selected_indices]
 # ╠═6c4c0af5-5820-46c9-aa53-0eb74fdf8038
 # ╠═1f96c203-8a00-4fef-bfcb-554c08ed09ab
 # ╟─79f5e435-e43b-4dd2-81a0-0ac1d611b218
-# ╠═2ae11a46-e3ee-4e25-be1e-f50d3c83d065
-# ╠═ca46c630-60f4-4928-9333-94b5c712d165
-# ╠═daba6c97-3c2d-4ef7-9f3d-45931f3eb62e
-# ╠═2177d761-8781-4631-9c30-db495626f0a0
-# ╠═6abba135-3dac-4be9-bdf9-e12953104387
-# ╠═c636bb30-4320-4f6b-81ce-4b5bcd4fbe6a
 # ╠═38a49d7b-d975-4ea3-9901-44f789c202e7
