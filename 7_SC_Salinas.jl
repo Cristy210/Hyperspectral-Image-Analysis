@@ -208,9 +208,6 @@ min_index = argmin(spec_clusterings[i].totalcost for i in 1:100)
 # ╔═╡ 3894966f-662e-4296-8c89-87cfe06eebab
 # clu_map = fill(NaN32, size(data)[1:2])
 
-# ╔═╡ 0e454066-a32b-4ca4-9c43-4ce15ad8c834
-
-
 # ╔═╡ 23f2afbf-7635-4827-9a8f-2dc1c98e2d8e
 # with_theme() do
 # 	assignments, idx = spec_aligned, spec_clustering_idx
@@ -266,6 +263,9 @@ end
 md"""
 ### Confusion Matrix
 """
+
+# ╔═╡ e134cc3a-54db-4a74-babf-78fe70e9a0cc
+filter(x -> x != 0, gt_labels)
 
 # ╔═╡ 9f2dd747-767b-4bb1-8ad6-2e1037687fc2
 begin
@@ -332,6 +332,9 @@ relabel_map = Dict(
 	16 => 4,
 )
 
+# ╔═╡ 2a6fc313-05a6-45dd-84dc-9cf8fecc6f26
+spec_aligned[min_index]
+
 # ╔═╡ 9e49c81a-777f-4f5d-8ea9-ff4d178894c9
 D_relabel = [relabel_map[label] for label in spec_aligned[min_index]]
 
@@ -341,7 +344,7 @@ with_theme() do
 
 	# Create figure
 	fig = Figure(; size=(800, 650))
-	colors = Makie.Colors.distinguishable_colors(n_clusters)
+	colors = Makie.Colors.distinguishable_colors(n_clusters+1)
 
 	# Show data
 	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth")
@@ -350,6 +353,7 @@ with_theme() do
 	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 
 	# Show cluster map
+	
 	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results")
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
@@ -369,6 +373,7 @@ begin
 	cluster_results_re = fill(NaN32, size(data)[1:2]) #Clustering algorithm results
 
 	# clu_assign, idx = spec_aligned, spec_clustering_idx
+	
 
 	cluster_results_re[mask] .= D_relabel
 
@@ -398,8 +403,113 @@ with_theme() do
 	fig
 end
 
-# ╔═╡ 1504b566-e3e4-4d37-8665-4fbbab1cc884
+# ╔═╡ c5bbfe13-116a-4c0e-9791-22b68174f03e
+md"""
+## Plot Clustering Results vs Spectrum
+"""
 
+# ╔═╡ 60a6af2f-d24a-4ff3-9f98-f08924fac72d
+masked_2darray = permutedims(data[mask, :]);
+
+# ╔═╡ 2a68f8a6-bd67-4b4b-9c8b-ff9a82cc8a14
+masked_gt = dropdims(gt_data[mask, :], dims=2)
+
+# ╔═╡ 6d15aab3-7dc5-4e37-a812-d3bcf28ea1dc
+
+
+# ╔═╡ 7181e5b5-4cd2-48e1-bab9-cca281333688
+with_theme() do
+    fig = Figure(; size=(1500, 700))
+	supertitle = Label(fig[0, 1:3], "Spectrum Analysis of Clustering Results with Corresponding Ground Truth Label Color", fontsize=20, halign=:center, valign=:top)
+	# Label(main_grid[1, 1:2], text="Spectrum Analysis of Clustering Results with Corresponding Ground Truth Label", fontsize=20, halign=:center, valign=:top, padding=(10, 10, 10, 10))
+	
+    grid_1 = GridLayout(fig[1, 1]; nrow=1, ncol=2)
+	grid_2 = GridLayout(fig[1, 2]; nrow=4, ncol=4)
+	grid_3 = GridLayout(fig[1, 3]; nrow=1, ncol=2)
+	
+
+    # Define Colors
+    colors = Makie.Colors.distinguishable_colors(n_clusters + 1) 
+    colors_spec = Makie.Colors.distinguishable_colors(n_clusters + 1)[2:end]
+
+    # Heatmaps
+    ax_hm = Axis(grid_1[1, 2], aspect=DataAspect(), yreversed=true, title="Clustering Results")
+    clustermap = fill(0, size(data)[1:2])
+    clustermap[mask] .= D_relabel
+    hm = heatmap!(ax_hm, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+    Colorbar(grid_1[1, 1], hm)
+
+    ax_hm1 = Axis(grid_3[1, 1], aspect=DataAspect(), yreversed=true, title="Ground Truth")
+    hm1 = heatmap!(ax_hm1, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+    Colorbar(grid_3[1, 2], hm1)
+
+    # Spectrum Plots
+    for label in 1:n_clusters
+        row = div(label - 1, 4) + 1   
+        col = mod(label - 1, 4) + 1   
+
+        ax = Axis(grid_2[row, col], title="Cluster $label")
+		hidedecorations!(ax)
+        cluster_indices = findall(D_relabel .== label)
+        selected_indices = cluster_indices[randperm(length(cluster_indices))[1:200]]
+
+        selected_spectra = masked_2darray[:, selected_indices]
+        selected_colors = [colors_spec[Int(round(masked_gt[idx]))] for idx in selected_indices]
+
+        for i in 1:length(selected_indices)
+            lines!(ax, selected_spectra[:, i], color=selected_colors[i])
+        end
+    end
+
+    fig
+end
+
+# ╔═╡ 7109e412-98b1-4acc-9617-e8399169a065
+with_theme() do
+    fig = Figure(; size=(1500, 700))
+	supertitle = Label(fig[0, 1:3], "Spectrum Analysis of Clustering Results with Corresponding Clustering Result Label", fontsize=20, halign=:center, valign=:top)
+    grid_1 = GridLayout(fig[1, 1]; nrow=1, ncol=2)
+	grid_2 = GridLayout(fig[1, 2]; nrow=4, ncol=4)
+	grid_3 = GridLayout(fig[1, 3]; nrow=1, ncol=2)
+
+	
+
+    # Define Colors
+    colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
+    colors_spec = Makie.Colors.distinguishable_colors(n_clusters + 1)[2:end]
+
+    # Heatmap for Clustering Results
+    ax_hm = Axis(grid_1[1, 2], aspect=DataAspect(), yreversed=true, title="Clustering Results")
+    clustermap = fill(0, size(data)[1:2])
+    clustermap[mask] .= D_relabel
+    hm = heatmap!(ax_hm, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+    Colorbar(grid_1[1, 1], hm, flipaxis=false)
+
+    # Heatmap for Ground Truth
+	ax_hm1 = Axis(grid_3[1, 1], aspect=DataAspect(), yreversed=true, title="Ground Truth")
+    hm1 = heatmap!(ax_hm1, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+    Colorbar(grid_3[1, 2], hm1)
+
+    # Spectrum Plots
+    for label in 1:n_clusters
+        row = div(label - 1, 4) + 1   
+        col = mod(label - 1, 4) + 1   
+
+        ax = Axis(grid_2[row, col], title="Cluster $label")
+		hidedecorations!(ax)
+        cluster_indices = findall(D_relabel .== label)
+        selected_indices = cluster_indices[randperm(length(cluster_indices))[1:200]]
+
+        selected_spectra = masked_2darray[:, selected_indices]
+        selected_colors = [colors_spec[D_relabel[idx]] for idx in selected_indices]
+
+        for i in 1:length(selected_indices)
+            lines!(ax, selected_spectra[:, i], color=selected_colors[i])
+        end
+    end
+
+    fig
+end
 
 # ╔═╡ Cell order:
 # ╟─86b2daa8-4ed6-4235-bbd0-a9d88a1a207e
@@ -432,17 +542,23 @@ end
 # ╠═883cf099-8b07-4dac-8cde-ab0e8cd3a97f
 # ╠═6cc95f84-a545-40f3-8ade-ecc3432c41c0
 # ╠═3894966f-662e-4296-8c89-87cfe06eebab
-# ╠═0e454066-a32b-4ca4-9c43-4ce15ad8c834
 # ╟─23f2afbf-7635-4827-9a8f-2dc1c98e2d8e
 # ╠═4ce4c122-2d70-46a8-a4f7-c9c730548a77
 # ╠═47a2d47c-0b8d-48c3-800e-ac119c084dbc
 # ╟─aad82e02-9466-48a9-b314-a6561be75a16
-# ╟─9f2dd747-767b-4bb1-8ad6-2e1037687fc2
+# ╠═e134cc3a-54db-4a74-babf-78fe70e9a0cc
+# ╠═9f2dd747-767b-4bb1-8ad6-2e1037687fc2
 # ╠═841ee5e1-278b-4ebe-be33-744ce6bd7abc
 # ╟─d5c7b00a-9156-44f3-a908-24cea4f121f3
 # ╠═6c6bcbb6-469c-4860-95e7-78ec97ac230c
+# ╠═2a6fc313-05a6-45dd-84dc-9cf8fecc6f26
 # ╠═9e49c81a-777f-4f5d-8ea9-ff4d178894c9
 # ╠═cbf023b5-0a95-4bb1-98bb-328430b50aec
-# ╟─8ece88c9-477c-4275-8df3-d7b4b7d3d953
+# ╠═8ece88c9-477c-4275-8df3-d7b4b7d3d953
 # ╠═ef60113d-fa13-4e9f-8e77-4545ca6d4f36
-# ╠═1504b566-e3e4-4d37-8665-4fbbab1cc884
+# ╟─c5bbfe13-116a-4c0e-9791-22b68174f03e
+# ╠═60a6af2f-d24a-4ff3-9f98-f08924fac72d
+# ╠═2a68f8a6-bd67-4b4b-9c8b-ff9a82cc8a14
+# ╠═6d15aab3-7dc5-4e37-a812-d3bcf28ea1dc
+# ╠═7181e5b5-4cd2-48e1-bab9-cca281333688
+# ╠═7109e412-98b1-4acc-9617-e8399169a065
