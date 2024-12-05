@@ -231,7 +231,7 @@ with_theme() do
 
 	# Create figure
 	fig = Figure(; size=(600, 750))
-	colors = Makie.Colors.distinguishable_colors(n_clusters)
+	colors = Makie.Colors.distinguishable_colors(n_clusters+1)
 
 	# Show data
 	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth")
@@ -241,7 +241,7 @@ with_theme() do
 
 	# Show cluster map
 	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results")
-	clustermap = fill(NaN32, size(data)[1:2])
+	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= assignments[idx]
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors))
 	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false)
@@ -346,7 +346,7 @@ with_theme() do
 
 	# Create figure
 	fig = Figure(; size=(700, 750))
-	colors = Makie.Colors.distinguishable_colors(n_clusters)
+	colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
 	# colors_re = Makie.Colors.distinguishable_colors(length(re_labels))
 
 	# Show data
@@ -451,6 +451,7 @@ with_theme() do
         col = mod(label - 1, 2) + 1   
 
         ax = Axis(grid_2[row, col], title="Cluster $label")
+		hidedecorations!(ax)
         cluster_indices = findall(D_relabel .== label)
         selected_indices = cluster_indices[randperm(length(cluster_indices))[1:200]]
 
@@ -498,6 +499,7 @@ with_theme() do
         col = mod(label - 1, 2) + 1   
 
         ax = Axis(grid_2[row, col], title="Cluster $label")
+		hidedecorations!(ax)
         cluster_indices = findall(D_relabel .== label)
         selected_indices = cluster_indices[randperm(length(cluster_indices))[1:200]]
 
@@ -574,7 +576,7 @@ md"""
 # ╠═57eeec35-8bb0-4879-929b-b5599c733f84
 # ╠═85db2fc6-525a-490c-8356-1b9bee82e37c
 # ╠═beb37be6-fea9-4a21-a7ed-81ba87d4e5b7
-# ╟─473c1586-df91-4ccb-992c-b98aad3f61e6
+# ╠═473c1586-df91-4ccb-992c-b98aad3f61e6
 # ╠═6c4c0af5-5820-46c9-aa53-0eb74fdf8038
 # ╠═1f96c203-8a00-4fef-bfcb-554c08ed09ab
 # ╟─79f5e435-e43b-4dd2-81a0-0ac1d611b218
