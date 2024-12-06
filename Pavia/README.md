@@ -57,8 +57,8 @@ This Dataset is downloaded from [Hyperspectral Remote Sensing Scenes](https://ww
 #### Spectral Clustering Results:
 Below Image shows the clustering results obtained from Spectral Clustering algorithm -- Plotted against the Ground Truth
 
-![Ground Truth Vs Clustering Results](/Clustering%20Results/Pavia/GT_CluRes_Pavia.pdf)
+![Ground Truth Vs Clustering Results](/Clustering%20Results/Pavia/GT_CluRes_Pavia.png)
 
 #### Confusion Matrix:
 Below Confusion Matrix helps evaluate clustering algorithm's  accuracy against ground truth labels
-![Confusion Matrix](/Clustering%20Results/Pavia/Conf_Mat_Pavia.pdf)
+![Confusion Matrix](/Clustering%20Results/Pavia/Conf_Mat_Pavia.png)
