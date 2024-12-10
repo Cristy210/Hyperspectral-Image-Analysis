@@ -277,6 +277,56 @@ with_theme() do
 	fig
 end
 
+# ╔═╡ 19298cbb-5ef1-462b-8624-47ab63d14ca4
+with_theme() do
+    fig = Figure(; size=(1300, 700))
+	supertitle = Label(fig[0, 1:3], "Spectrum Analysis of Clustering Results with Corresponding Ground Truth Label", fontsize=20, halign=:center, valign=:top)
+	
+    grid_1 = GridLayout(fig[1, 1]; nrow=2, ncol=1)
+	grid_2 = GridLayout(fig[1, 2]; nrow=5, ncol=2)
+	grid_3 = GridLayout(fig[1, 3]; nrow=2, ncol=1)
+	masked_gt = dropdims(gt_data[mask, :], dims=2)
+	masked_2darray = permutedims(data[mask, :])
+
+	
+
+    # Define Colors
+    colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
+    colors_spec = Makie.Colors.distinguishable_colors(n_clusters + 1)[2:end]
+
+    # Heatmaps
+    ax_hm = Axis(grid_1[1, 1], aspect=DataAspect(), yreversed=true, title="Clustering Results")
+    clustermap = fill(0, size(data)[1:2])
+    clustermap[mask] .= D_relabel
+    hm = heatmap!(ax_hm, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+    Colorbar(grid_1[2, 1], hm, vertical=false)
+
+    ax_hm1 = Axis(grid_3[1, 1], aspect=DataAspect(), yreversed=true, title="Ground Truth")
+    hm1 = heatmap!(ax_hm1, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+    Colorbar(grid_3[2, 1], hm1, vertical=false)
+
+    # Spectrum Plots
+    for label in 1:n_clusters
+        row = div(label - 1, 2) + 1   
+        col = mod(label - 1, 2) + 1   
+
+        ax = Axis(grid_2[row, col], title="Cluster $label")
+		hidedecorations!(ax)
+        cluster_indices = findall(D_relabel .== label)
+        selected_indices = cluster_indices[randperm(length(cluster_indices))[1:200]]
+
+        selected_spectra = masked_2darray[:, selected_indices]
+        selected_colors = [colors_spec[masked_gt[idx]] for idx in selected_indices]
+
+        for i in 1:length(selected_indices)
+            lines!(ax, selected_spectra[:, i], color=selected_colors[i])
+        end
+    end
+
+    fig
+end
+
+
 # ╔═╡ Cell order:
 # ╠═cec84524-bceb-4a8d-a30b-e82faca68cc7
 # ╠═b17ad74a-e088-4a72-aa0e-eef3fa7f5ca3
@@ -311,3 +361,4 @@ end
 # ╠═574b1660-cea0-4626-aa47-7eeff7d93e61
 # ╠═bb21a2c0-6011-4631-ac1c-3df0832def1d
 # ╠═106b6d99-27a5-4a0e-8367-39c69d338a9f
+# ╠═19298cbb-5ef1-462b-8624-47ab63d14ca4

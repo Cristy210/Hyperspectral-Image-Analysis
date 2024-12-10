@@ -213,7 +213,7 @@ with_theme() do
 	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
 
 	# Show cluster map
-	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results", titlesize=20)
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="KSS Clustering Results", titlesize=20)
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= KSS_Results
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))

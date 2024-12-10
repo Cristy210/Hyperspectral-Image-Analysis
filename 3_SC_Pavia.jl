@@ -422,7 +422,6 @@ D_relabel
 with_theme() do
     fig = Figure(; size=(1300, 700))
 	supertitle = Label(fig[0, 1:3], "Spectrum Analysis of Clustering Results with Corresponding Ground Truth Label", fontsize=20, halign=:center, valign=:top)
-	# Label(main_grid[1, 1:2], text="Spectrum Analysis of Clustering Results with Corresponding Ground Truth Label", fontsize=20, halign=:center, valign=:top, padding=(10, 10, 10, 10))
 	
     grid_1 = GridLayout(fig[1, 1]; nrow=2, ncol=1)
 	grid_2 = GridLayout(fig[1, 2]; nrow=5, ncol=2)
@@ -527,7 +526,7 @@ md"""
 
 
 # ╔═╡ Cell order:
-# ╠═7c16bf70-8d7d-11ef-23e6-f9d6b2d61dd3
+# ╟─7c16bf70-8d7d-11ef-23e6-f9d6b2d61dd3
 # ╠═ac175796-3e1b-4d8c-ad1b-9c67b521c13c
 # ╠═3d5c0527-359c-487c-9346-7eb5021c7c02
 # ╠═41634c3e-36c5-46a4-a1c2-d7b469939902
@@ -570,13 +569,13 @@ md"""
 # ╠═3ca21e15-d7e5-4582-8da3-5aba521fb937
 # ╟─dba9ea3e-d226-4b68-84e4-54fdcb76de62
 # ╠═0cd5fa6d-fa11-4279-a71b-ae414b353aed
-# ╟─ce41f7df-d3fe-4c5f-8194-84c33bc36619
+# ╠═ce41f7df-d3fe-4c5f-8194-84c33bc36619
 # ╠═a062718a-2f67-4864-aa7e-0129cb5f6f58
 # ╟─b3ce2cbd-471f-4bef-899d-6d85511a2539
 # ╠═57eeec35-8bb0-4879-929b-b5599c733f84
 # ╠═85db2fc6-525a-490c-8356-1b9bee82e37c
 # ╠═beb37be6-fea9-4a21-a7ed-81ba87d4e5b7
-# ╟─473c1586-df91-4ccb-992c-b98aad3f61e6
+# ╠═473c1586-df91-4ccb-992c-b98aad3f61e6
 # ╠═6c4c0af5-5820-46c9-aa53-0eb74fdf8038
 # ╠═1f96c203-8a00-4fef-bfcb-554c08ed09ab
 # ╟─79f5e435-e43b-4dd2-81a0-0ac1d611b218
