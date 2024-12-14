@@ -57,6 +57,9 @@ end
 # ╔═╡ 4453e50e-0bf2-4cf3-a7e9-8ff5c3d034dc
 CLASSIFIER_DIM = 1
 
+# ╔═╡ 504b377e-6e44-44bf-a179-2dc56a9f6d69
+train[9]
+
 # ╔═╡ 878f0a6a-43e1-4f23-9279-bedce534b576
 fits = map(image_mat -> affine_approx(image_mat, CLASSIFIER_DIM), train)
 
@@ -72,6 +75,9 @@ end
 
 # ╔═╡ e66874cf-245d-4211-a9fd-76ab6733c04b
 classify(x, fits) = argmin(i -> dist(x, fits[i]), 0:9)
+
+# ╔═╡ 0935af3b-1c3e-4bac-a960-d8a3dda5f8d4
+eachcol(train[1])
 
 # ╔═╡ 74b7e833-d38d-44f8-a248-cf0cfa9cac1a
 begin
@@ -146,23 +152,8 @@ begin
 	end
 end
 
-# ╔═╡ 5e0d9591-3f39-4ddf-a5be-c560af6def99
-n_clusters = length(unique(gt_data)) - 1
+# ╔═╡ 5dab6f5d-f2d3-4e96-8cf9-8cd73e49cda1
 
-# ╔═╡ 8f13a36f-d326-4b63-a87c-d2f642750eef
-permutedims(data[mask, :])
-
-# ╔═╡ 0e2268f3-18cd-4919-a90f-9e526589a8a7
-training_labels = [1, 2, 3, 4]
-
-# ╔═╡ 1e54d673-73c8-4389-aa49-6b031906900f
-testing_labels = [5, 6, 7, 8, 9]
-
-# ╔═╡ 1e8ad769-e259-4837-8cf8-b344ef994440
-training_labels .∈ [1, 1, 1, 1]
-
-# ╔═╡ 35ba8c5b-4de6-4ae7-8af3-d06753d32f7e
-train_labels = gt_data[gt_data .∈ training_labels]
 
 # ╔═╡ Cell order:
 # ╟─22335c30-b725-11ef-2f34-6f691acbde73
@@ -172,10 +163,12 @@ train_labels = gt_data[gt_data .∈ training_labels]
 # ╟─e4d94be6-0027-4df9-bb37-b36dbe64ffa6
 # ╠═7027a398-91f7-4d5f-860e-8e4242618b80
 # ╠═4453e50e-0bf2-4cf3-a7e9-8ff5c3d034dc
+# ╠═504b377e-6e44-44bf-a179-2dc56a9f6d69
 # ╠═878f0a6a-43e1-4f23-9279-bedce534b576
 # ╟─34f16752-e284-49ea-8335-16ba689ac924
 # ╠═d6e56291-7b34-45e5-b7b7-e789086942cb
 # ╠═e66874cf-245d-4211-a9fd-76ab6733c04b
+# ╠═0935af3b-1c3e-4bac-a960-d8a3dda5f8d4
 # ╠═74b7e833-d38d-44f8-a248-cf0cfa9cac1a
 # ╠═a9813130-40f0-4aec-9b19-0ed5d869ddd6
 # ╠═bbee969f-6527-4590-ae7c-51ab5f132521
@@ -194,9 +187,4 @@ train_labels = gt_data[gt_data .∈ training_labels]
 # ╠═21e4f21f-4e9a-4c95-b4e8-a73c326c14ce
 # ╟─d47100b1-6422-4585-9a2e-c2ef09fb9cf0
 # ╠═8451bec4-0ae1-4766-ae71-ba997617b6e2
-# ╠═5e0d9591-3f39-4ddf-a5be-c560af6def99
-# ╠═8f13a36f-d326-4b63-a87c-d2f642750eef
-# ╠═0e2268f3-18cd-4919-a90f-9e526589a8a7
-# ╠═1e54d673-73c8-4389-aa49-6b031906900f
-# ╠═1e8ad769-e259-4837-8cf8-b344ef994440
-# ╠═35ba8c5b-4de6-4ae7-8af3-d06753d32f7e
+# ╠═5dab6f5d-f2d3-4e96-8cf9-8cd73e49cda1
