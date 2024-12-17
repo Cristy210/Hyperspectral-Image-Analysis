@@ -1,4 +1,6 @@
-# Hyperspectral Image Analysis
+<div align="center">
+<h1> Hyperspectral Image Analysis </h1>
+</div>
 
 **Hyperspectral Imaging** is a powerful technique that captures and analyzes a wide spectrum of light across hundreds of narrow bands. This technology allows for detailed material identification, pattern recognition, and classification across diverse fields, including environmental monitoring, medical imaging, agriculture, art conservation, and more.
 
