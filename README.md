@@ -7,3 +7,11 @@
 This repository demonstrates the application of machine learning algorithms, particularly unsupervised learning techniques, to analyze and interpret hyperspectral datasets. The methods presented provide insights into spectral patterns, material properties, and class segmentation.
 
 
+📌 **1. Project Introduction** 
+
+This repository implements **unsupervised machine learning algorithms** on hyperspectral datasets (Pavia, Salinas, and Onera Satellite Datasets) to perform clustering and segmentation:
+- **K-Means Clustering**
+- **K-Subspaces Clustering**
+- **Spectral Clustering**
+
+
