@@ -1,4 +1,4 @@
-# Hyperspectral Image Analysis - Unsupervised Learning Techniques
+# Hyperspectral Image Analysis
 
 **Hyperspectral Imaging** is a powerful technique that captures and analyzes a wide spectrum of light across hundreds of narrow bands. This technology allows for detailed material identification, pattern recognition, and classification across diverse fields, including environmental monitoring, medical imaging, agriculture, art conservation, and more.
 
