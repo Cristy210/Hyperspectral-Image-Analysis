@@ -152,8 +152,7 @@ This Dataset is downloaded from [Hyperspectral Remote Sensing Scenes](https://ww
 
 ## Clustering Results
 
-#### Spectral Clustering Results:
-Below Image shows the clustering results obtained from Spectral Clustering algorithm -- Plotted against the Ground Truth
+## Below Image shows the clustering results obtained from Spectral Clustering algorithm -- Plotted against the Ground Truth
 
 ![Ground Truth Vs Clustering Results](/Clustering%20Results/Pavia/GT_CluRes_Pavia.png)
 
