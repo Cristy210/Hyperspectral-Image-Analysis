@@ -1,4 +1,7 @@
-# Clustering Algorithms Implementation on Pavia Dataset
+<div align="center">
+<h1> Clustering Algorithms Implementation on Pavia Dataset </h1>
+</div>
+
 This folder contains the implementation of different clustering algorithms for hyperspectral image analysis, using the widely known **Pavia Dataset**.
 
 ## About the Dataset
@@ -12,33 +15,128 @@ These are two scenes acquired by the Reflective Optics System Imaging Spectromet
 - **Spatial Dimensions**: 610 x 340 pixes
 - **Number of Spectral Bands**: 103
 
-## Groundtruth Classes for the Pavia Centre Scene
+<div align="center">
+<h2> Groundtruth Classes for the Pavia Centre Scene </h2>
+</div>
 
-| #   | Class                  | Samples |
-|-----|------------------------|---------|
-| 1   | Water                 | 824     |
-| 2   | Trees                 | 820     |
-| 3   | Asphalt               | 816     |
-| 4   | Self-Blocking Bricks  | 808     |
-| 5   | Bitumen               | 808     |
-| 6   | Tiles                 | 1260    |
-| 7   | Shadows               | 476     |
-| 8   | Meadows               | 824     |
-| 9   | Bare Soil             | 820     |
+<table align="center">
+    <thead>
+        <tr>
+            <th style="text-align:center">#</th>
+            <th style="text-align:center">Class</th>
+            <th style="text-align:center">Samples</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="center">1</td>
+            <td align="center">Water</td>
+            <td align="center">824</td>
+        </tr>
+        <tr>
+            <td align="center">2</td>
+            <td align="center">Trees</td>
+            <td align="center">820</td>
+        </tr>
+        <tr>
+            <td align="center">3</td>
+            <td align="center">Asphalt</td>
+            <td align="center">816</td>
+        </tr>
+         <tr>
+            <td align="center">4</td>
+            <td align="center">Self-Blocking Bricks</td>
+            <td align="center">808</td>
+        </tr>
+       <tr>
+            <td align="center">5</td>
+            <td align="center">Bitumen</td>
+            <td align="center">808</td>
+        </tr>
+       <tr>
+            <td align="center">6</td>
+            <td align="center">Tiles</td>
+            <td align="center">1260</td>
+        </tr>
+       <tr>
+            <td align="center">7</td>
+            <td align="center">Shadows</td>
+            <td align="center">476</td>
+        </tr>
+       <tr>
+            <td align="center">8</td>
+            <td align="center">Meadows</td>
+            <td align="center">824</td>
+        </tr>
+       <tr>
+            <td align="center">9</td>
+            <td align="center">Bare Soil</td>
+            <td align="center">820</td>
+        </tr>
+    </tbody>
+</table>
 
-## Groundtruth Classes for the Pavia Univeristy Scene
+<div align="center">
+<h2> Groundtruth Classes for the Pavia Univeristy Scene </h2>
+</div>
 
-| #   | Class                  | Samples |
-|-----|------------------------|---------|
-| 1   | Asphalt               | 6631    |
-| 2   | Meadows               | 18649   |
-| 3   | Gravel                | 2099    |
-| 4   | Trees                 | 3064    |
-| 5   | Painted metal sheets  | 1345    |
-| 6   | Bare Soil             | 5029    |
-| 7   | Bitumen               | 1330    |
-| 8   | Self-Blocking Bricks  | 3682    |
-| 9   | Shadows               | 947     |
+<table align="center">
+    <thead>
+        <tr>
+            <th style="text-align:center">#</th>
+            <th style="text-align:center">Class</th>
+            <th style="text-align:center">Samples</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="center">1</td>
+            <td align="center">Asphalt</td>
+            <td align="center">6631</td>
+        </tr>
+        <tr>
+            <td align="center">2</td>
+            <td align="center">Meadows</td>
+            <td align="center">18649</td>
+        </tr>
+        <tr>
+            <td align="center">3</td>
+            <td align="center">Gravel</td>
+            <td align="center">2099</td>
+        </tr>
+         <tr>
+            <td align="center">4</td>
+            <td align="center">Trees</td>
+            <td align="center">3064</td>
+        </tr>
+       <tr>
+            <td align="center">5</td>
+            <td align="center">Painted metal sheets</td>
+            <td align="center">1345</td>
+        </tr>
+       <tr>
+            <td align="center">6</td>
+            <td align="center">Bare Soil</td>
+            <td align="center">5029</td>
+        </tr>
+       <tr>
+            <td align="center">7</td>
+            <td align="center">Bitumen</td>
+            <td align="center">1330</td>
+        </tr>
+       <tr>
+            <td align="center">8</td>
+            <td align="center">Self-Blocking Bricks</td>
+            <td align="center">3682</td>
+        </tr>
+       <tr>
+            <td align="center">9</td>
+            <td align="center">Shadows</td>
+            <td align="center">947</td>
+        </tr>
+    </tbody>
+</table>
+
 
 ## Clustering Algorithms
 
@@ -54,11 +152,15 @@ This Dataset is downloaded from [Hyperspectral Remote Sensing Scenes](https://ww
 
 ## Clustering Results
 
-#### Spectral Clustering Results:
-Below Image shows the clustering results obtained from Spectral Clustering algorithm -- Plotted against the Ground Truth
+## Below Image shows the clustering results obtained from Spectral Clustering algorithm -- Plotted against the Ground Truth
 
-![Ground Truth Vs Clustering Results](/Clustering%20Results/Pavia/GT_CluRes_Pavia.png)
+<div align="center">
+    <img src="/Clustering%20Results/Pavia/GT_CluRes_Pavia.png" alt="Ground Truth Vs Clustering Results" width="800"/>
+</div>
 
-#### Confusion Matrix:
-Below Confusion Matrix helps evaluate clustering algorithm's  accuracy against ground truth labels
-![Confusion Matrix](/Clustering%20Results/Pavia/Conf_Mat_Pavia.png)
+## Below Confusion Matrix helps evaluate clustering algorithm's  accuracy against ground truth labels
+
+<div align="center">
+    <img src="/Clustering%20Results/Pavia/Conf_Mat_Pavia.png" alt="Confusion Matrix" width="800"/>
+</div>
+
