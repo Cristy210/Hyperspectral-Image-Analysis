@@ -143,10 +143,10 @@ kmeans_runs = 100
 permutedims(reshape(data, :, size(data,3)))
 
 # ╔═╡ 360ee108-52a6-433d-8a61-18f3477b1704
-permutedims(data[mask, :])
+# permutedims(data[mask, :])
 
 # ╔═╡ f4b00d98-36b6-4666-be51-f03b8aabb15b
-kmeans_clusterings = cachet(joinpath(splitext(basename(@__FILE__))[1], "kmeans-$n_clusters.bson")) do
+kmeans_clusterings = cachet(joinpath(splitext(basename(@__FILE__))[1], "kmeans_$Location($n_clusters).bson")) do
 	batchkmeans(permutedims(data[mask, :]), n_clusters; nruns=kmeans_runs, maxiter=1000)
 end
 
@@ -172,15 +172,15 @@ relabel_maps = Dict(
 ),
 	"PaviaUni" => Dict(
 	0 => 0,
-	1 => 3,
-	2 => 4,
+	1 => 8,
+	2 => 3,
 	3 => 1,
 	4 => 9,
 	5 => 7,
 	6 => 6,
-	7 => 5,
-	8 => 8,
-	9 => 2,
+	7 => 2,
+	8 => 4,
+	9 => 5,
 )
 )
 
@@ -202,14 +202,14 @@ with_theme() do
 	# Show data
 	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=20)
 	
-	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, 9))
+	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
 	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
 
 	# Show cluster map
-	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="K-Means Clustering Results", titlesize=20)
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="K-Means Clustering - $Location", titlesize=20)
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
-	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, 9))
+	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
 	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false)
 	
 	fig
@@ -242,7 +242,7 @@ end
 # ╔═╡ ba6fb26a-ba15-4473-b982-9d7bc829dddc
 with_theme() do
 	fig = Figure(; size=(600, 700))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="K-Means - Confusion Matrix", titlesize=20)
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="K-Means - $Location - Confusion Matrix", titlesize=20)
 	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
 	pm = permutedims(confusion_matrix_re)
 
@@ -255,7 +255,7 @@ with_theme() do
 end
 
 # ╔═╡ Cell order:
-# ╠═dca00a0f-50c3-476b-8670-917fc9f91d90
+# ╟─dca00a0f-50c3-476b-8670-917fc9f91d90
 # ╠═8904648f-0bd5-44e0-92c5-4134aefeab45
 # ╠═9b6ecd09-a64a-4018-846d-c06c278b7f89
 # ╠═fd9c906d-9a02-40fe-819b-65a1aa23a839
