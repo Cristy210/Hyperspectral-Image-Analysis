@@ -37,7 +37,7 @@ $$J = \sum_{j=1}^k \sum_{\mathbf{y}_i \in C_j} \left\| \mathbf{y}_i - \boldsymbo
 K-Subspaces (KSS) clustering extends K-Means by addressing the challenges of clustering high-dimensional data. Instead of relying solely on Euclidean distance, KSS assumes the data lies in a union of low-dimensional subspaces. Each cluster is modeled by a distinct subspace, and points are assigned to the subspace that minimizes the residual from the projections. 
 
 <div align="center">
-<h4> The objective of K-Subspaces clustering is to minimize the total reconstruction error. </h4>
+<h4> The objective of K-Subspaces clustering is to minimize the total projection error. </h4>
 </div>
 
 $$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - \mathbf{U}_k \mathbf{y}_i\|_2^2$$
