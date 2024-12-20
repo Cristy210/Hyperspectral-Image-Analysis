@@ -47,5 +47,5 @@ $$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - \mat
 - $$y_i$$: Data point $$i$$ in the dataset. 
 - $$\mu_j$$: Centroid of cluster $$j$$. 
 - $$C_j$$: Set of points assigned to cluster $$j$$.
-- $$U_k$$: Subspace Basis for Cluster $$k$$. 
+- $$U_k^T$$: Subspace Basis for Cluster $$k$$. 
 - $$\| \cdot \|_2$$: Euclidean norm (distance).
