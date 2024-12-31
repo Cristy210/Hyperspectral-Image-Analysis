@@ -26,7 +26,7 @@ filepath = joinpath(@__DIR__, "MAT Files", "Salinas_corrected.mat")
 gt_filepath = joinpath(@__DIR__, "GT Files", "Salinas_gt.mat")
 
 # ╔═╡ a60a2575-062a-4e9b-90ce-da8fa082a94d
-CACHEDIR = joinpath(@__DIR__, "cache_files", "Aerial Datasets")
+CACHEDIR = joinpath(@__DIR__, "cache_files", "KSS_Salinas")
 
 # ╔═╡ 0fffb162-c684-436e-ad63-3a96f7e2cbf2
 function cachet(@nospecialize(f), path)
@@ -223,7 +223,7 @@ with_theme() do
 end
 
 # ╔═╡ Cell order:
-# ╠═e5e87648-8a71-4759-ac7a-209b91122916
+# ╟─e5e87648-8a71-4759-ac7a-209b91122916
 # ╠═51938f91-d03b-4d21-9308-627c308a3b1a
 # ╠═8ba89f39-057c-469e-b8da-961fc3b01709
 # ╠═0c2c46d7-cdb6-42e1-b15a-2093512d7082
