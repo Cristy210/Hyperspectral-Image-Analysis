@@ -161,7 +161,7 @@ function batch_KSS(X, d; niters=100, nruns=10)
 	D, N = size(X)
 	runs = Vector{Tuple{Vector{Matrix{Float64}}, Vector{Int}, Float64}}(undef, nruns)
 	@progress for idx in 1:nruns
-		U, c = cachet(joinpath(CACHEDIR, "run-$idx.bson")) do
+		U, c = cachet(joinpath(CACHEDIR, "run_$Location-$idx.bson")) do
 			Random.seed!(idx)
 			KSS(X, d; niters=niters)
 		end
@@ -195,8 +195,9 @@ min_idx_KSS = argmax(KSS_Clustering[i][3] for i in 1:100)
 # ╔═╡ 71584f7f-0477-4b3e-96db-4f1a8b2cf8b4
 KSS_Results = KSS_Clustering[min_idx_KSS][2]
 
-# ╔═╡ 4f2261e2-88a5-40b8-ad79-d3b69e212bf5
-relabel_map = Dict(
+# ╔═╡ 8c6174a3-0782-4d44-a8b6-b6ec92668871
+relabel_maps = Dict(
+	"Pavia" => Dict(
 	0 => 0,
 	1 => 1,
 	2 => 4,
@@ -207,10 +208,26 @@ relabel_map = Dict(
 	7 => 5,
 	8 => 6,
 	9 => 9
+),
+	"PaviaUni" => Dict(
+	0 => 0,
+	1 => 5,
+	2 => 8,
+	3 => 3,
+	4 => 9,
+	5 => 1,
+	6 => 6,
+	7 => 4,
+	8 => 2,
+	9 => 7,
+)
 )
 
-# ╔═╡ 786d8114-bd9e-475f-a66e-b9456083d059
-D_relabel = [relabel_map[label] for label in KSS_Results]
+# ╔═╡ f0dfbe41-44dd-4c4c-b544-edc2faa7d3ff
+relabel_keys = relabel_maps[Location]
+
+# ╔═╡ 8012832c-42b0-48a4-97b0-bd1f61ed5e3b
+D_relabel = [relabel_keys[label] for label in KSS_Results]
 
 # ╔═╡ 574b1660-cea0-4626-aa47-7eeff7d93e61
 with_theme() do
@@ -356,8 +373,9 @@ end
 # ╠═77f09f83-eb68-4359-a1bf-5f30d002746c
 # ╠═aa903bca-1405-4b12-80b8-809113f9dc27
 # ╠═71584f7f-0477-4b3e-96db-4f1a8b2cf8b4
-# ╠═4f2261e2-88a5-40b8-ad79-d3b69e212bf5
-# ╠═786d8114-bd9e-475f-a66e-b9456083d059
+# ╠═8c6174a3-0782-4d44-a8b6-b6ec92668871
+# ╠═f0dfbe41-44dd-4c4c-b544-edc2faa7d3ff
+# ╠═8012832c-42b0-48a4-97b0-bd1f61ed5e3b
 # ╠═574b1660-cea0-4626-aa47-7eeff7d93e61
 # ╠═bb21a2c0-6011-4631-ac1c-3df0832def1d
 # ╠═106b6d99-27a5-4a0e-8367-39c69d338a9f
