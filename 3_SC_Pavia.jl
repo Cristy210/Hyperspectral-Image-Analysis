@@ -391,8 +391,8 @@ end
 
 # ╔═╡ a062718a-2f67-4864-aa7e-0129cb5f6f58
 with_theme() do
-	fig = Figure(; size=(600, 700))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix", titlesize=20)
+	fig = Figure(; size=(800, 700))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix - Spectral Clustering - $Location")
 	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
 	pm = permutedims(confusion_matrix_re)
 
