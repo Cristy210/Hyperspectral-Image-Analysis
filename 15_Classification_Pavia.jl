@@ -94,30 +94,12 @@ end
 # ╔═╡ 36651253-c082-4f26-b47a-9ec24f8af906
 n_classes = length(unique(gt_data)) - 1
 
-# ╔═╡ 9ee29df1-b24b-4c24-83e4-2d89b4811aed
-md"""
-### Heatmap for Ground Truth
-"""
-
-# ╔═╡ 5e6d387c-6fb6-4bee-8ea9-8fe520c98c99
-with_theme() do
-	fig = Figure(; size=(500, 600))
-	colors = Makie.Colors.distinguishable_colors(n_classes + 1)
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=20)
-	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, 9))
-	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
-	fig
-end
-
-# ╔═╡ 5c15ab9d-c704-4fa2-acd4-c5cf0dfaa37b
-data_mat = permutedims(reshape(data, :, size(data, 3)))
-
 # ╔═╡ d3f08059-b747-4fc5-83d7-a72f8ca8553f
 gt_vec = vec(gt_data)
 
 # ╔═╡ ca8f1f61-ca93-4b5a-9fe1-69cba3d19a9d
 md"""
-**Mean Classifier**
+## Mean Classifier
 """
 
 # ╔═╡ 1ca72f73-5d65-48de-b888-3884446995bd
@@ -136,7 +118,7 @@ function fit_mean(data::Array{T, 3}, gt_data::Array{U, 2}) where {T, U}
 	gt_labels = sort(unique(gt_vec))
 
 	#filter out the unique classes from the background labels
-	valid_labels = gt_labels
+	valid_labels = gt_labels[gt_labels .!= 0]
 
 	#Initialize a list to store mean vectors
 	mean_vectors = Vector{Vector{T}}()
@@ -164,79 +146,58 @@ end
 # ╔═╡ 47e0b117-bf16-4978-af8c-456f4cef0fd9
 mean_classifier = fit_mean(data, gt_data)
 
-# ╔═╡ b53bc942-6ddd-4c5b-8770-f6bc0f481c1f
-Dnorms = dropdims(sum(abs2, data; dims=3); dims=3)
-
-# ╔═╡ cc800d15-7bde-4220-9ecb-f4ab1d64d216
-sum(abs2, data; dims=3)
-
 # ╔═╡ 234c5f6e-1972-48ed-b5f5-151211f13819
-function classify(sample::Array{T, 3}, classifier::MeanClassifier{T}) where T<:AbstractFloat
-	Dnorms = dropdims(sum(abs2, sample; dims=3); dims=3)
+function classify(sample::Array{T, 2}, classifier::MeanClassifier{T}) where T<:AbstractFloat
+	Dnorms = dropdims(sum(abs2, sample; dims=1); dims=1)
 	resids = map(classifier.U) do Uc
-		innerprod = reshape(reshape(sample, :, size(sample,3))*Uc, size(sample)[1:2])
+		innerprod = permutedims(sample)*Uc
 		sqrt.(Dnorms .- 2 .* innerprod .+ sum(abs2, Uc))
 	end
-	pixel_classes = map(CartesianIndices(size(sample)[1:2])) do idx
-		min_idx = argmin(resid[idx] for resid in resids) - 1
+	pixel_classes = map(1:size(sample)[2]) do idx
+		min_idx = argmin(resid[idx] for resid in resids)
 		
 	end
 	# predicted_class = mode(vec(pixel_classes))
 	return pixel_classes
 end
 
-# ╔═╡ 7e96728d-6e00-4a61-99a2-a3a21e868618
-# classify(data, mean_classifier)
+# ╔═╡ dff407e5-17d3-433f-9f9f-779f89d4f5d1
+labels = classify(permutedims(data[mask, :]), mean_classifier)
 
-# ╔═╡ 83478be9-eeba-43c8-95c4-d542fb769bff
-# unique(classify(data, mean_classifier))
+# ╔═╡ d64f5ea0-f95d-4b0f-803a-e3fca082006d
+unique(classify(permutedims(data[mask, :]), mean_classifier))
 
-# ╔═╡ 200bea11-dde0-4c49-bc07-5ad54387aef0
-# with_theme() do
-# 	fig = Figure(; size=(500, 600))
-# 	colors = Makie.Colors.distinguishable_colors(n_classes + 1)
-# 	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=20)
-# 	hm = heatmap!(ax, permutedims(classify(data, mean_classifier)); colormap=Makie.Categorical(colors), colorrange=(0, 9))
-# 	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
-# 	fig
-# end
-
-# ╔═╡ 3b89c4a3-724b-41a4-b850-ceeffb776996
+# ╔═╡ 26e3f3ea-9bcb-44df-966b-4506d1fe548a
 md"
-### Rough Work
+## Ground Truth Vs Mean Classification
 "
 
-# ╔═╡ c4f03beb-27f1-428b-a87b-f191fed9ca41
-indices_1 = findall(x -> x .== 6, gt_vec)
+# ╔═╡ 200bea11-dde0-4c49-bc07-5ad54387aef0
+with_theme() do
+	fig = Figure(; size=(800, 600))
+	clustermap = fill(0, size(data)[1:2])
+	clustermap[mask] .= labels
+	colors = Makie.Colors.distinguishable_colors(n_classes + 1)
 
-# ╔═╡ 16827b02-cb47-4cfe-9615-8e94298f204c
-gt_vec[598654]
-
-# ╔═╡ 9ffebe00-e44e-4345-a464-a10036795f28
-selc_indices = indices_1[rand(1:length(indices_1), min(20, length(indices_1)))]
-
-# ╔═╡ 286551db-d32d-461b-980c-565d395874b1
-sel_data = data_mat[:, selc_indices]
-
-# ╔═╡ af281f18-296a-458d-87ec-25add69c49fa
-valid_labels = gt_labels[gt_labels .!= 0]
-
-# ╔═╡ 002fff22-fdd4-45d8-b484-f144fc0752d6
-mean_vectors = Vector{Vector{Float64}}()
-
-# ╔═╡ 49c40878-f6b0-4669-9fc0-61dcacd53358
-for label in valid_labels
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=20)
 	
-	indices = findall(x -> x .== label, gt_vec)
+	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, 9))
+	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
 
-	rand_indx = indices[rand(1:length(indices), min(100, length(indices)))]
-	sel_data = data_mat[:, rand_indx]
-	mean_vecs = mean(sel_data, dims=2) |> vec
-	push!(mean_vectors, mean_vecs)
+	
+	ax = Axis(fig[1, 2], aspect=DataAspect(), yreversed=true, title="Mean Classification", titlesize=20)
+	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, 9))
+	Colorbar(fig[2, 2], hm, tellwidth=false, vertical=false)
+	fig
 end
 
-# ╔═╡ 192ff092-7d1f-4ca0-8cf6-ec673f4faffa
-mean_vectors
+# ╔═╡ e428a263-d609-413d-97e8-c7a6981dde8e
+md"
+## Subspace Classifier
+"
+
+# ╔═╡ 5fa7724c-8937-4963-a602-8df91215b897
+
 
 # ╔═╡ Cell order:
 # ╟─080f426e-6e15-4ae3-ae1c-43feee6b1788
@@ -258,26 +219,15 @@ mean_vectors
 # ╟─19f3bc12-bc98-4fa5-b3cb-6c12230618eb
 # ╠═b6624b05-92f7-4790-ab36-bd8387a2a7a2
 # ╠═36651253-c082-4f26-b47a-9ec24f8af906
-# ╟─9ee29df1-b24b-4c24-83e4-2d89b4811aed
-# ╠═5e6d387c-6fb6-4bee-8ea9-8fe520c98c99
-# ╠═5c15ab9d-c704-4fa2-acd4-c5cf0dfaa37b
 # ╠═d3f08059-b747-4fc5-83d7-a72f8ca8553f
 # ╟─ca8f1f61-ca93-4b5a-9fe1-69cba3d19a9d
 # ╠═1ca72f73-5d65-48de-b888-3884446995bd
 # ╠═0da4baee-1636-435d-b27d-a7c606936b22
 # ╠═47e0b117-bf16-4978-af8c-456f4cef0fd9
-# ╠═b53bc942-6ddd-4c5b-8770-f6bc0f481c1f
-# ╠═cc800d15-7bde-4220-9ecb-f4ab1d64d216
 # ╠═234c5f6e-1972-48ed-b5f5-151211f13819
-# ╠═7e96728d-6e00-4a61-99a2-a3a21e868618
-# ╠═83478be9-eeba-43c8-95c4-d542fb769bff
+# ╠═dff407e5-17d3-433f-9f9f-779f89d4f5d1
+# ╠═d64f5ea0-f95d-4b0f-803a-e3fca082006d
+# ╟─26e3f3ea-9bcb-44df-966b-4506d1fe548a
 # ╠═200bea11-dde0-4c49-bc07-5ad54387aef0
-# ╟─3b89c4a3-724b-41a4-b850-ceeffb776996
-# ╠═c4f03beb-27f1-428b-a87b-f191fed9ca41
-# ╠═16827b02-cb47-4cfe-9615-8e94298f204c
-# ╠═9ffebe00-e44e-4345-a464-a10036795f28
-# ╠═286551db-d32d-461b-980c-565d395874b1
-# ╠═af281f18-296a-458d-87ec-25add69c49fa
-# ╠═002fff22-fdd4-45d8-b484-f144fc0752d6
-# ╠═49c40878-f6b0-4669-9fc0-61dcacd53358
-# ╠═192ff092-7d1f-4ca0-8cf6-ec673f4faffa
+# ╟─e428a263-d609-413d-97e8-c7a6981dde8e
+# ╠═5fa7724c-8937-4963-a602-8df91215b897
