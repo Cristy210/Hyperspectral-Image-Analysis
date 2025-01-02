@@ -22,9 +22,12 @@ using CairoMakie, LinearAlgebra, Colors, PlutoUI, Glob, FileIO, ArnoldiMethod, C
 
 # ╔═╡ 8f503704-4381-4b21-a7bf-eb6363cf64d6
 html"""<style>
+input[type*="range"] {
+	width: calc(100% - 4rem);
+}
 main {
-    max-width: 66%;
-    margin-left: 1%;
+    max-width: 96%;
+    margin-left: 0%;
     margin-right: 2% !important;
 }
 """
@@ -65,6 +68,18 @@ gt_labels = sort(unique(gt_data))
 # ╔═╡ 50942895-27ed-412c-b9f2-4b99d6349e08
 bg_indices = findall(gt_data .== 0)
 
+# ╔═╡ 66dba672-fe4d-42d0-9495-387fcd4e13ab
+# ╠═╡ disabled = true
+#=╠═╡
+n_clusters = length(unique(gt_data)) - 1
+  ╠═╡ =#
+
+# ╔═╡ 0809c6ef-438e-4bec-9e3c-d58309c76b30
+# ╠═╡ disabled = true
+#=╠═╡
+@bind band PlutoUI.Slider(1:size(data, 3), show_value=true)
+  ╠═╡ =#
+
 # ╔═╡ a7818f9f-b3bd-40ad-b725-ae3db3647d4a
 begin
 	mask = trues(size(data, 1), size(data, 2))
@@ -73,6 +88,12 @@ begin
 		mask[x, y] = false
 	end
 end
+
+# ╔═╡ 19f99593-4192-42d6-906a-dd19c4254315
+n_clusters = length(unique(gt_data)) - 1
+
+# ╔═╡ 946e68fe-3f68-464a-b2de-46075a3a6462
+@bind band PlutoUI.Slider(1:size(data, 3), show_value=true)
 
 # ╔═╡ 91b9005d-3f32-4dbf-82d6-45cc4b28fc56
 with_theme() do
@@ -171,22 +192,22 @@ with_theme() do
 	
 
 	# Create figure
-	fig = Figure(; size=(1200, 650))
+	fig = Figure(; size=(800, 700))
 	colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
 	# colors_re = Makie.Colors.distinguishable_colors(length(re_labels))
 
 	# Show data
-	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=20)
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=15)
 	
 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
-	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
+	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 
 	# Show cluster map
-	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="K-Means Clustering - Salinas", titlesize=20)
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="K-Means Clustering - Salinas", titlesize=15)
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
-	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false)
+	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 	
 	fig
 end
@@ -219,7 +240,7 @@ end
 # ╔═╡ 4e7b4e49-0123-42b8-9351-7d0590704654
 with_theme() do
 	fig = Figure(; size=(800, 700))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix - Salinas")
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix - KMeans Clustering - Salinas")
 	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
 	pm = permutedims(confusion_matrix_re)
 
@@ -230,24 +251,6 @@ with_theme() do
 	Colorbar(fig[1, 2], hm)
 	fig
 end
-
-# ╔═╡ 66dba672-fe4d-42d0-9495-387fcd4e13ab
-# ╠═╡ disabled = true
-#=╠═╡
-n_clusters = length(unique(gt_data)) - 1
-  ╠═╡ =#
-
-# ╔═╡ 19f99593-4192-42d6-906a-dd19c4254315
-n_clusters = length(unique(gt_data)) - 1
-
-# ╔═╡ 0809c6ef-438e-4bec-9e3c-d58309c76b30
-# ╠═╡ disabled = true
-#=╠═╡
-@bind band PlutoUI.Slider(1:size(data, 3), show_value=true)
-  ╠═╡ =#
-
-# ╔═╡ 946e68fe-3f68-464a-b2de-46075a3a6462
-@bind band PlutoUI.Slider(1:size(data, 3), show_value=true)
 
 # ╔═╡ Cell order:
 # ╟─8f503704-4381-4b21-a7bf-eb6363cf64d6

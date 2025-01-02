@@ -22,9 +22,12 @@ using CairoMakie, LinearAlgebra, Colors, PlutoUI, Glob, FileIO, ArnoldiMethod, C
 
 # ╔═╡ 86b2daa8-4ed6-4235-bbd0-a9d88a1a207e
 html"""<style>
+input[type*="range"] {
+	width: calc(100% - 4rem);
+}
 main {
-    max-width: 66%;
-    margin-left: 1%;
+    max-width: 96%;
+    margin-left: 0%;
     margin-right: 2% !important;
 }
 """
@@ -183,7 +186,7 @@ function batchkmeans(X, k, args...; nruns=100, kwargs...)
 end
 
 # ╔═╡ b0956a49-0ccc-43f5-a970-e1093b5930ce
-spec_clusterings = batchkmeans(permutedims(V), n_clusters; maxiter=1000)
+spec_clusterings = batchkmeans(permutedims(V), n_clusters; maxiter=100)
 
 # ╔═╡ 01d90d35-fe22-45a5-9d34-48c55d16374e
 aligned_assignments(clusterings, baseperm=1:maximum(first(clusterings).assignments)) = map(clusterings) do clustering
@@ -391,7 +394,7 @@ end
 # ╔═╡ ef60113d-fa13-4e9f-8e77-4545ca6d4f36
 with_theme() do
 	fig = Figure(; size=(800, 700))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix")
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix - Spectral Clustering - Salinas")
 	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
 	pm = permutedims(confusion_matrix_re)
 

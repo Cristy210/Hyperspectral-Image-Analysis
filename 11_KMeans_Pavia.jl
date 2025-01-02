@@ -22,9 +22,12 @@ using CairoMakie, LinearAlgebra, Colors, PlutoUI, Glob, FileIO, ArnoldiMethod, C
 
 # ╔═╡ dca00a0f-50c3-476b-8670-917fc9f91d90
 html"""<style>
+input[type*="range"] {
+	width: calc(100% - 4rem);
+}
 main {
-    max-width: 66%;
-    margin-left: 1%;
+    max-width: 96%;
+    margin-left: 0%;
     margin-right: 2% !important;
 }
 """
@@ -195,18 +198,18 @@ with_theme() do
 	
 
 	# Create figure
-	fig = Figure(; size=(700, 650))
+	fig = Figure(; size=(800, 650))
 	colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
 	# colors_re = Makie.Colors.distinguishable_colors(length(re_labels))
 
 	# Show data
-	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=20)
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=15)
 	
 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
 	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
 
 	# Show cluster map
-	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="K-Means Clustering - $Location", titlesize=20)
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="K-Means Clustering - $Location", titlesize=15)
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
@@ -241,8 +244,8 @@ end
 
 # ╔═╡ ba6fb26a-ba15-4473-b982-9d7bc829dddc
 with_theme() do
-	fig = Figure(; size=(600, 700))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="K-Means - $Location - Confusion Matrix", titlesize=20)
+	fig = Figure(; size=(800, 650))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="K-Means - $Location - Confusion Matrix", titlesize=15)
 	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
 	pm = permutedims(confusion_matrix_re)
 
@@ -250,12 +253,12 @@ with_theme() do
         value = round(pm[i, j], digits=1)
         text!(ax, i - 0.02, j - 0.1, text = "$value", color=:black, align = (:center, :center), fontsize=14)
     end
-	Colorbar(fig[1, 2], hm; height=Relative(0.8))
+	Colorbar(fig[1, 2], hm; height=Relative(1.0))
 	fig
 end
 
 # ╔═╡ Cell order:
-# ╟─dca00a0f-50c3-476b-8670-917fc9f91d90
+# ╠═dca00a0f-50c3-476b-8670-917fc9f91d90
 # ╠═8904648f-0bd5-44e0-92c5-4134aefeab45
 # ╠═9b6ecd09-a64a-4018-846d-c06c278b7f89
 # ╠═fd9c906d-9a02-40fe-819b-65a1aa23a839

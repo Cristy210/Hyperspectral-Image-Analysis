@@ -22,9 +22,12 @@ using CairoMakie, LinearAlgebra, Colors, PlutoUI, Glob, FileIO, ArnoldiMethod, C
 
 # ╔═╡ 7c16bf70-8d7d-11ef-23e6-f9d6b2d61dd3
 html"""<style>
+input[type*="range"] {
+	width: calc(100% - 4rem);
+}
 main {
-    max-width: 66%;
-    margin-left: 1%;
+    max-width: 96%;
+    margin-left: 0%;
     margin-right: 2% !important;
 }
 """

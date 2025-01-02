@@ -14,13 +14,13 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ b0a42020-92ef-433c-b26b-36d3a82e5180
+# ╔═╡ 11df6eb6-798c-48b2-b235-2e0668e86722
 import Pkg; Pkg.activate(@__DIR__)
 
-# ╔═╡ 9b113c9b-a65b-49f3-abb8-582ff582e758
+# ╔═╡ 95cf0240-a2bd-455e-8752-5c35a80408cc
 using CairoMakie, LinearAlgebra, Colors, PlutoUI, Glob, FileIO, ArnoldiMethod, CacheVariables, Clustering, ProgressLogging, Dates, SparseArrays, Random, Logging, MAT, Statistics
 
-# ╔═╡ 080f426e-6e15-4ae3-ae1c-43feee6b1788
+# ╔═╡ 91391c39-2b54-474b-90a9-22b5c67b40e2
 html"""<style>
 input[type*="range"] {
 	width: calc(100% - 4rem);
@@ -32,19 +32,16 @@ main {
 }
 """
 
-# ╔═╡ e3a985b4-a755-4a55-8cf3-b031bae9f4e1
-@bind Location Select(["Pavia", "PaviaUni",])
+# ╔═╡ 72c19f2d-642b-49ae-ba28-4a20aa2bd9e2
+filepath = joinpath(@__DIR__, "MAT Files", "Salinas_corrected.mat")
 
-# ╔═╡ 5d8f45e0-2f1d-43b7-ab3a-ffb1d1a4311c
-filepath = joinpath(@__DIR__, "MAT Files", "$Location.mat")
+# ╔═╡ e9b5d781-29bf-4f50-bd76-ce62a9520688
+gt_filepath = joinpath(@__DIR__, "GT Files", "Salinas_gt.mat")
 
-# ╔═╡ 15698332-14cd-479c-9345-836cd54c0965
-gt_filepath = joinpath(@__DIR__, "GT Files", "$Location.mat")
+# ╔═╡ c59016c2-3a33-468f-95d6-b1656536898e
+CACHEDIR = joinpath(@__DIR__, "cache_files", "KSS_Salinas")
 
-# ╔═╡ dcf1f561-1d3b-4c73-a956-03f0ff720057
-CACHEDIR = joinpath(@__DIR__, "cache_files", "KSS_Pavia")
-
-# ╔═╡ b3d1a8d1-15d3-4509-a272-99fb854bc0b8
+# ╔═╡ 2905dc6e-ba02-416b-9769-723a0aae1509
 function cachet(@nospecialize(f), path)
 	whenrun, timed_results = cache(path) do
 		return now(), @timed f()
@@ -53,39 +50,30 @@ function cachet(@nospecialize(f), path)
 	timed_results.value
 end
 
-# ╔═╡ 75bb6c2e-69f8-43b5-b29e-7f60bf698165
+# ╔═╡ f92f7f85-6c92-4e4b-8890-ea6038251c18
 vars = matread(filepath)
 
-# ╔═╡ e0c4e361-535d-4952-9173-6e9f0b24a8b1
+# ╔═╡ 90ef5e62-5f6d-4fa9-8dc4-06bdb3bea8dd
 vars_gt = matread(gt_filepath)
 
-# ╔═╡ 2e7cb89c-08e5-4ae1-9fe7-9e95a3421ec9
-loc_dict_keys = Dict(
-	"Pavia" => ("pavia", "pavia_gt"),
-	"PaviaUni" => ("paviaU", "paviaU_gt")
-)
+# ╔═╡ ba25f5b8-0cc3-4e2d-b1b8-1b5668de20c4
+data = vars["salinas_corrected"]
 
-# ╔═╡ c4dc77d4-99c9-4211-b981-b033b5b288f2
-data_key, gt_key = loc_dict_keys[Location]
+# ╔═╡ a3b059df-93ad-4526-af23-0b17d94c8709
+gt_data = vars_gt["salinas_gt"]
 
-# ╔═╡ bc2ed5ae-17cd-46c1-940c-b5794c25f9ff
-data = vars[data_key]
-
-# ╔═╡ b1da7a62-8c57-420b-b580-08ba6e314929
-gt_data = vars_gt[gt_key]
-
-# ╔═╡ 1d00d4ad-ff49-47be-a6e5-8387a2bc4398
+# ╔═╡ 6cebf8fd-0fd0-435c-bef0-95838a063b84
 gt_labels = sort(unique(gt_data))
 
-# ╔═╡ f161f22e-d287-4381-9b22-21e44c12c787
+# ╔═╡ 2f7ff7c6-f75e-4a81-b40d-5d0deccb5b6d
 bg_indices = findall(gt_data .== 0)
 
-# ╔═╡ 19f3bc12-bc98-4fa5-b3cb-6c12230618eb
+# ╔═╡ 1bca6dca-a336-4993-acb2-7f12af9ac07f
 md"""
 ### Defining mask to remove the background pixels, i.e., pixels labeled zero
 """
 
-# ╔═╡ b6624b05-92f7-4790-ab36-bd8387a2a7a2
+# ╔═╡ 6baf8f26-bab6-41ea-8ea6-6188556459d2
 begin
 	mask = trues(size(data, 1), size(data, 2))
 	for idx in bg_indices
@@ -94,20 +82,20 @@ begin
 	end
 end
 
-# ╔═╡ 36651253-c082-4f26-b47a-9ec24f8af906
+# ╔═╡ 90e24d33-d79c-4bfc-b70b-7dfa9e8e4d09
 n_classes = length(unique(gt_data)) - 1
 
-# ╔═╡ ca8f1f61-ca93-4b5a-9fe1-69cba3d19a9d
+# ╔═╡ 53168f41-05bc-444e-9860-77e2c2179002
 md"""
 ## Mean Classifier
 """
 
-# ╔═╡ 1ca72f73-5d65-48de-b888-3884446995bd
+# ╔═╡ 48c08eb6-cc53-49ba-9c53-e7ee4843649f
 struct MeanClassifier{T<:AbstractFloat}
 	U::Vector{Vector{T}}
 end
 
-# ╔═╡ 0da4baee-1636-435d-b27d-a7c606936b22
+# ╔═╡ 9b941cce-34e1-4081-ae02-482d80c91d98
 function fit_mean(data::Array{T, 3}, gt_data::Array{U, 2}) where {T, U}
 
 	#reshape the cube to a matrix
@@ -143,10 +131,10 @@ function fit_mean(data::Array{T, 3}, gt_data::Array{U, 2}) where {T, U}
 	return MeanClassifier{T}(mean_vectors)
 end
 
-# ╔═╡ 47e0b117-bf16-4978-af8c-456f4cef0fd9
+# ╔═╡ 3c39ec8e-a110-4dc0-b111-b09dc62a4489
 mean_classifier = fit_mean(data, gt_data)
 
-# ╔═╡ 234c5f6e-1972-48ed-b5f5-151211f13819
+# ╔═╡ b9080207-017e-4bf0-a3a5-9d390d2bb0bf
 function classify(sample::Array{T, 2}, classifier::MeanClassifier{T}) where T<:AbstractFloat
 	Dnorms = dropdims(sum(abs2, sample; dims=1); dims=1)
 	resids = map(classifier.U) do Uc
@@ -161,31 +149,34 @@ function classify(sample::Array{T, 2}, classifier::MeanClassifier{T}) where T<:A
 	return pixel_classes
 end
 
-# ╔═╡ d64f5ea0-f95d-4b0f-803a-e3fca082006d
-# unique(classify(permutedims(data[mask, :]), mean_classifier))
-
-# ╔═╡ 26e3f3ea-9bcb-44df-966b-4506d1fe548a
+# ╔═╡ 2c122e5a-b5f8-4086-a414-3bb565bcda16
 md"
 ## Ground Truth Vs Mean Classification
 "
 
-# ╔═╡ d25e33e2-e2dd-46a5-b84a-a88aa92b7de5
+# ╔═╡ 758b5863-4ed0-4b1d-b486-62c63ff68749
 md"
 ## Confusion Matrix - Mean Classification
 "
 
-# ╔═╡ e428a263-d609-413d-97e8-c7a6981dde8e
+# ╔═╡ a9d60506-9ca8-4a61-903e-d5be77a818a0
 md"
 ## Subspace Classifier
 "
 
-# ╔═╡ 88b1ad11-f28c-45ec-b3eb-b301cc5447f3
+# ╔═╡ a486d58a-f715-4631-b401-e91858b01ca0
 struct SubspaceClassifier{T<:AbstractFloat}
 	U::Vector{Matrix{T}}
 	thresh::Vector{T}
 end
 
-# ╔═╡ 51266b17-94ce-4c6f-bda6-f965f84fcff5
+# ╔═╡ 60365a6e-c92b-480b-bef5-c9de10a71f71
+gt_vec = vec(gt_data)
+
+# ╔═╡ c746780e-f0d2-4160-ac9a-f54636119d21
+valid_labels = Int64.(gt_labels[gt_labels .!= 0])
+
+# ╔═╡ 504a0a92-f5d2-4d11-89fa-c948cf74f2af
 function fit_subspace(data::Array{T, 3}, gt_data::Array{U, 2}, dims::Vector{Int}, thresh::Vector{T}) where {T, U}
 	
 	#reshape the cube to a matrix
@@ -196,7 +187,7 @@ function fit_subspace(data::Array{T, 3}, gt_data::Array{U, 2}, dims::Vector{Int}
 	gt_labels = sort(unique(gt_vec))
 
 	#filter out the unique classes from the background labels
-	valid_labels = gt_labels[gt_labels .!= 0]
+	valid_labels = Int64.(gt_labels[gt_labels .!= 0])
 
 	#Initialize a list to store subspace basis
 	subspace_basis = Vector{Matrix{T}}()
@@ -222,27 +213,27 @@ function fit_subspace(data::Array{T, 3}, gt_data::Array{U, 2}, dims::Vector{Int}
 	return SubspaceClassifier{T}(subspace_basis, thresh)
 end
 
-# ╔═╡ 22e11b97-3b91-4bd9-863b-8c205cfc6d9f
+# ╔═╡ 9f7e0fc8-a8a1-448d-b787-e480e4a5e0aa
 md"
 ### Selected the desired dimensions for each class
 "
 
-# ╔═╡ 57289efe-7de4-4daa-b5dc-213a57a3d084
-@bind Dimensions Select(["1", "2", "3", "4", "5"])
+# ╔═╡ 347393a7-e024-4305-88e5-5c903ed557ba
+@bind Dimensions Select(["1", "2", "3"])
 
-# ╔═╡ a36e5092-5d00-4085-86bb-d7aef02cfb76
-Select_Dims = Dict(["1" => fill(1, n_classes), "2" => fill(2, n_classes), "3" => fill(3, n_classes), "4" => fill(4, n_classes), "5" => fill(5, n_classes)])
+# ╔═╡ 3210452d-4372-4edd-be01-8a90a47c8d8f
+Select_Dims = Dict(["1" => fill(1, n_classes), "2" => fill(2, n_classes), "3" => fill(3, n_classes)])
 
-# ╔═╡ 1b48dfb1-d361-44e2-83d1-5264b23998b7
+# ╔═╡ 20825110-5277-4145-ade4-64d9cdfad5bd
 n_dims = Select_Dims[Dimensions]
 
-# ╔═╡ 6382ac76-5d26-4710-94c2-5bfc1ba22597
+# ╔═╡ af75265f-beaf-4577-9aca-729a221f03d8
 Threshold = fill(Inf64, n_classes)
 
-# ╔═╡ 320d30a2-b612-4cdc-aae5-04d9384314aa
+# ╔═╡ f5a105cd-f3ae-410e-860f-4ed317cd745d
 subspace_classifier = fit_subspace(data, gt_data, n_dims, Threshold)
 
-# ╔═╡ 0c268def-9af8-480c-9f8a-2a7adb6c56f8
+# ╔═╡ fbf7b12e-cbc1-4e96-b5d0-dd0658793a12
 function classify(sample::Array{T, 2}, classifier::SubspaceClassifier{T}) where T<:AbstractFloat
 	Dnorms = dropdims(sum(abs2, sample; dims=1); dims=1)
 	resids = map(classifier.U) do Uc
@@ -261,12 +252,12 @@ function classify(sample::Array{T, 2}, classifier::SubspaceClassifier{T}) where 
 	return pixel_classes
 end
 
-# ╔═╡ dff407e5-17d3-433f-9f9f-779f89d4f5d1
+# ╔═╡ e29055bf-099e-4258-a199-e01f48ecb097
 labels_mean = classify(permutedims(data[mask, :]), mean_classifier)
 
-# ╔═╡ 200bea11-dde0-4c49-bc07-5ad54387aef0
+# ╔═╡ 73b473b5-812c-48e5-b5cc-cca557d93730
 with_theme() do
-	fig = Figure(; size=(800, 600))
+	fig = Figure(; size=(800, 650))
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= labels_mean
 	colors = Makie.Colors.distinguishable_colors(n_classes + 1)
@@ -274,16 +265,16 @@ with_theme() do
 	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=15)
 	
 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_classes))
-	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
+	Colorbar(fig[2,1], hm, tellwidth=false,vertical=false, ticklabelsize=:8)
 
 	
 	ax = Axis(fig[1, 2], aspect=DataAspect(), yreversed=true, title="Mean Classification", titlesize=15)
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_classes))
-	Colorbar(fig[2, 2], hm, tellwidth=false, vertical=false)
+	Colorbar(fig[2, 2], hm, tellwidth=false,vertical=false, ticklabelsize=:8)
 	fig
 end
 
-# ╔═╡ 23ee3fa2-bbe8-479f-95b1-423578f7e030
+# ╔═╡ 271876b2-7a35-4cce-a133-831b70fb393d
 begin
 	ground_labels_mean = filter(x -> x != 0, gt_labels) #Filter out the background pixel label
 	true_labels_mean = length(ground_labels_mean)
@@ -308,10 +299,10 @@ begin
 	end
 end
 
-# ╔═╡ 2b53268b-4d1a-471c-addd-783eaa813c55
+# ╔═╡ 22c64a82-f985-4330-acf4-0ddd5f2cf98a
 with_theme() do
-	fig = Figure(; size=(800, 600))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_mean, yticks = 1:true_labels_mean, title="Confusion Matrix - Mean Classification - $Location")
+	fig = Figure(; size=(800, 650))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_mean, yticks = 1:true_labels_mean, title="Confusion Matrix - Mean Classification - Salinas")
 	hm = heatmap!(ax, permutedims(confusion_matrix_mean), colormap=:viridis)
 	pm = permutedims(confusion_matrix_mean)
 
@@ -323,12 +314,15 @@ with_theme() do
 	fig
 end
 
-# ╔═╡ dc6df293-74b5-41a0-befe-6a0aa9fcc130
+# ╔═╡ 8b1fc2f2-2cd9-48ba-b6c4-9e2f88e582c5
+unique(classify(permutedims(data[mask, :]), mean_classifier))
+
+# ╔═╡ 01a0f598-0a1c-419e-9085-8405014e67f9
 labels_subspace = classify(permutedims(data[mask, :]), subspace_classifier)
 
-# ╔═╡ 26d64190-8748-4673-87ef-833b15f284d0
+# ╔═╡ e33d4247-a59f-40ef-9627-3d1ca268ffc9
 with_theme() do
-	fig = Figure(; size=(800, 600))
+	fig = Figure(; size=(800, 650))
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= labels_subspace
 	colors = Makie.Colors.distinguishable_colors(n_classes + 1)
@@ -336,114 +330,65 @@ with_theme() do
 	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=15)
 	
 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_classes))
-	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
+	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 
 	
 	ax = Axis(fig[1, 2], aspect=DataAspect(), yreversed=true, title="Subspace Classification - Dims = $Dimensions", titlesize=15)
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_classes))
-	Colorbar(fig[2, 2], hm, tellwidth=false, vertical=false)
+	Colorbar(fig[2, 2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 	fig
 end
 
-# ╔═╡ 2a580d27-dce1-4da7-bc62-12aeb46330e9
-md"
-## Confusion Matrix - Subspace Classification
-"
-
-# ╔═╡ e42f949a-d22b-44ff-b1fb-385bcead2b40
-begin
-	ground_labels_re = filter(x -> x != 0, gt_labels) #Filter out the background pixel label
-	true_labels_re = length(ground_labels_re)
-	predicted_labels_re = n_classes
-
-	confusion_matrix_subspace = zeros(Float64, true_labels_re, predicted_labels_re) #Initialize a confusion matrix filled with zeros
-	cluster_results_re = fill(NaN32, size(data)[1:2]) #Clustering algorithm results
-
-	# clu_assign, idx = spec_aligned, spec_clustering_idx
-	
-
-	cluster_results_re[mask] .= labels_subspace
-
-	for (label_idx, label) in enumerate(ground_labels_re)
-	
-		label_indices = findall(gt_data .== label)
-	
-		cluster_values = [cluster_results_re[idx] for idx in label_indices]
-		t_pixels = length(cluster_values)
-		cluster_counts = [count(==(cluster), cluster_values) for cluster in 1:n_classes]
-		confusion_matrix_subspace[label_idx, :] .= [count / t_pixels * 100 for count in cluster_counts]
-	end
-end
-
-# ╔═╡ 87f7368b-a0c9-4eac-b95f-0109e5c82023
-with_theme() do
-	fig = Figure(; size=(800, 600))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix - Subspace Classification - $Location")
-	hm = heatmap!(ax, permutedims(confusion_matrix_subspace), colormap=:viridis)
-	pm = permutedims(confusion_matrix_subspace)
-
-	for i in 1:true_labels_re, j in 1:predicted_labels_re
-        value = round(pm[i, j], digits=1)
-        text!(ax, i - 0.02, j - 0.1, text = "$value", color=:black, align = (:center, :center), fontsize=14)
-    end
-	Colorbar(fig[1, 2], hm)
-	fig
-end
-
-# ╔═╡ 874963c2-3c25-4d04-b926-2f7819d1eaa0
+# ╔═╡ a95e8c22-fbd9-4625-8991-69b482fbd902
 md"
 ## Affine Classifier
 "
 
-# ╔═╡ e5f9503c-aa66-4935-bb57-d71cfa5c3555
+# ╔═╡ c33aeeb4-e671-429a-a38a-ea8122e933e1
 
 
 # ╔═╡ Cell order:
-# ╟─080f426e-6e15-4ae3-ae1c-43feee6b1788
-# ╠═b0a42020-92ef-433c-b26b-36d3a82e5180
-# ╠═9b113c9b-a65b-49f3-abb8-582ff582e758
-# ╠═e3a985b4-a755-4a55-8cf3-b031bae9f4e1
-# ╠═5d8f45e0-2f1d-43b7-ab3a-ffb1d1a4311c
-# ╠═15698332-14cd-479c-9345-836cd54c0965
-# ╠═dcf1f561-1d3b-4c73-a956-03f0ff720057
-# ╠═b3d1a8d1-15d3-4509-a272-99fb854bc0b8
-# ╠═75bb6c2e-69f8-43b5-b29e-7f60bf698165
-# ╠═e0c4e361-535d-4952-9173-6e9f0b24a8b1
-# ╠═2e7cb89c-08e5-4ae1-9fe7-9e95a3421ec9
-# ╠═c4dc77d4-99c9-4211-b981-b033b5b288f2
-# ╠═bc2ed5ae-17cd-46c1-940c-b5794c25f9ff
-# ╠═b1da7a62-8c57-420b-b580-08ba6e314929
-# ╠═1d00d4ad-ff49-47be-a6e5-8387a2bc4398
-# ╠═f161f22e-d287-4381-9b22-21e44c12c787
-# ╟─19f3bc12-bc98-4fa5-b3cb-6c12230618eb
-# ╠═b6624b05-92f7-4790-ab36-bd8387a2a7a2
-# ╠═36651253-c082-4f26-b47a-9ec24f8af906
-# ╟─ca8f1f61-ca93-4b5a-9fe1-69cba3d19a9d
-# ╠═1ca72f73-5d65-48de-b888-3884446995bd
-# ╠═0da4baee-1636-435d-b27d-a7c606936b22
-# ╠═47e0b117-bf16-4978-af8c-456f4cef0fd9
-# ╠═234c5f6e-1972-48ed-b5f5-151211f13819
-# ╠═dff407e5-17d3-433f-9f9f-779f89d4f5d1
-# ╠═d64f5ea0-f95d-4b0f-803a-e3fca082006d
-# ╟─26e3f3ea-9bcb-44df-966b-4506d1fe548a
-# ╠═200bea11-dde0-4c49-bc07-5ad54387aef0
-# ╟─d25e33e2-e2dd-46a5-b84a-a88aa92b7de5
-# ╠═23ee3fa2-bbe8-479f-95b1-423578f7e030
-# ╠═2b53268b-4d1a-471c-addd-783eaa813c55
-# ╟─e428a263-d609-413d-97e8-c7a6981dde8e
-# ╠═88b1ad11-f28c-45ec-b3eb-b301cc5447f3
-# ╠═51266b17-94ce-4c6f-bda6-f965f84fcff5
-# ╟─22e11b97-3b91-4bd9-863b-8c205cfc6d9f
-# ╠═57289efe-7de4-4daa-b5dc-213a57a3d084
-# ╠═a36e5092-5d00-4085-86bb-d7aef02cfb76
-# ╠═1b48dfb1-d361-44e2-83d1-5264b23998b7
-# ╠═6382ac76-5d26-4710-94c2-5bfc1ba22597
-# ╠═320d30a2-b612-4cdc-aae5-04d9384314aa
-# ╠═0c268def-9af8-480c-9f8a-2a7adb6c56f8
-# ╠═dc6df293-74b5-41a0-befe-6a0aa9fcc130
-# ╠═26d64190-8748-4673-87ef-833b15f284d0
-# ╟─2a580d27-dce1-4da7-bc62-12aeb46330e9
-# ╠═e42f949a-d22b-44ff-b1fb-385bcead2b40
-# ╠═87f7368b-a0c9-4eac-b95f-0109e5c82023
-# ╟─874963c2-3c25-4d04-b926-2f7819d1eaa0
-# ╠═e5f9503c-aa66-4935-bb57-d71cfa5c3555
+# ╟─91391c39-2b54-474b-90a9-22b5c67b40e2
+# ╠═11df6eb6-798c-48b2-b235-2e0668e86722
+# ╠═95cf0240-a2bd-455e-8752-5c35a80408cc
+# ╠═72c19f2d-642b-49ae-ba28-4a20aa2bd9e2
+# ╠═e9b5d781-29bf-4f50-bd76-ce62a9520688
+# ╠═c59016c2-3a33-468f-95d6-b1656536898e
+# ╠═2905dc6e-ba02-416b-9769-723a0aae1509
+# ╠═f92f7f85-6c92-4e4b-8890-ea6038251c18
+# ╠═90ef5e62-5f6d-4fa9-8dc4-06bdb3bea8dd
+# ╠═ba25f5b8-0cc3-4e2d-b1b8-1b5668de20c4
+# ╠═a3b059df-93ad-4526-af23-0b17d94c8709
+# ╠═6cebf8fd-0fd0-435c-bef0-95838a063b84
+# ╠═2f7ff7c6-f75e-4a81-b40d-5d0deccb5b6d
+# ╟─1bca6dca-a336-4993-acb2-7f12af9ac07f
+# ╠═6baf8f26-bab6-41ea-8ea6-6188556459d2
+# ╠═90e24d33-d79c-4bfc-b70b-7dfa9e8e4d09
+# ╟─53168f41-05bc-444e-9860-77e2c2179002
+# ╠═48c08eb6-cc53-49ba-9c53-e7ee4843649f
+# ╠═9b941cce-34e1-4081-ae02-482d80c91d98
+# ╠═3c39ec8e-a110-4dc0-b111-b09dc62a4489
+# ╠═b9080207-017e-4bf0-a3a5-9d390d2bb0bf
+# ╠═e29055bf-099e-4258-a199-e01f48ecb097
+# ╠═8b1fc2f2-2cd9-48ba-b6c4-9e2f88e582c5
+# ╟─2c122e5a-b5f8-4086-a414-3bb565bcda16
+# ╠═73b473b5-812c-48e5-b5cc-cca557d93730
+# ╟─758b5863-4ed0-4b1d-b486-62c63ff68749
+# ╠═271876b2-7a35-4cce-a133-831b70fb393d
+# ╠═22c64a82-f985-4330-acf4-0ddd5f2cf98a
+# ╟─a9d60506-9ca8-4a61-903e-d5be77a818a0
+# ╠═a486d58a-f715-4631-b401-e91858b01ca0
+# ╠═60365a6e-c92b-480b-bef5-c9de10a71f71
+# ╠═c746780e-f0d2-4160-ac9a-f54636119d21
+# ╠═504a0a92-f5d2-4d11-89fa-c948cf74f2af
+# ╟─9f7e0fc8-a8a1-448d-b787-e480e4a5e0aa
+# ╠═347393a7-e024-4305-88e5-5c903ed557ba
+# ╠═3210452d-4372-4edd-be01-8a90a47c8d8f
+# ╠═20825110-5277-4145-ade4-64d9cdfad5bd
+# ╠═af75265f-beaf-4577-9aca-729a221f03d8
+# ╠═f5a105cd-f3ae-410e-860f-4ed317cd745d
+# ╠═fbf7b12e-cbc1-4e96-b5d0-dd0658793a12
+# ╠═01a0f598-0a1c-419e-9085-8405014e67f9
+# ╠═e33d4247-a59f-40ef-9627-3d1ca268ffc9
+# ╟─a95e8c22-fbd9-4625-8991-69b482fbd902
+# ╠═c33aeeb4-e671-429a-a38a-ea8122e933e1
