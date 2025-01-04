@@ -167,7 +167,7 @@ function batch_KAffine(X, d; niters=100, nruns=10)
 	D, N = size(X)
 	runs = Vector{Tuple{Vector{Matrix{Float64}}, Vector{Vector{Float64}}, Vector{Int}, Float64}}(undef, nruns)
 	@progress for idx in 1:nruns
-		U, b, c = cachet(joinpath(CACHEDIR, "run_1-$idx.bson")) do
+		U, b, c = cachet(joinpath(CACHEDIR, "run_1_$Location-$idx.bson")) do
 			Random.seed!(idx)
 			K_Affine(X, d; niters=niters)
 		end
@@ -185,10 +185,78 @@ function batch_KAffine(X, d; niters=100, nruns=10)
 end
 
 # ╔═╡ bc382656-a63f-42a5-aa00-540a8fb37132
-KAffine_runs = 100
+KAffine_runs = 50
 
 # ╔═╡ 31ef0f16-1e80-48be-b2d0-158aa01fb117
-KAffine_Clustering = batch_KAffine(permutedims(reshape(data, :, size(data, 3))), fill(1, 12); niters=100, nruns=KAffine_runs)
+KAffine_Clustering = batch_KAffine(permutedims(data[mask, :]), fill(1, n_clusters); niters=100, nruns=KAffine_runs)
+
+# ╔═╡ 6bbe5785-b592-4872-9a35-355473b4d19a
+min_idx_KAffine = argmax(KAffine_Clustering[i][4] for i in 1:KAffine_runs)
+
+# ╔═╡ 0e380268-51a5-4eb4-a05e-4a99412b8509
+
+
+# ╔═╡ 018a4a3a-7533-45b3-83f6-31a02e4d50a9
+KAffine_Results = KAffine_Clustering[min_idx_KAffine][3]
+
+# ╔═╡ 9a429935-ec53-4f18-8229-cf15e8aabbc1
+relabel_maps = Dict(
+	"Pavia" => Dict(
+	0 => 0,
+	1 => 1,
+	2 => 2,
+	3 => 3,
+	4 => 4,
+	5 => 5,
+	6 => 6,
+	7 => 7,
+	8 => 8,
+	9 => 9
+),
+	"PaviaUni" => Dict(
+	0 => 0,
+	1 => 1,
+	2 => 3,
+	3 => 8,
+	4 => 4,
+	5 => 5,
+	6 => 6,
+	7 => 7,
+	8 => 2,
+	9 => 9,
+)
+)
+
+# ╔═╡ d10767ce-0944-4fd1-80dc-7eabf89d1388
+relabel_keys = relabel_maps[Location]
+
+# ╔═╡ bd7a78da-80c2-407d-920f-32e65251e0f7
+D_relabel = [relabel_keys[label] for label in KAffine_Results]
+
+# ╔═╡ 150a2548-7cb7-48c6-a889-27fbb459e84c
+with_theme() do
+	
+
+	# Create figure
+	fig = Figure(; size=(800, 700))
+	colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
+	
+
+	# Show data
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=15)
+	
+	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
+
+	# Show cluster map
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="KAffine Clustering Results - $Location", titlesize=15)
+	clustermap = fill(0, size(data)[1:2])
+	clustermap[mask] .= D_relabel
+	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
+	
+	fig
+end
 
 # ╔═╡ Cell order:
 # ╠═e510d702-e7f0-4c01-a8bc-12bdb1b80cab
@@ -217,3 +285,10 @@ KAffine_Clustering = batch_KAffine(permutedims(reshape(data, :, size(data, 3))),
 # ╠═58035f5a-52c7-4006-bcc2-c41de0a68aa4
 # ╠═bc382656-a63f-42a5-aa00-540a8fb37132
 # ╠═31ef0f16-1e80-48be-b2d0-158aa01fb117
+# ╠═6bbe5785-b592-4872-9a35-355473b4d19a
+# ╠═0e380268-51a5-4eb4-a05e-4a99412b8509
+# ╠═018a4a3a-7533-45b3-83f6-31a02e4d50a9
+# ╠═9a429935-ec53-4f18-8229-cf15e8aabbc1
+# ╠═d10767ce-0944-4fd1-80dc-7eabf89d1388
+# ╠═bd7a78da-80c2-407d-920f-32e65251e0f7
+# ╠═150a2548-7cb7-48c6-a889-27fbb459e84c

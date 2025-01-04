@@ -22,9 +22,12 @@ using CairoMakie, LinearAlgebra, Colors, PlutoUI, Glob, FileIO, ArnoldiMethod, C
 
 # ╔═╡ cec84524-bceb-4a8d-a30b-e82faca68cc7
 html"""<style>
+input[type*="range"] {
+	width: calc(100% - 4rem);
+}
 main {
-    max-width: 66%;
-    margin-left: 1%;
+    max-width: 96%;
+    margin-left: 0%;
     margin-right: 2% !important;
 }
 """
@@ -231,7 +234,6 @@ D_relabel = [relabel_keys[label] for label in KSS_Results]
 
 # ╔═╡ 574b1660-cea0-4626-aa47-7eeff7d93e61
 with_theme() do
-	# assignments, idx = spec_aligned, spec_clustering_idx
 
 	# Create figure
 	fig = Figure(; size=(700, 650))

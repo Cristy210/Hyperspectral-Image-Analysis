@@ -205,7 +205,7 @@ with_theme() do
 	# assignments, idx = spec_aligned, spec_clustering_idx
 
 	# Create figure
-	fig = Figure(; size=(1200, 750))
+	fig = Figure(; size=(800, 700))
 	colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
 	# colors_re = Makie.Colors.distinguishable_colors(length(re_labels))
 
@@ -213,20 +213,60 @@ with_theme() do
 	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=20)
 	
 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
-	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
+	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 
 	# Show cluster map
 	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="KSS Clustering Results", titlesize=20)
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= KSS_Results
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
-	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false)
+	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 	
 	fig
 end
 
+# ╔═╡ d1008687-5807-414c-9c7c-a3410055b027
+begin
+	ground_labels_re = filter(x -> x != 0, gt_labels) #Filter out the background pixel label
+	true_labels_re = length(ground_labels_re)
+	predicted_labels_re = n_clusters
+
+	confusion_matrix_re = zeros(Float64, true_labels_re, predicted_labels_re) #Initialize a confusion matrix filled with zeros
+	cluster_results_re = fill(NaN32, size(data)[1:2]) #Clustering algorithm results
+
+	# clu_assign, idx = spec_aligned, spec_clustering_idx
+	
+
+	cluster_results_re[mask] .= D_relabel
+
+	for (label_idx, label) in enumerate(ground_labels_re)
+	
+		label_indices = findall(gt_data .== label)
+	
+		cluster_values = [cluster_results_re[idx] for idx in label_indices]
+		t_pixels = length(cluster_values)
+		cluster_counts = [count(==(cluster), cluster_values) for cluster in 1:n_clusters]
+		confusion_matrix_re[label_idx, :] .= [count / t_pixels * 100 for count in cluster_counts]
+	end
+end
+
+# ╔═╡ 000f1fb0-e1db-4842-8fc3-beb39c1d347c
+with_theme() do
+	fig = Figure(; size=(800, 700))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix - KSS Clustering - Salinas")
+	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
+	pm = permutedims(confusion_matrix_re)
+
+	for i in 1:true_labels_re, j in 1:predicted_labels_re
+        value = round(pm[i, j], digits=1)
+        text!(ax, i - 0.02, j - 0.1, text = "$value", color=:black, align = (:center, :center), fontsize=14)
+    end
+	Colorbar(fig[1, 2], hm)
+	fig
+end
+
 # ╔═╡ Cell order:
-# ╟─e5e87648-8a71-4759-ac7a-209b91122916
+# ╠═e5e87648-8a71-4759-ac7a-209b91122916
 # ╠═51938f91-d03b-4d21-9308-627c308a3b1a
 # ╠═8ba89f39-057c-469e-b8da-961fc3b01709
 # ╠═0c2c46d7-cdb6-42e1-b15a-2093512d7082
@@ -254,3 +294,5 @@ end
 # ╠═9cfcfeab-58c1-4c13-ac19-524ecd0ecba8
 # ╠═79101292-84d7-4be7-8c4a-3a46f5dd1062
 # ╠═a40a1f05-852a-464e-b207-efee9b1d2fb3
+# ╠═d1008687-5807-414c-9c7c-a3410055b027
+# ╠═000f1fb0-e1db-4842-8fc3-beb39c1d347c
