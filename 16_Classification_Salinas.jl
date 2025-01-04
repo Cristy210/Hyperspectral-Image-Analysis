@@ -116,8 +116,8 @@ function fit_mean(data::Array{T, 3}, gt_data::Array{U, 2}) where {T, U}
 		# Find indices of pixels belonging to the current label
 		indices = findall(x -> x .== label, gt_vec)
 		
-		# Select 100 random indices for the current label
-		selected_indices = indices[rand(1:length(indices), min(100, length(indices)))]
+		# Select 3000 random indices for the current label
+		selected_indices = indices[rand(1:length(indices), min(3000, length(indices)))]
 		
 		# Select corresponding data points from data mat
 		selected_points = data_mat[:, selected_indices]
@@ -197,8 +197,8 @@ function fit_subspace(data::Array{T, 3}, gt_data::Array{U, 2}, dims::Vector{Int}
 		# Find indices of pixels belonging to the current label
 		indices = findall(x -> x .== label, gt_vec)
 		
-		# Select 100 random indices for the current label
-		selected_indices = indices[rand(1:length(indices), min(100, length(indices)))]
+		# Select 3000 random indices for the current label
+		selected_indices = indices[rand(1:length(indices), min(3000, length(indices)))]
 		
 		# Select corresponding data points from data mat
 		selected_points = data_mat[:, selected_indices]
@@ -252,12 +252,90 @@ function classify(sample::Array{T, 2}, classifier::SubspaceClassifier{T}) where 
 	return pixel_classes
 end
 
+# ╔═╡ cfee7176-6528-4258-8017-c7d28b0649e5
+md"
+## Confusion Matrix - Subspace Classification
+"
+
+# ╔═╡ a95e8c22-fbd9-4625-8991-69b482fbd902
+md"
+## Affine Classifier
+"
+
+# ╔═╡ c33aeeb4-e671-429a-a38a-ea8122e933e1
+struct AffineClassifier{T<:AbstractFloat}
+	b::Vector{Vector{T}}
+	U::Vector{Matrix{T}}
+	thresh::Vector{T}
+end
+
+# ╔═╡ e4cc5b65-2753-4512-bbce-40e18c19e0fe
+function fit_affinespace(data::Array{T, 3}, gt_data::Array{U, 2}, dims::Vector{Int}, thresh::Vector{T}) where {T, U}
+	
+	#reshape the cube to a matrix
+	data_mat = permutedims(reshape(data, :, size(data, 3)))
+
+	#reshape the label matrix to a vector
+	gt_vec = vec(gt_data)
+	gt_labels = sort(unique(gt_vec))
+
+	#filter out the unique classes from the background labels
+	valid_labels = Int64.(gt_labels[gt_labels .!= 0])
+
+	#Initialize a list to store subspace basis and mean vector
+	subspace_basis = Vector{Matrix{T}}()
+	mean_vectors = Vector{Vector{T}}()
+
+	for label in valid_labels
+
+		# Find indices of pixels belonging to the current label
+		indices = findall(x -> x .== label, gt_vec)
+
+		# Select 3000 random indices for the current label
+		selected_indices = indices[rand(1:length(indices), min(3000, length(indices)))]
+
+		# Select corresponding data points from data mat
+		selected_points = data_mat[:, selected_indices]
+
+		#Compute mean vector for the current label
+		mean_vector = mean(selected_points, dims=2) |> vec
+		push!(mean_vectors, mean_vector)
+
+		#Compute Subspace basis for the current label
+		U_label = svd(selected_points).U[:, 1:dims[label]]
+		push!(subspace_basis, U_label)
+
+	end
+
+	return AffineClassifier{T}(mean_vectors, subspace_basis, thresh)
+end
+
+# ╔═╡ 8b923971-e295-4273-9c2c-2b5259b2325e
+affine_classifier = fit_affinespace(data, gt_data, n_dims, Threshold)
+
+# ╔═╡ 83bfd29c-2b3c-43d0-bab0-7289c55dc447
+function classify(sample::Array{T, 2}, classifier::AffineClassifier{T}) where T<:AbstractFloat
+	resids = map(zip(classifier.U, classifier.b)) do (Uhat, bhat)
+		dropdims(sum(abs2, sample .- (Uhat*Uhat'*(sample.- bhat) .+ bhat); dims=1); dims=1)
+	end
+
+	pixel_classes = map(1:size(sample)[2]) do idx
+		min_idx = argmin(resid[idx] for resid in resids)
+		if resids[min_idx][idx] < classifier.thresh[min_idx]
+			return min_idx
+		else
+			return nothing
+		end
+	end
+	return pixel_classes
+end
+
 # ╔═╡ e29055bf-099e-4258-a199-e01f48ecb097
 labels_mean = classify(permutedims(data[mask, :]), mean_classifier)
 
 # ╔═╡ 73b473b5-812c-48e5-b5cc-cca557d93730
 with_theme() do
-	fig = Figure(; size=(800, 650))
+	fig = Figure(; size=(800, 800))
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= labels_mean
 	colors = Makie.Colors.distinguishable_colors(n_classes + 1)
@@ -301,7 +379,7 @@ end
 
 # ╔═╡ 22c64a82-f985-4330-acf4-0ddd5f2cf98a
 with_theme() do
-	fig = Figure(; size=(800, 650))
+	fig = Figure(; size=(800, 800))
 	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_mean, yticks = 1:true_labels_mean, title="Confusion Matrix - Mean Classification - Salinas")
 	hm = heatmap!(ax, permutedims(confusion_matrix_mean), colormap=:viridis)
 	pm = permutedims(confusion_matrix_mean)
@@ -322,7 +400,7 @@ labels_subspace = classify(permutedims(data[mask, :]), subspace_classifier)
 
 # ╔═╡ e33d4247-a59f-40ef-9627-3d1ca268ffc9
 with_theme() do
-	fig = Figure(; size=(800, 650))
+	fig = Figure(; size=(800, 800))
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= labels_subspace
 	colors = Makie.Colors.distinguishable_colors(n_classes + 1)
@@ -333,19 +411,116 @@ with_theme() do
 	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 
 	
-	ax = Axis(fig[1, 2], aspect=DataAspect(), yreversed=true, title="Subspace Classification - Dims = $Dimensions", titlesize=15)
+	ax = Axis(fig[1, 2], aspect=DataAspect(), yreversed=true, title="Subspace - Dims = $Dimensions", titlesize=15)
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_classes))
 	Colorbar(fig[2, 2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 	fig
 end
 
-# ╔═╡ a95e8c22-fbd9-4625-8991-69b482fbd902
+# ╔═╡ a75a19b7-13ff-4c4b-a012-d0b8bde82907
+begin
+	ground_labels_re = filter(x -> x != 0, gt_labels) #Filter out the background pixel label
+	true_labels_re = length(ground_labels_re)
+	predicted_labels_re = n_classes
+
+	confusion_matrix_subspace = zeros(Float64, true_labels_re, predicted_labels_re) #Initialize a confusion matrix filled with zeros
+	cluster_results_re = fill(NaN32, size(data)[1:2]) #Clustering algorithm results
+
+	# clu_assign, idx = spec_aligned, spec_clustering_idx
+	
+
+	cluster_results_re[mask] .= labels_subspace
+
+	for (label_idx, label) in enumerate(ground_labels_re)
+	
+		label_indices = findall(gt_data .== label)
+	
+		cluster_values = [cluster_results_re[idx] for idx in label_indices]
+		t_pixels = length(cluster_values)
+		cluster_counts = [count(==(cluster), cluster_values) for cluster in 1:n_classes]
+		confusion_matrix_subspace[label_idx, :] .= [count / t_pixels * 100 for count in cluster_counts]
+	end
+end
+
+# ╔═╡ a1586905-53a3-454b-bd73-057cec66389e
+with_theme() do
+	fig = Figure(; size=(800, 800))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix - Subspace Classification - Salinas")
+	hm = heatmap!(ax, permutedims(confusion_matrix_subspace), colormap=:viridis)
+	pm = permutedims(confusion_matrix_subspace)
+
+	for i in 1:true_labels_re, j in 1:predicted_labels_re
+        value = round(pm[i, j], digits=1)
+        text!(ax, i - 0.02, j - 0.1, text = "$value", color=:black, align = (:center, :center), fontsize=14)
+    end
+	Colorbar(fig[1, 2], hm)
+	fig
+end
+
+# ╔═╡ c3d2cf6c-c1b2-4828-8d86-497767c2f618
+labels_affine = classify(permutedims(data[mask, :]), affine_classifier)
+
+# ╔═╡ a86788d4-aca6-457e-aead-8f3e86bd6277
+with_theme() do
+	fig = Figure(; size=(800, 800))
+	clustermap = fill(0, size(data)[1:2])
+	clustermap[mask] .= labels_affine
+	colors = Makie.Colors.distinguishable_colors(n_classes + 1)
+
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=15)
+	
+	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_classes))
+	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
+
+	
+	ax = Axis(fig[1, 2], aspect=DataAspect(), yreversed=true, title="Affine space - Dims = $Dimensions", titlesize=15)
+	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_classes))
+	Colorbar(fig[2, 2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
+	fig
+end
+
+# ╔═╡ d86030c1-eccf-472f-bc14-23849a4c4077
 md"
-## Affine Classifier
+## Confusion Matrix - Affine Classification
 "
 
-# ╔═╡ c33aeeb4-e671-429a-a38a-ea8122e933e1
+# ╔═╡ 3d24b4c2-7129-4d92-9ea7-b998035617b9
+begin
+	ground_labels_af = filter(x -> x != 0, gt_labels) #Filter out the background pixel label
+	true_labels_af = length(ground_labels_af)
+	predicted_labels_af = n_classes
 
+	confusion_matrix_affine = zeros(Float64, true_labels_af, predicted_labels_af) #Initialize a confusion matrix filled with zeros
+	cluster_results_af = fill(NaN32, size(data)[1:2]) #Clustering algorithm results
+	
+
+	cluster_results_af[mask] .= labels_affine
+
+	for (label_idx, label) in enumerate(ground_labels_af)
+	
+		label_indices = findall(gt_data .== label)
+	
+		cluster_values = [cluster_results_af[idx] for idx in label_indices]
+		t_pixels = length(cluster_values)
+		cluster_counts = [count(==(cluster), cluster_values) for cluster in 1:n_classes]
+		confusion_matrix_affine[label_idx, :] .= [count / t_pixels * 100 for count in cluster_counts]
+	end
+end
+
+# ╔═╡ 00e80d6c-e8ee-4ff4-b5af-4282427122c7
+with_theme() do
+	fig = Figure(; size=(800, 800))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_af, yticks = 1:true_labels_af, title="Confusion Matrix - Affine Classification - Salinas")
+	hm = heatmap!(ax, permutedims(confusion_matrix_affine), colormap=:viridis)
+	pm = permutedims(confusion_matrix_affine)
+
+	for i in 1:true_labels_af, j in 1:predicted_labels_af
+        value = round(pm[i, j], digits=1)
+        text!(ax, i - 0.02, j - 0.1, text = "$value", color=:black, align = (:center, :center), fontsize=14)
+    end
+	Colorbar(fig[1, 2], hm)
+	fig
+end
 
 # ╔═╡ Cell order:
 # ╟─91391c39-2b54-474b-90a9-22b5c67b40e2
@@ -390,5 +565,16 @@ md"
 # ╠═fbf7b12e-cbc1-4e96-b5d0-dd0658793a12
 # ╠═01a0f598-0a1c-419e-9085-8405014e67f9
 # ╠═e33d4247-a59f-40ef-9627-3d1ca268ffc9
+# ╟─cfee7176-6528-4258-8017-c7d28b0649e5
+# ╠═a75a19b7-13ff-4c4b-a012-d0b8bde82907
+# ╠═a1586905-53a3-454b-bd73-057cec66389e
 # ╟─a95e8c22-fbd9-4625-8991-69b482fbd902
 # ╠═c33aeeb4-e671-429a-a38a-ea8122e933e1
+# ╠═e4cc5b65-2753-4512-bbce-40e18c19e0fe
+# ╠═8b923971-e295-4273-9c2c-2b5259b2325e
+# ╠═83bfd29c-2b3c-43d0-bab0-7289c55dc447
+# ╠═c3d2cf6c-c1b2-4828-8d86-497767c2f618
+# ╠═a86788d4-aca6-457e-aead-8f3e86bd6277
+# ╟─d86030c1-eccf-472f-bc14-23849a4c4077
+# ╠═3d24b4c2-7129-4d92-9ea7-b998035617b9
+# ╠═00e80d6c-e8ee-4ff4-b5af-4282427122c7
