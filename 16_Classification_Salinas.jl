@@ -218,11 +218,11 @@ md"
 ### Selected the desired dimensions for each class
 "
 
-# ╔═╡ 347393a7-e024-4305-88e5-5c903ed557ba
-@bind Dimensions Select(["1", "2", "3"])
+# ╔═╡ 8207194e-02e4-4c95-b6b2-6db735ce13fe
+@bind Dimensions Select(["1", "2", "4", "8", "16", "32"])
 
-# ╔═╡ 3210452d-4372-4edd-be01-8a90a47c8d8f
-Select_Dims = Dict(["1" => fill(1, n_classes), "2" => fill(2, n_classes), "3" => fill(3, n_classes)])
+# ╔═╡ bae9459d-a5ad-4640-a349-066c50c1d358
+Select_Dims = Dict(["1" => fill(1, n_classes), "2" => fill(2, n_classes), "4" => fill(4, n_classes), "8" => fill(8, n_classes), "16" => fill(16, n_classes), "32" => fill(32, n_classes)])
 
 # ╔═╡ 20825110-5277-4145-ade4-64d9cdfad5bd
 n_dims = Select_Dims[Dimensions]
@@ -445,7 +445,7 @@ end
 # ╔═╡ a1586905-53a3-454b-bd73-057cec66389e
 with_theme() do
 	fig = Figure(; size=(800, 800))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix - Subspace Classification - Salinas")
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Subspace Classification - Dims = $Dimensions - Salinas")
 	hm = heatmap!(ax, permutedims(confusion_matrix_subspace), colormap=:viridis)
 	pm = permutedims(confusion_matrix_subspace)
 
@@ -510,7 +510,7 @@ end
 # ╔═╡ 00e80d6c-e8ee-4ff4-b5af-4282427122c7
 with_theme() do
 	fig = Figure(; size=(800, 800))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_af, yticks = 1:true_labels_af, title="Confusion Matrix - Affine Classification - Salinas")
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_af, yticks = 1:true_labels_af, title="Affine Classification - Dims = $Dimensions - Salinas")
 	hm = heatmap!(ax, permutedims(confusion_matrix_affine), colormap=:viridis)
 	pm = permutedims(confusion_matrix_affine)
 
@@ -557,8 +557,8 @@ end
 # ╠═c746780e-f0d2-4160-ac9a-f54636119d21
 # ╠═504a0a92-f5d2-4d11-89fa-c948cf74f2af
 # ╟─9f7e0fc8-a8a1-448d-b787-e480e4a5e0aa
-# ╠═347393a7-e024-4305-88e5-5c903ed557ba
-# ╠═3210452d-4372-4edd-be01-8a90a47c8d8f
+# ╠═8207194e-02e4-4c95-b6b2-6db735ce13fe
+# ╠═bae9459d-a5ad-4640-a349-066c50c1d358
 # ╠═20825110-5277-4145-ade4-64d9cdfad5bd
 # ╠═af75265f-beaf-4577-9aca-729a221f03d8
 # ╠═f5a105cd-f3ae-410e-860f-4ed317cd745d

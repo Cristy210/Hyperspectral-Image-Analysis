@@ -234,10 +234,10 @@ md"
 "
 
 # ╔═╡ 57289efe-7de4-4daa-b5dc-213a57a3d084
-@bind Dimensions Select(["1", "2", "3", "4", "5"])
+@bind Dimensions Select(["1", "2", "4", "8", "16", "32"])
 
 # ╔═╡ a36e5092-5d00-4085-86bb-d7aef02cfb76
-Select_Dims = Dict(["1" => fill(1, n_classes), "2" => fill(2, n_classes), "3" => fill(3, n_classes), "4" => fill(4, n_classes), "5" => fill(5, n_classes)])
+Select_Dims = Dict(["1" => fill(1, n_classes), "2" => fill(2, n_classes), "4" => fill(4, n_classes), "8" => fill(8, n_classes), "16" => fill(16, n_classes), "32" => fill(32, n_classes)])
 
 # ╔═╡ 1b48dfb1-d361-44e2-83d1-5264b23998b7
 n_dims = Select_Dims[Dimensions]
@@ -457,7 +457,7 @@ end
 # ╔═╡ 87f7368b-a0c9-4eac-b95f-0109e5c82023
 with_theme() do
 	fig = Figure(; size=(800, 650))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix - Subspace Classification - $Location")
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Subspace Classification - Dims = $Dimensions - $Location")
 	hm = heatmap!(ax, permutedims(confusion_matrix_subspace), colormap=:viridis)
 	pm = permutedims(confusion_matrix_subspace)
 
@@ -522,7 +522,7 @@ end
 # ╔═╡ ff6f02e4-5ca5-4cbf-8b7a-11ba3dc33642
 with_theme() do
 	fig = Figure(; size=(800, 650))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_af, yticks = 1:true_labels_af, title="Confusion Matrix - Affine Classification - $Location")
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_af, yticks = 1:true_labels_af, title=" Affine Classification - Dims = $Dimensions - $Location")
 	hm = heatmap!(ax, permutedims(confusion_matrix_affine), colormap=:viridis)
 	pm = permutedims(confusion_matrix_affine)
 
