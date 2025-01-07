@@ -204,14 +204,14 @@ relabel_maps = Dict(
 	"Pavia" => Dict(
 	0 => 0,
 	1 => 1,
-	2 => 2,
-	3 => 3,
-	4 => 4,
+	2 => 8,
+	3 => 6,
+	4 => 9,
 	5 => 5,
-	6 => 6,
+	6 => 3,
 	7 => 7,
-	8 => 8,
-	9 => 9
+	8 => 4,
+	9 => 2
 ),
 	"PaviaUni" => Dict(
 	0 => 0,
@@ -220,10 +220,10 @@ relabel_maps = Dict(
 	3 => 8,
 	4 => 4,
 	5 => 5,
-	6 => 6,
+	6 => 9,
 	7 => 7,
 	8 => 2,
-	9 => 9,
+	9 => 6,
 )
 )
 
@@ -258,8 +258,47 @@ with_theme() do
 	fig
 end
 
+# ╔═╡ dad3de1b-9cde-44c6-beb2-d56f0083f24d
+begin
+	ground_labels_re = filter(x -> x != 0, gt_labels) #Filter out the background pixel label
+	true_labels_re = length(ground_labels_re)
+	predicted_labels_re = n_clusters
+
+	confusion_matrix_re = zeros(Float64, true_labels_re, predicted_labels_re) #Initialize a confusion matrix filled with zeros
+	cluster_results_re = fill(NaN32, size(data)[1:2]) #Clustering algorithm results
+
+	# clu_assign, idx = spec_aligned, spec_clustering_idx
+
+	cluster_results_re[mask] .= D_relabel
+
+	for (label_idx, label) in enumerate(ground_labels_re)
+	
+		label_indices = findall(gt_data .== label)
+	
+		cluster_values = [cluster_results_re[idx] for idx in label_indices]
+		t_pixels = length(cluster_values)
+		cluster_counts = [count(==(cluster), cluster_values) for cluster in 1:n_clusters]
+		confusion_matrix_re[label_idx, :] .= [count / t_pixels * 100 for count in cluster_counts]
+	end
+end
+
+# ╔═╡ 32d1f93f-a711-467f-997f-4f5de2eb3711
+with_theme() do
+	fig = Figure(; size=(800, 650))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="K-Affinespaces - $Location - Confusion Matrix", titlesize=15)
+	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
+	pm = permutedims(confusion_matrix_re)
+
+	for i in 1:true_labels_re, j in 1:predicted_labels_re
+        value = round(pm[i, j], digits=1)
+        text!(ax, i - 0.02, j - 0.1, text = "$value", color=:black, align = (:center, :center), fontsize=14)
+    end
+	Colorbar(fig[1, 2], hm; height=Relative(1.0))
+	fig
+end
+
 # ╔═╡ Cell order:
-# ╠═e510d702-e7f0-4c01-a8bc-12bdb1b80cab
+# ╟─e510d702-e7f0-4c01-a8bc-12bdb1b80cab
 # ╠═3ff5fa73-4af0-4f51-b119-27807de8f95e
 # ╠═39cde77c-5647-4262-aa38-ce373415c2ac
 # ╠═60351d80-ef17-4568-a0eb-5f8f5552159c
@@ -292,3 +331,5 @@ end
 # ╠═d10767ce-0944-4fd1-80dc-7eabf89d1388
 # ╠═bd7a78da-80c2-407d-920f-32e65251e0f7
 # ╠═150a2548-7cb7-48c6-a889-27fbb459e84c
+# ╠═dad3de1b-9cde-44c6-beb2-d56f0083f24d
+# ╠═32d1f93f-a711-467f-997f-4f5de2eb3711

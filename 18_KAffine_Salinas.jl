@@ -206,23 +206,62 @@ with_theme() do
 	# assignments, idx = spec_aligned, spec_clustering_idx
 
 	# Create figure
-	fig = Figure(; size=(800, 700))
+	fig = Figure(; size=(800, 800))
 	colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
 	# colors_re = Makie.Colors.distinguishable_colors(length(re_labels))
 
 	# Show data
-	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=20)
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=15)
 	
 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
 	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 
 	# Show cluster map
-	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="KSS Clustering Results", titlesize=20)
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="K-Affinespaces Clustering Results", titlesize=15)
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
 	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 	
+	fig
+end
+
+# ╔═╡ f04c789b-a126-43fc-8bb5-ae324dada034
+begin
+	ground_labels_re = filter(x -> x != 0, gt_labels) #Filter out the background pixel label
+	true_labels_re = length(ground_labels_re)
+	predicted_labels_re = n_clusters
+
+	confusion_matrix_re = zeros(Float64, true_labels_re, predicted_labels_re) #Initialize a confusion matrix filled with zeros
+	cluster_results_re = fill(NaN32, size(data)[1:2]) #Clustering algorithm results
+
+	# clu_assign, idx = spec_aligned, spec_clustering_idx
+
+	cluster_results_re[mask] .= D_relabel
+
+	for (label_idx, label) in enumerate(ground_labels_re)
+	
+		label_indices = findall(gt_data .== label)
+	
+		cluster_values = [cluster_results_re[idx] for idx in label_indices]
+		t_pixels = length(cluster_values)
+		cluster_counts = [count(==(cluster), cluster_values) for cluster in 1:n_clusters]
+		confusion_matrix_re[label_idx, :] .= [count / t_pixels * 100 for count in cluster_counts]
+	end
+end
+
+# ╔═╡ be85fbd8-d251-497b-bb8d-1de180d5d4ca
+with_theme() do
+	fig = Figure(; size=(800, 800))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="K-Affinespaces - Salinas - Confusion Matrix", titlesize=15)
+	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
+	pm = permutedims(confusion_matrix_re)
+
+	for i in 1:true_labels_re, j in 1:predicted_labels_re
+        value = round(pm[i, j], digits=1)
+        text!(ax, i - 0.02, j - 0.1, text = "$value", color=:black, align = (:center, :center), fontsize=14)
+    end
+	Colorbar(fig[1, 2], hm; height=Relative(1.0))
 	fig
 end
 
@@ -256,3 +295,5 @@ end
 # ╠═68890796-2b30-4014-b825-05f6f4ebb47b
 # ╠═54e6c3c9-dc85-44a4-b7f7-4263adc481d1
 # ╠═10c1c8ad-dc67-43dc-96a3-d71f51d2a704
+# ╠═f04c789b-a126-43fc-8bb5-ae324dada034
+# ╠═be85fbd8-d251-497b-bb8d-1de180d5d4ca
