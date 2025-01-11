@@ -348,18 +348,18 @@ with_theme() do
 	assignments, idx = spec_aligned, spec_clustering_idx
 
 	# Create figure
-	fig = Figure(; size=(700, 650))
+	fig = Figure(; size=(800, 700))
 	colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
 	# colors_re = Makie.Colors.distinguishable_colors(length(re_labels))
 
 	# Show data
-	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=20)
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=15)
 	
 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, 9))
 	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
 
 	# Show cluster map
-	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results", titlesize=20)
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Spectral Clustering Results - $Location", titlesize=15)
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, 9))
@@ -395,7 +395,7 @@ end
 # ╔═╡ a062718a-2f67-4864-aa7e-0129cb5f6f58
 with_theme() do
 	fig = Figure(; size=(800, 700))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix - Spectral Clustering - $Location")
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Spectral Clustering - $Location - Confusion Matrix")
 	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
 	pm = permutedims(confusion_matrix_re)
 

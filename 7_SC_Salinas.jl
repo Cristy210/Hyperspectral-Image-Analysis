@@ -71,6 +71,22 @@ bg_indices = findall(gt_data .== 0)
 # ╔═╡ 48dc661e-86ca-4e65-8273-c34f518d0cc8
 n_clusters = length(unique(gt_data)) - 1
 
+# ╔═╡ 6819ce1c-12c8-4d93-8a95-f409b78a9ec6
+with_theme() do
+	
+
+	# Create figure
+	fig = Figure(; size=(700, 700))
+	colors = Makie.Colors.distinguishable_colors(n_clusters+1)
+
+	# Show data
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Salinas")
+	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors))
+	Colorbar(fig[1,2], hm, height=Relative(1.0))
+
+	fig
+end
+
 # ╔═╡ 1000381a-3f79-46be-ab85-7ab94176d693
 @bind band PlutoUI.Slider(1:size(data, 3), show_value=true)
 
@@ -346,7 +362,7 @@ with_theme() do
 	# assignments, idx = spec_aligned, spec_clustering_idx
 
 	# Create figure
-	fig = Figure(; size=(800, 650))
+	fig = Figure(; size=(800, 800))
 	colors = Makie.Colors.distinguishable_colors(n_clusters+1)
 
 	# Show data
@@ -357,7 +373,7 @@ with_theme() do
 
 	# Show cluster map
 	
-	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Clustering Results")
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Spectral Clustering Results - Salinas")
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors))
@@ -393,8 +409,8 @@ end
 
 # ╔═╡ ef60113d-fa13-4e9f-8e77-4545ca6d4f36
 with_theme() do
-	fig = Figure(; size=(800, 700))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Confusion Matrix - Spectral Clustering - Salinas")
+	fig = Figure(; size=(800, 800))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Spectral Clustering - Salinas - Confusion Matrix")
 	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
 	pm = permutedims(confusion_matrix_re)
 
@@ -528,6 +544,7 @@ end
 # ╠═278820b5-1037-4479-b79b-4e1d90c59f4d
 # ╠═f104e513-6bf3-43fd-bd87-a6085cf7eb21
 # ╠═c4456bce-09b5-4e11-8d1d-b16b50855281
+# ╠═6819ce1c-12c8-4d93-8a95-f409b78a9ec6
 # ╠═48dc661e-86ca-4e65-8273-c34f518d0cc8
 # ╠═1000381a-3f79-46be-ab85-7ab94176d693
 # ╠═5763e16d-4f72-4302-99b7-c52b10269161
