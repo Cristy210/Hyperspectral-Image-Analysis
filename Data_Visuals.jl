@@ -92,9 +92,10 @@ with_theme() do
 	colors = Makie.Colors.distinguishable_colors(n_clusters+1)
 
 	# Show data
-	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Pavia University")
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Pavia University")
 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors))
-	Colorbar(fig[1,2], hm, height=Relative(1.0))
+	Colorbar(fig[1,1], hm, flipaxis=false)
+	colgap!(fig.layout, 1, -200)
 
 	fig
 end

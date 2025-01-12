@@ -74,15 +74,15 @@ n_clusters = length(unique(gt_data)) - 1
 # ╔═╡ 6819ce1c-12c8-4d93-8a95-f409b78a9ec6
 with_theme() do
 	
-
 	# Create figure
-	fig = Figure(; size=(700, 700))
+	fig = Figure(; size=(600, 600))
 	colors = Makie.Colors.distinguishable_colors(n_clusters+1)
 
 	# Show data
-	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Salinas")
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Salinas")
 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors))
-	Colorbar(fig[1,2], hm, height=Relative(1.0))
+	Colorbar(fig[1,1], hm, flipaxis=false, flip_vertical_label=true)
+	colgap!(fig.layout, 1, -220)
 
 	fig
 end
