@@ -32,6 +32,21 @@ main {
 }
 """
 
+# ╔═╡ b5bc9bac-9c23-41b4-8730-696a6ea196e0
+md"""
+### Activate Project Directory
+"""
+
+# ╔═╡ afa8c064-dd3f-445e-96f4-84b3c86baf1a
+md"""
+### Install Necessary Packages
+"""
+
+# ╔═╡ 3b596463-35c4-4b12-b663-401af311dc02
+md"""
+### Select the Dataset
+"""
+
 # ╔═╡ e3a985b4-a755-4a55-8cf3-b031bae9f4e1
 @bind Location Select(["Pavia", "PaviaUni",])
 
@@ -267,6 +282,11 @@ function classify(sample::Array{T, 2}, classifier::SubspaceClassifier{T}) where 
 	return pixel_classes
 end
 
+# ╔═╡ 1c703eee-2e38-46d3-a97f-623ebd824b84
+md"
+## Ground Truth Vs Subspace Classification
+"
+
 # ╔═╡ 2a580d27-dce1-4da7-bc62-12aeb46330e9
 md"
 ## Confusion Matrix - Subspace Classification
@@ -472,6 +492,11 @@ end
 # ╔═╡ c0da6a0e-c4e1-418c-86d2-9c1be6e3131a
 labels_affine = classify(permutedims(data[mask, :]), affine_classifier)
 
+# ╔═╡ 61a6c794-67c7-4152-979f-53a59cf3f3d4
+md"
+## Ground Truth Vs Affine space Classification
+"
+
 # ╔═╡ c295ca62-da1c-4fee-a6df-69923cd00ef6
 with_theme() do
 	fig = Figure(; size=(800, 650))
@@ -536,8 +561,11 @@ end
 
 # ╔═╡ Cell order:
 # ╟─080f426e-6e15-4ae3-ae1c-43feee6b1788
+# ╟─b5bc9bac-9c23-41b4-8730-696a6ea196e0
 # ╠═b0a42020-92ef-433c-b26b-36d3a82e5180
+# ╟─afa8c064-dd3f-445e-96f4-84b3c86baf1a
 # ╠═9b113c9b-a65b-49f3-abb8-582ff582e758
+# ╟─3b596463-35c4-4b12-b663-401af311dc02
 # ╠═e3a985b4-a755-4a55-8cf3-b031bae9f4e1
 # ╠═5d8f45e0-2f1d-43b7-ab3a-ffb1d1a4311c
 # ╠═15698332-14cd-479c-9345-836cd54c0965
@@ -564,10 +592,10 @@ end
 # ╠═dff407e5-17d3-433f-9f9f-779f89d4f5d1
 # ╠═d64f5ea0-f95d-4b0f-803a-e3fca082006d
 # ╟─26e3f3ea-9bcb-44df-966b-4506d1fe548a
-# ╠═200bea11-dde0-4c49-bc07-5ad54387aef0
+# ╟─200bea11-dde0-4c49-bc07-5ad54387aef0
 # ╟─d25e33e2-e2dd-46a5-b84a-a88aa92b7de5
 # ╠═23ee3fa2-bbe8-479f-95b1-423578f7e030
-# ╠═2b53268b-4d1a-471c-addd-783eaa813c55
+# ╟─2b53268b-4d1a-471c-addd-783eaa813c55
 # ╟─e428a263-d609-413d-97e8-c7a6981dde8e
 # ╠═88b1ad11-f28c-45ec-b3eb-b301cc5447f3
 # ╠═51266b17-94ce-4c6f-bda6-f965f84fcff5
@@ -579,17 +607,19 @@ end
 # ╠═320d30a2-b612-4cdc-aae5-04d9384314aa
 # ╠═0c268def-9af8-480c-9f8a-2a7adb6c56f8
 # ╠═dc6df293-74b5-41a0-befe-6a0aa9fcc130
+# ╟─1c703eee-2e38-46d3-a97f-623ebd824b84
 # ╠═26d64190-8748-4673-87ef-833b15f284d0
 # ╟─2a580d27-dce1-4da7-bc62-12aeb46330e9
 # ╠═e42f949a-d22b-44ff-b1fb-385bcead2b40
-# ╠═87f7368b-a0c9-4eac-b95f-0109e5c82023
+# ╟─87f7368b-a0c9-4eac-b95f-0109e5c82023
 # ╟─9a3e6c31-af27-44c9-ac92-bec97391579c
 # ╠═db2fb8a1-93c8-4d20-a942-68b04a86c693
 # ╠═15a4f896-277b-4df0-ba1d-9dae1c9d0e92
 # ╠═7c055c89-0979-48eb-a981-3c0c2ed3a0f8
 # ╠═75e824e1-1cbc-44f0-b211-2ac76abfc68b
 # ╠═c0da6a0e-c4e1-418c-86d2-9c1be6e3131a
-# ╠═c295ca62-da1c-4fee-a6df-69923cd00ef6
+# ╟─61a6c794-67c7-4152-979f-53a59cf3f3d4
+# ╟─c295ca62-da1c-4fee-a6df-69923cd00ef6
 # ╟─f0e862b0-6980-417c-988d-b125fa6387f2
 # ╠═7f2931e9-7dcd-4c97-9f96-06d884ad2831
-# ╠═ff6f02e4-5ca5-4cbf-8b7a-11ba3dc33642
+# ╟─ff6f02e4-5ca5-4cbf-8b7a-11ba3dc33642
