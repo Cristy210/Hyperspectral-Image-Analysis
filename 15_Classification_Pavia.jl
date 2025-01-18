@@ -83,8 +83,18 @@ loc_dict_keys = Dict(
 # ╔═╡ c4dc77d4-99c9-4211-b981-b033b5b288f2
 data_key, gt_key = loc_dict_keys[Location]
 
+# ╔═╡ 4a26fb5c-d51d-4976-bedf-5c9df300e6f8
+md"
+#### Original Data matrix
+"
+
 # ╔═╡ bc2ed5ae-17cd-46c1-940c-b5794c25f9ff
 data = vars[data_key]
+
+# ╔═╡ e50c6570-60e2-4024-943b-e2c51cf9b4fa
+md"
+#### Ground Truth Labels
+"
 
 # ╔═╡ b1da7a62-8c57-420b-b580-08ba6e314929
 gt_data = vars_gt[gt_key]
@@ -575,7 +585,9 @@ end
 # ╠═e0c4e361-535d-4952-9173-6e9f0b24a8b1
 # ╠═2e7cb89c-08e5-4ae1-9fe7-9e95a3421ec9
 # ╠═c4dc77d4-99c9-4211-b981-b033b5b288f2
+# ╟─4a26fb5c-d51d-4976-bedf-5c9df300e6f8
 # ╠═bc2ed5ae-17cd-46c1-940c-b5794c25f9ff
+# ╟─e50c6570-60e2-4024-943b-e2c51cf9b4fa
 # ╠═b1da7a62-8c57-420b-b580-08ba6e314929
 # ╠═1d00d4ad-ff49-47be-a6e5-8387a2bc4398
 # ╠═f161f22e-d287-4381-9b22-21e44c12c787
@@ -618,8 +630,8 @@ end
 # ╠═7c055c89-0979-48eb-a981-3c0c2ed3a0f8
 # ╠═75e824e1-1cbc-44f0-b211-2ac76abfc68b
 # ╠═c0da6a0e-c4e1-418c-86d2-9c1be6e3131a
-# ╟─61a6c794-67c7-4152-979f-53a59cf3f3d4
-# ╟─c295ca62-da1c-4fee-a6df-69923cd00ef6
 # ╟─f0e862b0-6980-417c-988d-b125fa6387f2
 # ╠═7f2931e9-7dcd-4c97-9f96-06d884ad2831
 # ╟─ff6f02e4-5ca5-4cbf-8b7a-11ba3dc33642
+# ╟─61a6c794-67c7-4152-979f-53a59cf3f3d4
+# ╟─c295ca62-da1c-4fee-a6df-69923cd00ef6
