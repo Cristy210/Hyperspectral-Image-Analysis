@@ -502,30 +502,6 @@ end
 # ╔═╡ c0da6a0e-c4e1-418c-86d2-9c1be6e3131a
 labels_affine = classify(permutedims(data[mask, :]), affine_classifier)
 
-# ╔═╡ 61a6c794-67c7-4152-979f-53a59cf3f3d4
-md"
-## Ground Truth Vs Affine space Classification
-"
-
-# ╔═╡ c295ca62-da1c-4fee-a6df-69923cd00ef6
-with_theme() do
-	fig = Figure(; size=(800, 650))
-	clustermap = fill(0, size(data)[1:2])
-	clustermap[mask] .= labels_affine
-	colors = Makie.Colors.distinguishable_colors(n_classes + 1)
-
-	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=15)
-	
-	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_classes))
-	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
-
-	
-	ax = Axis(fig[1, 2], aspect=DataAspect(), yreversed=true, title="Affine space - $Location - Dims = $Dimensions", titlesize=15)
-	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_classes))
-	Colorbar(fig[2, 2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
-	fig
-end
-
 # ╔═╡ f0e862b0-6980-417c-988d-b125fa6387f2
 md"
 ## Confusion Matrix - Affine Classification
@@ -566,6 +542,30 @@ with_theme() do
         text!(ax, i - 0.02, j - 0.1, text = "$value", color=:black, align = (:center, :center), fontsize=15)
     end
 	Colorbar(fig[1, 2], hm)
+	fig
+end
+
+# ╔═╡ 61a6c794-67c7-4152-979f-53a59cf3f3d4
+md"
+## Ground Truth Vs Affine space Classification
+"
+
+# ╔═╡ c295ca62-da1c-4fee-a6df-69923cd00ef6
+with_theme() do
+	fig = Figure(; size=(800, 650))
+	clustermap = fill(0, size(data)[1:2])
+	clustermap[mask] .= labels_affine
+	colors = Makie.Colors.distinguishable_colors(n_classes + 1)
+
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=15)
+	
+	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_classes))
+	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
+
+	
+	ax = Axis(fig[1, 2], aspect=DataAspect(), yreversed=true, title="Affine space - $Location - Dims = $Dimensions", titlesize=15)
+	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_classes))
+	Colorbar(fig[2, 2], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 	fig
 end
 
