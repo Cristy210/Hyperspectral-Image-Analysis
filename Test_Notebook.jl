@@ -22,9 +22,12 @@ using CairoMakie, LinearAlgebra, Colors, PlutoUI, Glob, FileIO, ArnoldiMethod, C
 
 # ╔═╡ c164ba95-9cad-4911-a192-f9fd9fdaa7be
 html"""<style>
+input[type*="range"] {
+	width: calc(100% - 4rem);
+}
 main {
-    max-width: 66%;
-    margin-left: 1%;
+    max-width: 96%;
+    margin-left: 0%;
     margin-right: 2% !important;
 }
 """
@@ -388,6 +391,24 @@ with_theme() do
 	fig
 end
 
+# ╔═╡ 12ff3fd2-4182-4ab1-b5ca-378dc5ef7f56
+md"""
+### Rough Work
+"""
+
+# ╔═╡ 00ea0929-8aeb-4415-81ee-81af68c1ead5
+Mat_test = [1 2 3
+			4 5 6
+			7 8 9]
+
+# ╔═╡ 8f80925a-9f29-457d-a065-9eb9f13d8225
+hcat([Mat_test[i, :] for i in size(Mat_test, 1):-1:1]...)
+
+# ╔═╡ 5a6847e7-b9ab-497a-8403-50b625eba870
+Mat_test_1 = [1 2 3
+			4 5 6
+			7 8 9]
+
 # ╔═╡ Cell order:
 # ╠═c164ba95-9cad-4911-a192-f9fd9fdaa7be
 # ╠═3c38e381-851e-48c7-b014-c525a3872e3f
@@ -433,3 +454,7 @@ end
 # ╠═0b5d8e16-7ee0-4f71-8f17-89bb5f3363cd
 # ╠═20bc5e97-3e49-4974-bfbf-9eff9bc97d05
 # ╠═bad3f503-961b-487b-872f-216aaa174b2f
+# ╟─12ff3fd2-4182-4ab1-b5ca-378dc5ef7f56
+# ╠═00ea0929-8aeb-4415-81ee-81af68c1ead5
+# ╠═8f80925a-9f29-457d-a065-9eb9f13d8225
+# ╠═5a6847e7-b9ab-497a-8403-50b625eba870
