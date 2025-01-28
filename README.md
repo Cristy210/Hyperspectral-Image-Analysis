@@ -9,7 +9,7 @@ This repository demonstrates the application of machine learning algorithms, par
 
 📌 **1. Project Introduction** 
 
-This repository implements **supervised and unsupervised machine learning algorithms** on hyperspectral datasets (Pavia, Salinas, and Onera Satellite Datasets) to perform clustering and segmentation:
+This repository implements **unsupervised machine learning algorithms** on hyperspectral datasets (Pavia, Salinas, and Onera Satellite Datasets) to perform clustering and segmentation:
 - **K-Means Clustering**
 - **K-Subspaces Clustering**
 - **Spectral Clustering**
@@ -26,11 +26,11 @@ K-Means clustering is one of the widely used clustering algorithms due to its si
 $$J = \sum_{k=1}^K \sum_{\mathbf{y}_i \in C_j} \left\| \mathbf{y}_i - \boldsymbol{\mu}_j \right\|_2^2$$ 
 
 **Where:**
-- $$k$$: Number of clusters.
-- $$y_i$$: Data point $$i$$ in the dataset. 
-- $$\mu_j$$: Centroid of cluster $$j$$. 
-- $$C_j$$: Set of points assigned to cluster $$j$$.
-- $$\| \cdot \|_2$$: Euclidean norm (distance).
+- $K$: Number of clusters.
+- $y_i$: Data point at index $i$ in the dataset. 
+- $\mu_k$: Centroid of cluster $k$. 
+- $C_k$: Set of points assigned to cluster $k$.
+- $\| \cdot \|_2$: Euclidean norm (distance).
 
 
 #### K-Subspaces Clustering:
@@ -43,9 +43,26 @@ K-Subspaces (KSS) clustering extends K-Means by addressing the challenges of clu
 $$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - \mathbf{U}_k \mathbf{U}_k^{\top} \mathbf{y}_i\|_2^2$$
 
 **Where:**
-- $$k$$: Number of clusters.
-- $$y_i$$: Data point $$i$$ in the dataset. 
-- $$\mu_j$$: Centroid of cluster $$j$$. 
-- $$C_j$$: Set of points assigned to cluster $$j$$.
-- $$U_k^T$$: Subspace Basis for Cluster $$k$$. 
-- $$\| \cdot \|_2$$: Euclidean norm (distance).
+- $K$: Number of clusters.
+- $y_i$: Data point at index $i$ in the dataset.  
+- $C_k$: Set of points assigned to cluster $k$.
+- $U_k$: Subspace Basis for Cluster $k$. 
+- $\| \cdot \|_2$: Euclidean norm (distance).
+
+#### K-Affine spaces Clustering:
+K-Affine spaces (KAS) clustering. Just like KSS, KAS assumes that the data lies in a union of low-dimensional affine spaces formed from a set of bases and a bias vector rather than a set of linear subspaces. Clustering is accomplished through a iterative process where the basis and the bias vector for each affine space are updated, and the data points are assigned based on their projection onto the closest affine space.  
+
+<div align="center">
+<h4> The objective of K-Affine spaces clustering is to minimize the total projection error. </h4>
+</div>
+
+$$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - [\mathbf{U}_k \mathbf{U}_k^{\top} (\mathbf{y}_i - \boldsymbol{\mu}_k) + \boldsymbol{\mu}_k]\|_2^2$$
+
+**Where:**
+- $K$: Number of clusters.
+- $y_i$: Data point at index $i$ in the dataset. 
+- $\mu_k$: Centroid of cluster $k$. 
+- $C_k$: Set of points assigned to cluster $k$.
+- $U_k$: Affine space Basis for Cluster $k$. 
+- $\| \cdot \|_2$: Euclidean norm (distance).
+
