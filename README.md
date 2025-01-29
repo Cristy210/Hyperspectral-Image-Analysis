@@ -76,7 +76,8 @@ $$L_{sym} = I - D^{-1/2}AD^{-1/2}$$
 **where:**
 - $I$: Identity matrix of size $MN \times MN$
 - $MN$: Total number of data points
-- $A$: $A = Z + Z^{\top}$; Z = thresholded version of $C$; $C_{ij} = \exp \left[ -2 \cdot \arccos \left( \frac{\mathbf{y}_i^{\top} \mathbf{y}_j}{\|\mathbf{y}_i\|_2 \cdot \|\mathbf{y}_j\|_2} \right) \right], \quad \text{for } i,j = 1, \dots, MN.$
+- $A$: $A = Z + Z^{\top}$; Z = thresholded version of $C$
+$$C_{ij} = \exp \left[ -2 \cdot \arccos \left( \frac{\mathbf{y}_i^{\top} \mathbf{y}_j}{\|\mathbf{y}_i\|_2 \cdot \|\mathbf{y}_j\|_2} \right) \right], \quad \text{for } i,j = 1, \dots, MN.$$
 - $D$ = $\text{diag}(d), d_i = \sum_{j=1}^{MN}A_{ij} \quad \text{for } i = 1, \dots, MN$
 
 #### Mean-based Classification:
@@ -89,7 +90,7 @@ $$ \boldsymbol{\mu}_k = \frac{1}{N_k} y_n^{(k)} \in \mathbb{R}^{L}, \quad \text{
 - $N_k$: Number of data points in class $k$. 
 -  $y_n^{(k)}$: $n^{\text{th}}$ training data point in class $k$. 
 
-$$\operatorname{classify}(y) = \operatorname*{argmin}_{k = \{1, \dots, K\}} \| y - \boldsymbol{\mu}_k\|_2^2$$
+$$\text{classify}(y) = \text{argmin}_{k = \{1, \dots, K\}} \| y - \boldsymbol{\mu}_k\|_2^2$$
 
 
 #### Subspace-based Classification:
@@ -101,7 +102,7 @@ $$\mathbf{U}_k^{dim_k} = \mathbf{\hat{U}}[:, 1:dim_k] \quad \text{where } \mathc
 - $\mathbf{U}_k^{dim_k}:$ Subspace basis corresponding to the class $k$ with dimensions $dim_k$.
 - $\mathcal{Y}_k \in \mathbb{R}^{L \times N_k}:$  data matrix for the selected $N_k$ training data points in class $k$; $L$ refers to the original feature space dimensions data points are in. 
 
-$$\operatorname{classify}(\mathbf{y}) = \operatorname*{argmin}_{k \in \{1,\dots,K\}}\; \|\mathbf{y}\|_2^2 - \|(\textbf{U}^{\text{dim}_k}_k)^{\top} \mathbf{y}\|_2^2$$
+$$\text{classify}(\mathbf{y}) = \text{argmin}_{k \in \{1,\dots,K\}}\; \|\mathbf{y}\|_2^2 - \|(\textbf{U}^{\text{dim}_k}_k)^{\top} \mathbf{y}\|_2^2$$
 
 #### Affine space-based Classification:
 Affine space-based classification classifies data points based on the closest projection onto the defined low-dimensional closest affine space, where each class is represented in an affine space formed from a set of basis ($\mathbf{U_k}$) and a centroid ($\boldsymbol{\mu}_k$) which acts as the center for the affine space.
@@ -114,7 +115,7 @@ $$\mathbf{U}_k^{dim_k} = \mathbf{\hat{U}}[:, 1:dim_k] \quad \text{where } \mathc
 - $\boldsymbol{\mu}_k:$ Center of the affine space aka the mean vector formed by the mean of the data points in the corresponding class $k$. 
 
 
-$$\operatorname{classify}(\mathbf{y}) = \operatorname*{argmin}_{k \in \{1,\dots,K\}} \; \|\mathbf{y} - [(\textbf{U}_k^{dim_k})(\textbf{U}^{\text{dim}_k}_k)^{\top} (\mathbf{y} - \boldsymbol{\mu}_k) + \boldsymbol{\mu}_k]\|_2^2$$
+$$\text{classify}(\mathbf{y}) = \text{argmin}_{k \in \{1,\dots,K\}} \; \|\mathbf{y} - [(\textbf{U}_k^{dim_k})(\textbf{U}^{\text{dim}_k}_k)^{\top} (\mathbf{y} - \boldsymbol{\mu}_k) + \boldsymbol{\mu}_k]\|_2^2$$
 
 
 
