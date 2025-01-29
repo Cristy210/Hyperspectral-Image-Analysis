@@ -9,7 +9,7 @@ This repository demonstrates the application of machine learning algorithms, par
 
 📌 **1. Project Introduction** 
 
-This repository implements **unsupervised machine learning algorithms** on hyperspectral datasets (Pavia, Salinas, and Onera Satellite Datasets) to perform clustering and segmentation:
+This repository implements both **unsupervised and supervised machine learning algorithms** on hyperspectral datasets (Pavia, Salinas, and Onera Satellite Datasets) to perform clustering and segmentation:
 - **K-Means Clustering**
 - **K-Subspaces Clustering**
 - **Spectral Clustering**
@@ -65,4 +65,58 @@ $$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - [\ma
 - $C_k$: Set of points assigned to cluster $k$.
 - $U_k$: Affine space Basis for Cluster $k$. 
 - $\| \cdot \|_2$: Euclidean norm (distance).
+
+#### Thresholded subspace Clustering:
+In Thresholded Subspace Clustering (TSC) algorithm, data points are treated as nodes in a graph, which are then clustered using techniques from spectral graph theory. TSC algorithm is made up of three important matrices.
+Adjaceny Matrix ($A$) defines similarity between any two nodes in the dataset; Degree Matrix ($D$) represents the sum of the weights of all edges connected to a node; Laplacian Matrix($L$) captures the structure of the graph by combining information from the above two matrices. K-Means clustering is applied on the eigenvectors corresponding to the $K$ smallest eigenvalues of $L_{sym}$. 
+
+
+$$L_{sym} = I - D^{-1/2}AD^{-1/2}$$
+
+**where:**
+- $I$: Identity matrix of size $MN \times MN$
+- $MN$: Total number of data points
+- $A$: $A = Z + Z^{\top}$; Z = thresholded version of $C$; $C_{ij} = \exp \left[ -2 \cdot \arccos \left( \frac{\mathbf{y}_i^{\top} \mathbf{y}_j}{\|\mathbf{y}_i\|_2 \cdot \|\mathbf{y}_j\|_2} \right) \right], \quad \text{for } i,j = 1, \dots, MN.$
+- $D$ = $\text{diag}(d), d_i = \sum_{j=1}^{MN}A_{ij} \quad \text{for } i = 1, \dots, MN$
+
+#### Mean-based Classification:
+Mean-based classification classifies data points based on the nearest centroid, where each centroid ($\boldsymbol{\mu}_k$) is the mean of the data points in the corresponding class ($k$).
+
+$$ \boldsymbol{\mu}_k = \frac{1}{N_k} y_n^{(k)} \in \mathbb{R}^{L}, \quad \text{for } k = 1, \dots, K$$
+
+**where:**
+- $K$: Number of Classes
+- $N_k$: Number of data points in class $k$. 
+-  $y_n^{(k)}$: $n^{\text{th}}$ training data point in class $k$. 
+
+$$\operatorname{classify}(y) = \operatorname*{argmin}_{k = \{1, \dots, K\}} \| y - \boldsymbol{\mu}_k\|_2^2$$
+
+
+#### Subspace-based Classification:
+Subspace-based classification classifies data points based on the closest projection onto the defined low-dimensional subspace, where each subspace corresponds to a class. subspace basis ($\mathbf{U}$) are formed by the number of left singular vectors from training data specified by the dimensions ($dim$) intitially chosen for each class ($k$). 
+
+$$\mathbf{U}_k^{dim_k} = \mathbf{\hat{U}}[:, 1:dim_k] \quad \text{where } \mathcal{Y}_k = \mathbf{\hat{U}}\mathbf{\hat{\Sigma}}\mathbf{\hat{V}}^{\top} \text{ is an SVD, } \quad \text{for } k = 1, \dots, K$$
+
+**where:**
+- $\mathbf{U}_k^{dim_k}:$ Subspace basis corresponding to the class $k$ with dimensions $dim_k$.
+- $\mathcal{Y}_k \in \mathbb{R}^{L \times N_k}:$  data matrix for the selected $N_k$ training data points in class $k$; $L$ refers to the original feature space dimensions data points are in. 
+
+$$\operatorname{classify}(\mathbf{y}) = \operatorname*{argmin}_{k \in \{1,\dots,K\}}\; \|\mathbf{y}\|_2^2 - \|(\textbf{U}^{\text{dim}_k}_k)^{\top} \mathbf{y}\|_2^2$$
+
+#### Affine space-based Classification:
+Affine space-based classification classifies data points based on the closest projection onto the defined low-dimensional closest affine space, where each class is represented in an affine space formed from a set of basis ($\mathbf{U_k}$) and a centroid ($\boldsymbol{\mu}_k$) which acts as the center for the affine space.
+
+$$\boldsymbol{\mu}_k = \frac{1}{N_k} y_n^{(k)} \in \mathbb{R}^{L}$$
+$$\mathbf{U}_k^{dim_k} = \mathbf{\hat{U}}[:, 1:dim_k] \quad \text{where } \mathcal{Y}_k - \boldsymbol{\mu}_k1_{N_k}^{\top} = \mathbf{\hat{U}}\mathbf{\hat{\Sigma}}\mathbf{\hat{V}}^{\top} \text{ is an SVD, } \quad \text{for } k = 1, \dots, K$$
+
+**where:**
+- $\mathbf{U}_k^{dim_k}:$ Affine space basis corresponding to the class $k$ with dimensions $dim_k$.
+- $\boldsymbol{\mu}_k:$ Center of the affine space aka the mean vector formed by the mean of the data points in the corresponding class $k$. 
+
+
+$$\operatorname{classify}(\mathbf{y}) = \operatorname*{argmin}_{k \in \{1,\dots,K\}} \; \|\mathbf{y} - [(\textbf{U}_k^{dim_k})(\textbf{U}^{\text{dim}_k}_k)^{\top} (\mathbf{y} - \boldsymbol{\mu}_k) + \boldsymbol{\mu}_k]\|_2^2$$
+
+
+
+
 
