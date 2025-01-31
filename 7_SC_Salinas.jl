@@ -373,7 +373,7 @@ with_theme() do
 
 	# Show cluster map
 	
-	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Spectral Clustering Results - Salinas")
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="Threshold Subspace Clustering - Salinas")
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors))
@@ -410,7 +410,7 @@ end
 # ╔═╡ ef60113d-fa13-4e9f-8e77-4545ca6d4f36
 with_theme() do
 	fig = Figure(; size=(800, 800))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Spectral Clustering - Salinas - Confusion Matrix")
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="Threshold Subspace Clustering - Salinas - Confusion Matrix")
 	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
 	pm = permutedims(confusion_matrix_re)
 

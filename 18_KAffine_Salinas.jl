@@ -211,13 +211,13 @@ with_theme() do
 	# colors_re = Makie.Colors.distinguishable_colors(length(re_labels))
 
 	# Show data
-	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=15)
+	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth")
 	
 	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
 	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false, ticklabelsize=:8)
 
 	# Show cluster map
-	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="K-Affinespaces Clustering Results", titlesize=15)
+	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="K-Affine spaces Clustering - Salinas")
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
 	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
@@ -253,7 +253,7 @@ end
 # ╔═╡ be85fbd8-d251-497b-bb8d-1de180d5d4ca
 with_theme() do
 	fig = Figure(; size=(800, 800))
-	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="K-Affinespaces - Salinas - Confusion Matrix", titlesize=15)
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true, xlabel = "Predicted Labels", ylabel = "True Labels", xticks = 1:predicted_labels_re, yticks = 1:true_labels_re, title="K-Affine spaces clustering - Salinas - Confusion Matrix", titlesize=15)
 	hm = heatmap!(ax, permutedims(confusion_matrix_re), colormap=:viridis)
 	pm = permutedims(confusion_matrix_re)
 
