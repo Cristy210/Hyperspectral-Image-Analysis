@@ -169,7 +169,7 @@ function fit_mean(data::Array{T, 3}, gt_data::Array{U, 2}) where {T, U}
 end
 
 # ╔═╡ c0a17298-c27e-4593-aebc-273576ff9053
-dropdims(sum(abs2, permutedims(data[mask, :]); dims=1); dims=1)
+# dropdims(sum(abs2, permutedims(data[mask, :]); dims=1); dims=1)
 
 # ╔═╡ 284327c2-726b-4f5d-aabf-e6cf22c9094f
 permutedims(data[mask, :])
