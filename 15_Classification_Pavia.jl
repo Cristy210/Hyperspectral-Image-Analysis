@@ -192,6 +192,21 @@ function classify(sample::Array{T, 2}, classifier::MeanClassifier{T}) where T<:A
 	return pixel_classes
 end
 
+# ╔═╡ ea216d35-f291-4438-a442-74bd8aee849e
+innerprod_8 = data[mask, :]*mean_classifier.b[8]
+
+# ╔═╡ 944cd035-4dc2-410c-96eb-62230f243457
+Dnorms_8 = dropdims(sum(abs2, permutedims(data[mask, :]); dims=1); dims=1)
+
+# ╔═╡ 9486afd4-b4af-4c32-b52d-83ca5ab1286a
+Uc_8 = sum(abs2, mean_classifier.b[8])
+
+# ╔═╡ 9f53248e-b67b-4da8-ae21-ca5e73dc5696
+Dnorms_8 .- 2 .* innerprod_8 .+ Uc_8
+
+# ╔═╡ 16549632-d38d-4168-b42d-c02ff1f904c5
+mean_classifier.b[2]
+
 # ╔═╡ d64f5ea0-f95d-4b0f-803a-e3fca082006d
 # unique(classify(permutedims(data[mask, :]), mean_classifier))
 
@@ -601,10 +616,15 @@ end
 # ╠═284327c2-726b-4f5d-aabf-e6cf22c9094f
 # ╠═47e0b117-bf16-4978-af8c-456f4cef0fd9
 # ╠═234c5f6e-1972-48ed-b5f5-151211f13819
+# ╠═ea216d35-f291-4438-a442-74bd8aee849e
+# ╠═944cd035-4dc2-410c-96eb-62230f243457
+# ╠═9486afd4-b4af-4c32-b52d-83ca5ab1286a
+# ╠═9f53248e-b67b-4da8-ae21-ca5e73dc5696
+# ╠═16549632-d38d-4168-b42d-c02ff1f904c5
 # ╠═dff407e5-17d3-433f-9f9f-779f89d4f5d1
 # ╠═d64f5ea0-f95d-4b0f-803a-e3fca082006d
 # ╟─26e3f3ea-9bcb-44df-966b-4506d1fe548a
-# ╟─200bea11-dde0-4c49-bc07-5ad54387aef0
+# ╠═200bea11-dde0-4c49-bc07-5ad54387aef0
 # ╟─d25e33e2-e2dd-46a5-b84a-a88aa92b7de5
 # ╠═23ee3fa2-bbe8-479f-95b1-423578f7e030
 # ╟─2b53268b-4d1a-471c-addd-783eaa813c55
