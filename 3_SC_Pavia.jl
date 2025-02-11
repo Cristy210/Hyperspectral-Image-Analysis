@@ -343,6 +343,9 @@ md"""
 ### Confusion Matrix -- Best Clustering Result
 """
 
+# ╔═╡ 458edb58-aace-409a-9676-9c58c89fab79
+hex(Makie.Colors.distinguishable_colors(n_clusters + 1)[10])
+
 # ╔═╡ 0cd5fa6d-fa11-4279-a71b-ae414b353aed
 with_theme() do
 	assignments, idx = spec_aligned, spec_clustering_idx
@@ -571,6 +574,7 @@ md"""
 # ╠═ea9c42bd-218c-4d6a-962d-1fc13f82408b
 # ╠═3ca21e15-d7e5-4582-8da3-5aba521fb937
 # ╟─dba9ea3e-d226-4b68-84e4-54fdcb76de62
+# ╠═458edb58-aace-409a-9676-9c58c89fab79
 # ╠═0cd5fa6d-fa11-4279-a71b-ae414b353aed
 # ╠═ce41f7df-d3fe-4c5f-8194-84c33bc36619
 # ╠═a062718a-2f67-4864-aa7e-0129cb5f6f58
