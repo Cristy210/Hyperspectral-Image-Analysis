@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,maximum-scale=2">
+    <link rel="stylesheet" type="text/css" media="screen" href="/assets/css/style.css?v=f4f2d949507257de51fc8b139205d35e2fb595ce">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Hyper-Spectral-Image-Analysis | Supervised and Unsupervised Learning; Hyper Spectral Image Analysis</title>
+<meta name="generator" content="Jekyll v3.9.5" />
+<meta property="og:title" content="Hyper-Spectral-Image-Analysis" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Supervised and Unsupervised Learning; Hyper Spectral Image Analysis" />
+<meta property="og:description" content="Supervised and Unsupervised Learning; Hyper Spectral Image Analysis" />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
+<meta property="og:site_name" content="Hyper-Spectral-Image-Analysis" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Hyper-Spectral-Image-Analysis" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"Supervised and Unsupervised Learning; Hyper Spectral Image Analysis","headline":"Hyper-Spectral-Image-Analysis","name":"Hyper-Spectral-Image-Analysis","url":"http://localhost:4000/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          
+            <a id="forkme_banner" href="https://github.com/Cristy210/Hyper-Spectral-Image-Analysis">GitHub Repository</a>
+          
+
+          <h1 id="project_title">Hyper-Spectral-Image-Analysis</h1>
+          <h2 id="project_tagline">Supervised and Unsupervised Learning; Hyper Spectral Image Analysis</h2>
+
+          
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        
+<div align="center">
+<h1> Hyperspectral Image Analysis </h1>
+</div>
+
+<p><strong>Hyperspectral Imaging</strong> is a powerful technique that captures and analyzes a wide spectrum of light across hundreds of narrow bands. This technology allows for detailed material identification, pattern recognition, and classification across diverse fields, including environmental monitoring, medical imaging, agriculture, art conservation, and more.</p>
+
+<p>This repository demonstrates the application of machine learning algorithms, particularly unsupervised learning techniques, to analyze and interpret hyperspectral datasets. The methods presented provide insights into spectral patterns, material properties, and class segmentation.</p>
+
+<p>📌 <strong>1. Project Introduction</strong></p>
+
+<p>This repository implements both <strong>unsupervised and supervised machine learning algorithms</strong> on hyperspectral datasets (Pavia, Salinas, and Onera Satellite Datasets) to perform clustering and segmentation:</p>
+<ul>
+  <li><strong>K-Means Clustering</strong></li>
+  <li><strong>K-Subspaces Clustering</strong></li>
+  <li><strong>Spectral Clustering</strong></li>
+</ul>
+
+<p>📊 <strong>2. Implemented Algorithms</strong></p>
+
+<h4 id="k-means-clustering">K-Means Clustering:</h4>
+<p>K-Means clustering is one of the widely used clustering algorithms due to its simplicity. K-Means clustering groups data points into k clusters by minimizing the within cluster variance. Each cluster is represented by a centroid, and data points are assigned to the cluster with the nearest centroid. The algorithm works iteratively to assign each data point to the cluster with the nearest centroid (based on <strong>Euclidean distance</strong>) and then updates the centroids as the mean of the points in each cluster. This process repeats until the centroids stabilize or a stopping criterion is met.</p>
+
+<div align="center">
+<h4> The objective of K-Means is to minimize the within-cluster sum of sqaured errors. </h4>
+</div>
+
+<div align="center">
+<img src="LaTeX Images/K_Means.png" alt="Heatmap Vs Spectral Plots" width="200" />
+</div>
+
+<p><br /></p>
+
+<div align="center">
+<img src="LaTeX Images/K_Means_Var.png" alt="Heatmap Vs Spectral Plots" width="300" />
+</div>
+
+<h4 id="k-subspaces-clustering">K-Subspaces Clustering:</h4>
+<p>K-Subspaces (KSS) clustering extends K-Means by addressing the challenges of clustering high-dimensional data. Instead of relying solely on Euclidean distance, KSS assumes the data lies in a union of low-dimensional subspaces. Clustering is accomplished through a iterative process where subspace space basis are updated and data points are assigned based on their projection onto the closest subspace.</p>
+
+<div align="center">
+<h4> The objective of K-Subspaces clustering is to minimize the total projection error. </h4>
+</div>
+
+\[J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - \mathbf{U}_k \mathbf{U}_k^{\top} \mathbf{y}_i\|_2^2\]
+
+<p><strong>Where:</strong></p>
+<ul>
+  <li>$K$: Number of clusters.</li>
+  <li>$y_i$: Data point at index $i$ in the dataset.</li>
+  <li>$C_k$: Set of points assigned to cluster $k$.</li>
+  <li>$U_k$: Subspace Basis for Cluster $k$.</li>
+  <li>$| \cdot |_2$: Euclidean norm (distance).</li>
+</ul>
+
+<h4 id="k-affine-spaces-clustering">K-Affine spaces Clustering:</h4>
+<p>K-Affine spaces (KAS) clustering. Just like KSS, KAS assumes that the data lies in a union of low-dimensional affine spaces formed from a set of bases and a bias vector rather than a set of linear subspaces. Clustering is accomplished through a iterative process where the basis and the bias vector for each affine space are updated, and the data points are assigned based on their projection onto the closest affine space.</p>
+
+<div align="center">
+<h4> The objective of K-Affine spaces clustering is to minimize the total projection error. </h4>
+</div>
+
+\[J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - [\mathbf{U}_k \mathbf{U}_k^{\top} (\mathbf{y}_i - \boldsymbol{\mu}_k) + \boldsymbol{\mu}_k]\|_2^2\]
+
+<p><strong>Where:</strong></p>
+<ul>
+  <li>$K$: Number of clusters.</li>
+  <li>$y_i$: Data point at index $i$ in the dataset.</li>
+  <li>$\mu_k$: Centroid of cluster $k$.</li>
+  <li>$C_k$: Set of points assigned to cluster $k$.</li>
+  <li>$U_k$: Affine space Basis for Cluster $k$.</li>
+  <li>$| \cdot |_2$: Euclidean norm (distance).</li>
+</ul>
+
+<h4 id="thresholded-subspace-clustering">Thresholded subspace Clustering:</h4>
+<p>In Thresholded Subspace Clustering (TSC) algorithm, data points are treated as nodes in a graph, which are then clustered using techniques from spectral graph theory. TSC algorithm is made up of three important matrices.
+Adjaceny Matrix ($A$) defines similarity between any two nodes in the dataset; Degree Matrix ($D$) represents the sum of the weights of all edges connected to a node; Laplacian Matrix($L$) captures the structure of the graph by combining information from the above two matrices. K-Means clustering is applied on the eigenvectors corresponding to the $K$ smallest eigenvalues of $L_{sym}$.</p>
+
+\[L_{sym} = I - D^{-1/2}AD^{-1/2}\]
+
+<p><strong>where:</strong></p>
+<ul>
+  <li>$I$: Identity matrix of size $MN \times MN$</li>
+  <li>$MN$: Total number of data points</li>
+  <li>$A$: $A = Z + Z^{\top}$; Z = thresholded version of $C$
+\(C_{ij} = \exp \left[ -2 \cdot \arccos \left( \frac{\mathbf{y}_i^{\top} \mathbf{y}_j}{\|\mathbf{y}_i\|_2 \cdot \|\mathbf{y}_j\|_2} \right) \right], \quad \text{for } i,j = 1, \dots, MN.\)</li>
+  <li>$D$ = $\text{diag}(d), d_i = \sum_{j=1}^{MN}A_{ij} \quad \text{for } i = 1, \dots, MN$</li>
+</ul>
+
+<h4 id="mean-based-classification">Mean-based Classification:</h4>
+<p>Mean-based classification classifies data points based on the nearest centroid, where each centroid ($\boldsymbol{\mu}_k$) is the mean of the data points in the corresponding class ($k$).</p>
+
+\[\boldsymbol{\mu}_k = \frac{1}{N_k} y_n^{(k)} \in \mathbb{R}^{L}, \quad \text{for } k = 1, \dots, K\]
+
+<p><strong>where:</strong></p>
+<ul>
+  <li>$K$: Number of Classes</li>
+  <li>$N_k$: Number of data points in class $k$.</li>
+  <li>$y_n^{(k)}$: $n^{\text{th}}$ training data point in class $k$.</li>
+</ul>
+
+\[\text{classify}(y) = \text{argmin}_{k = \{1, \dots, K\}} \| y - \boldsymbol{\mu}_k\|_2^2\]
+
+<h4 id="subspace-based-classification">Subspace-based Classification:</h4>
+<p>Subspace-based classification classifies data points based on the closest projection onto the defined low-dimensional subspace, where each subspace corresponds to a class. subspace basis ($\mathbf{U}$) are formed by the number of left singular vectors from training data specified by the dimensions ($dim$) intitially chosen for each class ($k$).</p>
+
+\[\mathbf{U}_k^{dim_k} = \mathbf{\hat{U}}[:, 1:dim_k] \quad \text{where } \mathcal{Y}_k = \mathbf{\hat{U}}\mathbf{\hat{\Sigma}}\mathbf{\hat{V}}^{\top} \text{ is an SVD, } \quad \text{for } k = 1, \dots, K\]
+
+<p><strong>where:</strong></p>
+<ul>
+  <li>$\mathbf{U}_k^{dim_k}:$ Subspace basis corresponding to the class $k$ with dimensions $dim_k$.</li>
+  <li>$\mathcal{Y}_k \in \mathbb{R}^{L \times N_k}:$  data matrix for the selected $N_k$ training data points in class $k$; $L$ refers to the original feature space dimensions data points are in.</li>
+</ul>
+
+\[\text{classify}(\mathbf{y}) = \text{argmin}_{k \in \{1,\dots,K\}}\; \|\mathbf{y}\|_2^2 - \|(\textbf{U}^{\text{dim}_k}_k)^{\top} \mathbf{y}\|_2^2\]
+
+<h4 id="affine-space-based-classification">Affine space-based Classification:</h4>
+<p>Affine space-based classification classifies data points based on the closest projection onto the defined low-dimensional closest affine space, where each class is represented in an affine space formed from a set of basis ($\mathbf{U_k}$) and a centroid ($\boldsymbol{\mu}_k$) which acts as the center for the affine space.</p>
+
+\[\boldsymbol{\mu}_k = \frac{1}{N_k} y_n^{(k)} \in \mathbb{R}^{L} ; \quad \mathbf{U}_k^{dim_k} = \mathbf{\hat{U}}[:, 1:dim_k] \quad \text{where } \mathcal{Y}_k - \boldsymbol{\mu}_k1_{N_k}^{\top} = \mathbf{\hat{U}}\mathbf{\hat{\Sigma}}\mathbf{\hat{V}}^{\top} \text{ is an SVD, } \quad \text{for } k = 1, \dots, K\]
+
+<p><strong>where:</strong></p>
+<ul>
+  <li>$\mathbf{U}_k^{dim_k}:$ Affine space basis corresponding to the class $k$ with dimensions $dim_k$.</li>
+  <li>$\boldsymbol{\mu}_k:$ Center of the affine space aka the mean vector formed by the mean of the data points in the corresponding class $k$.</li>
+</ul>
+
+\[\text{classify}(\mathbf{y}) = \text{argmin}_{k \in \{1,\dots,K\}} \; \|\mathbf{y} - [(\textbf{U}_k^{dim_k})(\textbf{U}^{\text{dim}_k}_k)^{\top} (\mathbf{y} - \boldsymbol{\mu}_k) + \boldsymbol{\mu}_k]\|_2^2\]
+
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        
+        <p class="copyright">Hyper-Spectral-Image-Analysis maintained by <a href="https://github.com/Cristy210">Cristy210</a></p>
+        
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+  </body>
+</html>

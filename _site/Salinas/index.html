@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,maximum-scale=2">
+    <link rel="stylesheet" type="text/css" media="screen" href="/assets/css/style.css?v=f4f2d949507257de51fc8b139205d35e2fb595ce">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Clustering Algorithms Implementation on Pavia Dataset | Hyper-Spectral-Image-Analysis</title>
+<meta name="generator" content="Jekyll v3.9.5" />
+<meta property="og:title" content="Clustering Algorithms Implementation on Pavia Dataset" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Supervised and Unsupervised Learning; Hyper Spectral Image Analysis" />
+<meta property="og:description" content="Supervised and Unsupervised Learning; Hyper Spectral Image Analysis" />
+<link rel="canonical" href="http://localhost:4000/Salinas/" />
+<meta property="og:url" content="http://localhost:4000/Salinas/" />
+<meta property="og:site_name" content="Hyper-Spectral-Image-Analysis" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Clustering Algorithms Implementation on Pavia Dataset" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Supervised and Unsupervised Learning; Hyper Spectral Image Analysis","headline":"Clustering Algorithms Implementation on Pavia Dataset","url":"http://localhost:4000/Salinas/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          
+            <a id="forkme_banner" href="https://github.com/Cristy210/Hyper-Spectral-Image-Analysis">GitHub Repository</a>
+          
+
+          <h1 id="project_title">Hyper-Spectral-Image-Analysis</h1>
+          <h2 id="project_tagline">Supervised and Unsupervised Learning; Hyper Spectral Image Analysis</h2>
+
+          
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1 id="clustering-algorithms-implementation-on-pavia-dataset">Clustering Algorithms Implementation on Pavia Dataset</h1>
+<p>This folder contains the implementation of different clustering algorithms for hyperspectral image analysis, using the widely known <strong>Salinas Dataset</strong>.</p>
+
+<h2 id="about-the-dataset">About the Dataset</h2>
+<p>The Salinas Dataset was collected using the 224-band AVIRIS sensor over Salinas Valley, California. This dataset is characterized by its high spatial resolution (3.7-meter pixels) and covers an area of 512 rows by 217 columns. After removing 20 water absorption bands, the dataset comprises 204 spectral bands. It is widely used for agricultural analysis as it includes various crops, bare soils, and vineyard fields. The ground truth data contains 16 distinct classes, representing different types of vegetation and soil.</p>
+
+<h3 id="salinas-scene">Salinas Scene:</h3>
+<ul>
+  <li><strong>Spatial Dimensions</strong>: 512 x 217 pixels</li>
+  <li><strong>Number of Spectral Bands</strong>: 204</li>
+</ul>
+
+<h2 id="groundtruth-classes-for-the-salinas-dataset">Groundtruth Classes for the Salinas Dataset</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Class</th>
+      <th>Samples</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Broccoli_green_weeds_1</td>
+      <td>2009</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Broccoli_green_weeds_2</td>
+      <td>3726</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Fallow</td>
+      <td>1976</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Fallow_rough_plow</td>
+      <td>1394</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Fallow_smooth</td>
+      <td>2678</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Stubble</td>
+      <td>3959</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Celery</td>
+      <td>3579</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Grapes_untrained</td>
+      <td>11271</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>Soil_vineyard_develop</td>
+      <td>6203</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>Corn_senesced_green_weeds</td>
+      <td>3278</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>Lettuce_romaine_4wk</td>
+      <td>1068</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>Lettuce_romaine_5wk</td>
+      <td>1927</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td>Lettuce_romaine_6wk</td>
+      <td>916</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td>Lettuce_romaine_7wk</td>
+      <td>1070</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td>Vineyard_untrained</td>
+      <td>7268</td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td>Vineyard_vertical_trellis</td>
+      <td>1807</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="clustering-algorithms">Clustering Algorithms</h2>
+
+<p>This project explores unsupervised learning techniques to segment and cluster hyperspectral data from the Pavia University Dataset. The implemented algorithms include:</p>
+<ul>
+  <li><strong>K-means Clustering</strong></li>
+  <li><strong>Spectral Clustering</strong></li>
+  <li><strong>K-Subspaces Clustering</strong></li>
+</ul>
+
+<h2 id="data-credits">Data Credits</h2>
+<p>This Dataset is downloaded from <a href="https://www.ehu.eus/ccwintco/index.php/Hyperspectral_Remote_Sensing_Scenes">Hyperspectral Remote Sensing Scenes</a></p>
+
+<h2 id="clustering-results">Clustering Results</h2>
+<h4 id="spectral-clustering-results">Spectral Clustering Results:</h4>
+<p>Below Image shows the clustering results obtained from Spectral Clustering algorithm – Plotted against the Ground Truth</p>
+
+<p><img src="/Clustering%20Results/Salinas/Salinas_GT_CluRes_800.png" alt="Ground Truth Vs Clustering Results" /></p>
+
+<h4 id="confusion-matrix">Confusion Matrix:</h4>
+<p>Below Confusion Matrix helps evaluate clustering algorithm’s  accuracy against ground truth labels
+<img src="/Clustering%20Results/Salinas/Salinas_Conf_Mat.png" alt="Confusion Matrix" /></p>
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        
+        <p class="copyright">Hyper-Spectral-Image-Analysis maintained by <a href="https://github.com/Cristy210">Cristy210</a></p>
+        
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+  </body>
+</html>
