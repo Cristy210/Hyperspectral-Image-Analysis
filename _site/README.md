@@ -25,15 +25,14 @@ K-Means clustering is one of the widely used clustering algorithms due to its si
 <h4> The objective of K-Means is to minimize the within-cluster sum of sqaured errors. </h4>
 </div>
 
-<div align="center">
-<img src="LaTeX Images/K_Means.png" alt="Heatmap Vs Spectral Plots" width="200"/>
-</div>
+$$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - \boldsymbol{\mu}_k\|_2^2$$
 
-<br>
-
-<div align="center">
-<img src="LaTeX Images/K_Means_Var.png" alt="Heatmap Vs Spectral Plots" width="300"/>
-</div>
+**Where:**
+- $K$: Number of clusters.
+- $y_i$: Data point at index $i$ in the dataset.  
+- $C_k$: Set of points assigned to cluster $k$.
+- $\mu_k$: Centroid of Cluster $k$. 
+- $\| \cdot \|_2$: Euclidean norm (distance).
 
 
 #### K-Subspaces Clustering:
