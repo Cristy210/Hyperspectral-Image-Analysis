@@ -22,7 +22,7 @@ This repository implements both **unsupervised and supervised machine learning a
 K-Means clustering is one of the widely used clustering algorithms due to its simplicity. K-Means clustering groups data points into k clusters by minimizing the within cluster variance. Each cluster is represented by a centroid, and data points are assigned to the cluster with the nearest centroid. The algorithm works iteratively to assign each data point to the cluster with the nearest centroid (based on **Euclidean distance**) and then updates the centroids as the mean of the points in each cluster. This process repeats until the centroids stabilize or a stopping criterion is met.
 
 <div align="center">
-<h4> The objective of K-Means is to minimize the within-cluster sum of sqaured errors. </h4>
+<h5> The objective of K-Means is to minimize the within-cluster sum of sqaured errors. </h5>
 </div>
 
 $$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - \boldsymbol{\mu}_k\|_2^2$$
@@ -39,7 +39,7 @@ $$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - \bol
 K-Subspaces (KSS) clustering extends K-Means by addressing the challenges of clustering high-dimensional data. Instead of relying solely on Euclidean distance, KSS assumes the data lies in a union of low-dimensional subspaces. Clustering is accomplished through a iterative process where subspace space basis are updated and data points are assigned based on their projection onto the closest subspace.   
 
 <div align="center">
-<h4> The objective of K-Subspaces clustering is to minimize the total projection error. </h4>
+<h5> The objective of K-Subspaces clustering is to minimize the total projection error. </h5>
 </div>
 
 $$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - \mathbf{U}_k \mathbf{U}_k^{\top} \mathbf{y}_i\|_2^2$$
@@ -55,7 +55,7 @@ $$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - \mat
 K-Affine spaces (KAS) clustering. Just like KSS, KAS assumes that the data lies in a union of low-dimensional affine spaces formed from a set of bases and a bias vector rather than a set of linear subspaces. Clustering is accomplished through a iterative process where the basis and the bias vector for each affine space are updated, and the data points are assigned based on their projection onto the closest affine space.  
 
 <div align="center">
-<h4> The objective of K-Affine spaces clustering is to minimize the total projection error. </h4>
+<h5> The objective of K-Affine spaces clustering is to minimize the total projection error. </h5>
 </div>
 
 $$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - [\mathbf{U}_k \mathbf{U}_k^{\top} (\mathbf{y}_i - \boldsymbol{\mu}_k) + \boldsymbol{\mu}_k]\|_2^2$$
@@ -78,7 +78,7 @@ $$L_{sym} = I - D^{-1/2}AD^{-1/2}$$
 **where:**
 - $I$: Identity matrix of size $MN \times MN$
 - $MN$: Total number of data points
-- $A$: $A = Z + Z^{\top}$; Z = thresholded version of $C$
+- $A$: $A = Z + Z^{\top}$; $Z$ = thresholded version of $C$;
 $$C_{ij} = \exp \left[ -2 \cdot \arccos \left( \frac{\mathbf{y}_i^{\top} \mathbf{y}_j}{\|\mathbf{y}_i\|_2 \cdot \|\mathbf{y}_j\|_2} \right) \right], \quad \text{for } i,j = 1, \dots, MN.$$
 - $D$ = $\text{diag}(d), d_i = \sum_{j=1}^{MN}A_{ij} \quad \text{for } i = 1, \dots, MN$
 
@@ -109,16 +109,12 @@ $$\text{classify}(\mathbf{y}) = \text{argmin}_{k \in \{1,\dots,K\}}\; \|\mathbf{
 #### Affine space-based Classification:
 Affine space-based classification classifies data points based on the closest projection onto the defined low-dimensional closest affine space, where each class is represented in an affine space formed from a set of basis ($\mathbf{U_k}$) and a centroid ($\boldsymbol{\mu}_k$) which acts as the center for the affine space.
 
-$$\boldsymbol{\mu}_k = \frac{1}{N_k} y_n^{(k)} \in \mathbb{R}^{L} ; \quad \mathbf{U}_k^{dim_k} = \mathbf{\hat{U}}[:, 1:dim_k] \quad \text{where } \mathcal{Y}_k - \boldsymbol{\mu}_k1_{N_k}^{\top} = \mathbf{\hat{U}}\mathbf{\hat{\Sigma}}\mathbf{\hat{V}}^{\top} \text{ is an SVD, } \quad \text{for } k = 1, \dots, K$$
+$$\boldsymbol{\mu}_k = \frac{1}{N_k} y_n^{(k)} \in \mathbb{R}^{L} ; \quad \mathbf{U}_k^{dim_k} = \mathbf{\hat{U}}[:, 1:dim_k] \quad \\
+\text{where } \mathcal{Y}_k - \boldsymbol{\mu}_k1_{N_k}^{\top} = \mathbf{\hat{U}}\mathbf{\hat{\Sigma}}\mathbf{\hat{V}}^{\top} \text{ is an SVD, } \quad \text{for } k = 1, \dots, K$$
 
 **where:**
 - $\mathbf{U}_k^{dim_k}:$ Affine space basis corresponding to the class $k$ with dimensions $dim_k$.
 - $\boldsymbol{\mu}_k:$ Center of the affine space aka the mean vector formed by the mean of the data points in the corresponding class $k$. 
 
 
-$$\text{classify}(\mathbf{y}) = \text{argmin}_{k \in \{1,\dots,K\}} \; \|\mathbf{y} - [(\textbf{U}_k^{dim_k})(\textbf{U}^{\text{dim}_k}_k)^{\top} (\mathbf{y} - \boldsymbol{\mu}_k) + \boldsymbol{\mu}_k]\|_2^2$$
-
-
-
-
-
+$$\text{classify}(\mathbf{y}) = \text{argmin}_{k \in \{1,\dots,K\}} \; \|\mathbf{y} - [(\textbf{U}_k^{dim_k})(\textbf{U}^{\text{dim}_k}_k)^{\top} (\mathbf{y} - \boldsymbol{\mu}_k) + \boldsymbol{\mu}_k]\|_2^2$$. 
