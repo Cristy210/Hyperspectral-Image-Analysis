@@ -109,7 +109,8 @@ $$\text{classify}(\mathbf{y}) = \text{argmin}_{k \in \{1,\dots,K\}}\; \|\mathbf{
 #### Affine space-based Classification:
 Affine space-based classification classifies data points based on the closest projection onto the defined low-dimensional closest affine space, where each class is represented in an affine space formed from a set of basis ($\mathbf{U_k}$) and a centroid ($\boldsymbol{\mu}_k$) which acts as the center for the affine space.
 
-$$\boldsymbol{\mu}_k = \frac{1}{N_k} y_n^{(k)} \in \mathbb{R}^{L} ; \quad \mathbf{U}_k^{dim_k} = \mathbf{\hat{U}}[:, 1:dim_k] \quad \\
+$$\boldsymbol{\mu}_k = \frac{1}{N_k} y_n^{(k)} \in \mathbb{R}^{L} $$
+$$ \mathbf{U}_k^{dim_k} = \mathbf{\hat{U}}[:, 1:dim_k] \quad
 \text{where } \mathcal{Y}_k - \boldsymbol{\mu}_k1_{N_k}^{\top} = \mathbf{\hat{U}}\mathbf{\hat{\Sigma}}\mathbf{\hat{V}}^{\top} \text{ is an SVD, } \quad \text{for } k = 1, \dots, K$$
 
 **where:**
