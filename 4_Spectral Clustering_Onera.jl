@@ -23,8 +23,8 @@ using CairoMakie, LinearAlgebra, Colors, PlutoUI, Glob, FileIO, ArnoldiMethod, C
 # ╔═╡ 5afddd44-8f0f-11ef-0e66-0f1b667bc230
 html"""<style>
 main {
-    max-width: 66%;
-    margin-left: 1%;
+    max-width: 96%;
+    margin-left: 0%;
     margin-right: 2% !important;
 }
 """
