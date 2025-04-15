@@ -59,6 +59,17 @@ vars_gt = matread(gt_filepath)
 # ╔═╡ ba25f5b8-0cc3-4e2d-b1b8-1b5668de20c4
 data = vars["salinas_corrected"]
 
+# ╔═╡ 6b0e7ccf-4218-4d1d-8cb3-4330a69e29ae
+@bind band PlutoUI.Slider(1:size(data, 3), show_value=true)
+
+# ╔═╡ d55f7567-7872-4b56-9240-0940dd9efda9
+with_theme() do
+	fig = Figure(; size=(800, 600))
+	ax = Axis(fig[1, 1], aspect=DataAspect(), yreversed=true)
+	image!(ax, permutedims(data[:, :, band]))
+	fig
+end
+
 # ╔═╡ a3b059df-93ad-4526-af23-0b17d94c8709
 gt_data = vars_gt["salinas_gt"]
 
@@ -533,6 +544,8 @@ end
 # ╠═f92f7f85-6c92-4e4b-8890-ea6038251c18
 # ╠═90ef5e62-5f6d-4fa9-8dc4-06bdb3bea8dd
 # ╠═ba25f5b8-0cc3-4e2d-b1b8-1b5668de20c4
+# ╠═6b0e7ccf-4218-4d1d-8cb3-4330a69e29ae
+# ╠═d55f7567-7872-4b56-9240-0940dd9efda9
 # ╠═a3b059df-93ad-4526-af23-0b17d94c8709
 # ╠═6cebf8fd-0fd0-435c-bef0-95838a063b84
 # ╠═2f7ff7c6-f75e-4a81-b40d-5d0deccb5b6d

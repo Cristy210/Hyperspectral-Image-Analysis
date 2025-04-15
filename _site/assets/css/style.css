@@ -212,15 +212,15 @@ Full-Width Styles
 *******************************************************************************/
 .outer { width: 100%; }
 
-.inner { position: relative; max-width: 640px; padding: 20px 10px; margin: 0 auto; }
+.inner { position: relative; max-width: 1200px; width: 100%; padding: 20px 10px; margin: 0 auto; }
 
-#forkme_banner { display: block; position: absolute; top: 10; right: -200px; z-index: 10; padding: 10px 50px 10px 10px; color: #fff; background: url("../images/blacktocat.png") #000509 no-repeat 95% 50%; font-weight: 700; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; }
+#forkme_banner { display: block; position: absolute; top: 10; right: -30px; z-index: 10; padding: 10px 50px 10px 10px; color: #fff; background: url("../images/blacktocat.png") #000509 no-repeat 95% 50%; font-weight: 700; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px; }
 
 #header_wrap { background: #2987f3; background: -moz-linear-gradient(top, #80bef8d6, #4a90e2); background: -webkit-linear-gradient(top, #80bef8d6, #4a90e2); background: -ms-linear-gradient(top, #80bef8d6, #4a90e2); background: -o-linear-gradient(top, #80bef8d6, #4a90e2); background: linear-gradient(to top, #80bef8d6, #4a90e2); }
 
 #header_wrap .inner { padding: 50px 120px 30px 120px; }
 
-#project_title { margin: 0; color: #000000; font-size: 42px; font-weight: 700; }
+#project_title { margin: 0; color: #000000; font-size: 40px; font-weight: 700; max-width: 90%; text-align: left; }
 
 #project_tagline { color: #000000; font-size: 25px; font-weight: 700; background: none; }
 

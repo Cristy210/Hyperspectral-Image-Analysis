@@ -425,51 +425,51 @@ masked_gt = dropdims(gt_data[mask, :], dims=2)
 D_relabel
 
 # ╔═╡ 473c1586-df91-4ccb-992c-b98aad3f61e6
-with_theme() do
-    fig = Figure(; size=(1300, 700))
-	supertitle = Label(fig[0, 1:3], "Spectrum Analysis of Clustering Results with Corresponding Ground Truth Label", fontsize=20, halign=:center, valign=:top)
+# with_theme() do
+#     fig = Figure(; size=(1300, 700))
+# 	supertitle = Label(fig[0, 1:3], "Spectrum Analysis of Clustering Results with Corresponding Ground Truth Label", fontsize=20, halign=:center, valign=:top)
 	
-    grid_1 = GridLayout(fig[1, 1]; nrow=2, ncol=1)
-	grid_2 = GridLayout(fig[1, 2]; nrow=5, ncol=2)
-	grid_3 = GridLayout(fig[1, 3]; nrow=2, ncol=1)
+#     grid_1 = GridLayout(fig[1, 1]; nrow=2, ncol=1)
+# 	grid_2 = GridLayout(fig[1, 2]; nrow=5, ncol=2)
+# 	grid_3 = GridLayout(fig[1, 3]; nrow=2, ncol=1)
 
 	
 
-    # Define Colors
-    colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
-    colors_spec = Makie.Colors.distinguishable_colors(n_clusters + 1)[2:end]
+#     # Define Colors
+#     colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
+#     colors_spec = Makie.Colors.distinguishable_colors(n_clusters + 1)[2:end]
 
-    # Heatmaps
-    ax_hm = Axis(grid_1[1, 1], aspect=DataAspect(), yreversed=true, title="Clustering Results")
-    clustermap = fill(0, size(data)[1:2])
-    clustermap[mask] .= D_relabel
-    hm = heatmap!(ax_hm, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
-    Colorbar(grid_1[2, 1], hm, vertical=false)
+#     # Heatmaps
+#     ax_hm = Axis(grid_1[1, 1], aspect=DataAspect(), yreversed=true, title="Clustering Results")
+#     clustermap = fill(0, size(data)[1:2])
+#     clustermap[mask] .= D_relabel
+#     hm = heatmap!(ax_hm, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+#     Colorbar(grid_1[2, 1], hm, vertical=false)
 
-    ax_hm1 = Axis(grid_3[1, 1], aspect=DataAspect(), yreversed=true, title="Ground Truth")
-    hm1 = heatmap!(ax_hm1, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
-    Colorbar(grid_3[2, 1], hm1, vertical=false)
+#     ax_hm1 = Axis(grid_3[1, 1], aspect=DataAspect(), yreversed=true, title="Ground Truth")
+#     hm1 = heatmap!(ax_hm1, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, n_clusters))
+#     Colorbar(grid_3[2, 1], hm1, vertical=false)
 
-    # Spectrum Plots
-    for label in 1:n_clusters
-        row = div(label - 1, 2) + 1   
-        col = mod(label - 1, 2) + 1   
+#     # Spectrum Plots
+#     for label in 1:n_clusters
+#         row = div(label - 1, 2) + 1   
+#         col = mod(label - 1, 2) + 1   
 
-        ax = Axis(grid_2[row, col], title="Cluster $label")
-		hidedecorations!(ax)
-        cluster_indices = findall(D_relabel .== label)
-        selected_indices = cluster_indices[randperm(length(cluster_indices))[1:200]]
+#         ax = Axis(grid_2[row, col], title="Cluster $label")
+# 		hidedecorations!(ax)
+#         cluster_indices = findall(D_relabel .== label)
+#         selected_indices = cluster_indices[randperm(length(cluster_indices))[1:200]]
 
-        selected_spectra = masked_2darray[:, selected_indices]
-        selected_colors = [colors_spec[masked_gt[idx]] for idx in selected_indices]
+#         selected_spectra = masked_2darray[:, selected_indices]
+#         selected_colors = [colors_spec[masked_gt[idx]] for idx in selected_indices]
 
-        for i in 1:length(selected_indices)
-            lines!(ax, selected_spectra[:, i], color=selected_colors[i])
-        end
-    end
+#         for i in 1:length(selected_indices)
+#             lines!(ax, selected_spectra[:, i], color=selected_colors[i])
+#         end
+#     end
 
-    fig
-end
+#     fig
+# end
 
 
 # ╔═╡ 6c4c0af5-5820-46c9-aa53-0eb74fdf8038
