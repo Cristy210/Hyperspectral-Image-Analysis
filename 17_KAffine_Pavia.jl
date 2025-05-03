@@ -1,24 +1,26 @@
 ### A Pluto.jl notebook ###
-# v0.19.46
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
 
 # This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
 macro bind(def, element)
-    quote
+    #! format: off
+    return quote
         local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
         local el = $(esc(element))
         global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
         el
     end
+    #! format: on
 end
 
 # ╔═╡ 3ff5fa73-4af0-4f51-b119-27807de8f95e
 import Pkg; Pkg.activate(@__DIR__)
 
 # ╔═╡ 39cde77c-5647-4262-aa38-ce373415c2ac
-using CairoMakie, LinearAlgebra, Colors, PlutoUI, Glob, FileIO, ArnoldiMethod, CacheVariables, Clustering, ProgressLogging, Dates, SparseArrays, Random, Logging, MAT, Statistics
+using CairoMakie, LinearAlgebra, Colors, PlutoUI, Glob, FileIO, ArnoldiMethod, CacheVariables, ProgressLogging, Dates, Random, Logging, MAT, Statistics
 
 # ╔═╡ e510d702-e7f0-4c01-a8bc-12bdb1b80cab
 html"""<style>
@@ -194,7 +196,25 @@ KAffine_Clustering = batch_KAffine(permutedims(data[mask, :]), fill(1, n_cluster
 min_idx_KAffine = argmax(KAffine_Clustering[i][4] for i in 1:KAffine_runs)
 
 # ╔═╡ 0e380268-51a5-4eb4-a05e-4a99412b8509
+pairs(eachcol(permutedims(data[mask, :])))
 
+# ╔═╡ 4abd829a-ed6c-47c4-b94c-844fd3e15b40
+X = permutedims(data[mask, :])
+
+# ╔═╡ fc866ca1-eba9-4c48-9490-4766dba5659b
+d = fill(1, n_clusters)
+
+# ╔═╡ 557bed89-c32e-40bb-b6a6-a09bddb4e587
+U_test = randn.(size(X, 1), collect(d))
+
+# ╔═╡ 1b7e76f6-3e6e-4c06-8224-ea73cbef4f6a
+(only ∘ unique)([length(d), length(randn.(size(X, 1), collect(d)))])
+
+# ╔═╡ 2009190b-da69-4db7-acc9-92e44a1fe8a9
+similar(Vector{Int}, axes(X, 2))
+
+# ╔═╡ 7cb60c8c-f1aa-4657-b5f4-d45228cc24be
+size(permutedims(data[mask, :]), 2)
 
 # ╔═╡ 018a4a3a-7533-45b3-83f6-31a02e4d50a9
 KAffine_Results = KAffine_Clustering[min_idx_KAffine][3]
@@ -326,6 +346,12 @@ end
 # ╠═31ef0f16-1e80-48be-b2d0-158aa01fb117
 # ╠═6bbe5785-b592-4872-9a35-355473b4d19a
 # ╠═0e380268-51a5-4eb4-a05e-4a99412b8509
+# ╠═4abd829a-ed6c-47c4-b94c-844fd3e15b40
+# ╠═fc866ca1-eba9-4c48-9490-4766dba5659b
+# ╠═557bed89-c32e-40bb-b6a6-a09bddb4e587
+# ╠═1b7e76f6-3e6e-4c06-8224-ea73cbef4f6a
+# ╠═2009190b-da69-4db7-acc9-92e44a1fe8a9
+# ╠═7cb60c8c-f1aa-4657-b5f4-d45228cc24be
 # ╠═018a4a3a-7533-45b3-83f6-31a02e4d50a9
 # ╠═9a429935-ec53-4f18-8229-cf15e8aabbc1
 # ╠═d10767ce-0944-4fd1-80dc-7eabf89d1388
