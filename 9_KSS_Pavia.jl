@@ -1,17 +1,19 @@
 ### A Pluto.jl notebook ###
-# v0.19.46
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
 
 # This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
 macro bind(def, element)
-    quote
+    #! format: off
+    return quote
         local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
         local el = $(esc(element))
         global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
         el
     end
+    #! format: on
 end
 
 # ╔═╡ b17ad74a-e088-4a72-aa0e-eef3fa7f5ca3
@@ -19,6 +21,11 @@ import Pkg; Pkg.activate(@__DIR__)
 
 # ╔═╡ 5685a44c-81db-4b63-b9f1-60eb86009a9c
 using CairoMakie, LinearAlgebra, Colors, PlutoUI, Glob, FileIO, ArnoldiMethod, CacheVariables, Clustering, ProgressLogging, Dates, SparseArrays, Random, Logging, MAT
+
+# ╔═╡ 09d8cf22-3fc1-4c6f-9bc9-5bd7605c73f4
+md"""
+### This Notebook demonstrates the implementation of K-Subspaces (KSS) Clustering Algorithm on Pavia Dataset
+"""
 
 # ╔═╡ cec84524-bceb-4a8d-a30b-e82faca68cc7
 html"""<style>
@@ -44,6 +51,11 @@ gt_filepath = joinpath(@__DIR__, "GT Files", "$Location.mat")
 # ╔═╡ bb23b272-abef-481f-a7cc-9f11f9eedc2a
 CACHEDIR = joinpath(@__DIR__, "cache_files", "KSS_Pavia")
 
+# ╔═╡ 9ea34d74-f62f-4a1f-93e1-73db5e175ee5
+md"""
+###### Defined `cachet` function to cache KSS runs
+"""
+
 # ╔═╡ 62a2322b-a16b-40c6-8f18-2dd0c4b25981
 function cachet(@nospecialize(f), path)
 	whenrun, timed_results = cache(path) do
@@ -68,8 +80,18 @@ loc_dict_keys = Dict(
 # ╔═╡ 30ba8e64-f32a-42f2-80e8-1f6ad92a94a6
 data_key, gt_key = loc_dict_keys[Location]
 
+# ╔═╡ 0d35dc3c-349e-4a7a-b1fd-93abadf98cdb
+md"""
+### Hyperspectral Image Cube
+"""
+
 # ╔═╡ 2770834a-eb75-4892-974f-7598191aaf55
 data = vars[data_key]
+
+# ╔═╡ 4aa90f5b-5ed1-498e-bdd3-f7fe610b1fb6
+md"""
+#### Ground Truth
+"""
 
 # ╔═╡ 9c48fa8b-cd33-4b0c-9cc9-fc64f08b7739
 gt_data = vars_gt[gt_key]
@@ -94,8 +116,33 @@ begin
 	end
 end
 
+# ╔═╡ 71afca57-43f1-45c7-b22d-9292db501a9e
+md"""
+#### Slider to choose the band of the image
+"""
+
+# ╔═╡ 6604b9b9-7a7a-4bed-8f72-86ed93e253f9
+@bind band PlutoUI.Slider(1:size(data, 3), show_value=true)
+
+# ╔═╡ a9091d9c-5da0-418e-8978-19f509f5c875
+md"""
+#### Number of clusters
+"""
+
 # ╔═╡ 2d9f470e-314e-4d97-b415-1b86d654df7e
 n_clusters = length(unique(gt_data)) - 1
+
+# ╔═╡ 7d961694-fd3c-4de6-a546-2a96fd04a420
+with_theme() do
+	fig = Figure(; size=(700, 650))
+	labels = length(unique(gt_data))
+	colors = Makie.Colors.distinguishable_colors(n_clusters+1)
+	ax = Axis(fig[1, 1], aspect=DataAspect(), title ="Image, Band - $band", yreversed=true)
+	ax1 = Axis(fig[1, 2], aspect=DataAspect(), title ="Masked Image", yreversed=true)
+	image!(ax, permutedims(data[:, :, band]))
+	hm = heatmap!(ax1, permutedims(gt_data); colormap=Makie.Categorical(colors))
+	fig
+end
 
 # ╔═╡ 6d6d0675-bf03-4a80-b69f-963da7f3b1a3
 md"""
@@ -159,6 +206,9 @@ function KSS(X, d; niters=100, Uinit=polar.(randn.(size(X, 1), collect(d))))
 	return U, c
 end
 
+# ╔═╡ e7f5b999-dc99-47f3-aeac-ab7e2ec81a24
+
+
 # ╔═╡ 3f0bc139-107e-4dcd-a58f-e41bd6e980f6
 function batch_KSS(X, d; niters=100, nruns=10)
 	D, N = size(X)
@@ -183,17 +233,11 @@ function batch_KSS(X, d; niters=100, nruns=10)
 	 return runs
 end
 
-# ╔═╡ 015883f0-2cbe-4699-9971-552b6d174688
-fill(2, n_clusters)
-
 # ╔═╡ 02732d8e-171c-4b15-b5e7-b0e79941c999
 KSS_Clustering = batch_KSS(permutedims(data[mask, :]), fill(1, n_clusters); niters=100, nruns=100)
 
 # ╔═╡ 77f09f83-eb68-4359-a1bf-5f30d002746c
 min_idx_KSS = argmax(KSS_Clustering[i][3] for i in 1:100)
-
-# ╔═╡ aa903bca-1405-4b12-80b8-809113f9dc27
-
 
 # ╔═╡ 71584f7f-0477-4b3e-96db-4f1a8b2cf8b4
 KSS_Results = KSS_Clustering[min_idx_KSS][2]
@@ -347,6 +391,7 @@ end
 
 
 # ╔═╡ Cell order:
+# ╟─09d8cf22-3fc1-4c6f-9bc9-5bd7605c73f4
 # ╟─cec84524-bceb-4a8d-a30b-e82faca68cc7
 # ╠═b17ad74a-e088-4a72-aa0e-eef3fa7f5ca3
 # ╠═5685a44c-81db-4b63-b9f1-60eb86009a9c
@@ -354,28 +399,34 @@ end
 # ╠═aa573616-092e-42d0-a7af-570f6d1dd6e5
 # ╠═347bd60b-b1f2-44ed-b158-f439369ae38a
 # ╠═bb23b272-abef-481f-a7cc-9f11f9eedc2a
+# ╟─9ea34d74-f62f-4a1f-93e1-73db5e175ee5
 # ╠═62a2322b-a16b-40c6-8f18-2dd0c4b25981
 # ╠═05c90322-b232-4112-81be-23971472be29
 # ╠═679dd062-dfc0-4cbf-bcb2-b5b755b4348f
 # ╠═5ce6d6c2-13ab-4ed8-a8c8-ca05beb63455
 # ╠═30ba8e64-f32a-42f2-80e8-1f6ad92a94a6
+# ╟─0d35dc3c-349e-4a7a-b1fd-93abadf98cdb
 # ╠═2770834a-eb75-4892-974f-7598191aaf55
+# ╟─4aa90f5b-5ed1-498e-bdd3-f7fe610b1fb6
 # ╠═9c48fa8b-cd33-4b0c-9cc9-fc64f08b7739
 # ╠═8b339a3b-3c1f-4d85-bb25-7c079765b79c
 # ╠═4f93390d-bfd9-4097-ae8a-b27389af8c62
 # ╟─2b260d09-8853-42db-9c84-8902a5c0f7bc
 # ╠═f8fe700a-9bfc-42d2-979d-60a500da4d6b
+# ╟─71afca57-43f1-45c7-b22d-9292db501a9e
+# ╟─6604b9b9-7a7a-4bed-8f72-86ed93e253f9
+# ╟─7d961694-fd3c-4de6-a546-2a96fd04a420
+# ╟─a9091d9c-5da0-418e-8978-19f509f5c875
 # ╠═2d9f470e-314e-4d97-b415-1b86d654df7e
 # ╟─6d6d0675-bf03-4a80-b69f-963da7f3b1a3
 # ╠═b8991416-ba95-46f2-907d-7a43edf6c890
 # ╠═62a83180-5565-4f6e-9210-89ee42fc6e6b
+# ╠═e7f5b999-dc99-47f3-aeac-ab7e2ec81a24
 # ╠═3f0bc139-107e-4dcd-a58f-e41bd6e980f6
-# ╠═015883f0-2cbe-4699-9971-552b6d174688
 # ╠═02732d8e-171c-4b15-b5e7-b0e79941c999
 # ╠═77f09f83-eb68-4359-a1bf-5f30d002746c
-# ╠═aa903bca-1405-4b12-80b8-809113f9dc27
 # ╠═71584f7f-0477-4b3e-96db-4f1a8b2cf8b4
-# ╠═8c6174a3-0782-4d44-a8b6-b6ec92668871
+# ╟─8c6174a3-0782-4d44-a8b6-b6ec92668871
 # ╠═f0dfbe41-44dd-4c4c-b544-edc2faa7d3ff
 # ╠═8012832c-42b0-48a4-97b0-bd1f61ed5e3b
 # ╠═574b1660-cea0-4626-aa47-7eeff7d93e61
