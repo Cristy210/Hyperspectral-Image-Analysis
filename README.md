@@ -51,6 +51,9 @@ $$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - \mat
 - $U_k$: Subspace Basis for Cluster $k$. 
 - $\| \cdot \|_2$: Euclidean norm (distance).
 
+[**Pluto Notebook - KSS Implementation on Pavia Dataset**](https://cristy210.github.io/Hyperspectral-Image-Analysis/KSS_Pavia.html)
+
+
 #### K-Affine spaces Clustering:
 K-Affine spaces (KAS) clustering. Just like KSS, KAS assumes that the data lies in a union of low-dimensional affine spaces formed from a set of bases and a bias vector rather than a set of linear subspaces. Clustering is accomplished through a iterative process where the basis and the bias vector for each affine space are updated, and the data points are assigned based on their projection onto the closest affine space.  
 
@@ -118,3 +121,4 @@ $$\boldsymbol{\mu}_k = \frac{1}{N_k} y_n^{(k)} \in \mathbb{R}^{L}; \mathbf{U}_k^
 
 
 $$\text{classify}(\mathbf{y}) = \text{argmin}_{k \in \{1,\dots,K\}} \; \|\mathbf{y} - [(\textbf{U}_k^{dim_k})(\textbf{U}^{\text{dim}_k}_k)^{\top} (\mathbf{y} - \boldsymbol{\mu}_k) + \boldsymbol{\mu}_k]\|_2^2$$. 
+
