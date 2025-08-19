@@ -71,7 +71,7 @@ $$J = \sum_{k=1}^{K} \sum_{\mathbf{y}_i \in \mathcal{C}_k} \|\mathbf{y}_i - [\ma
 - $U_k$: Affine space Basis for Cluster $k$. 
 - $\| \cdot \|_2$: Euclidean norm (distance).
 
-#### Thresholded subspace Clustering:
+#### Thresholded subspace Clustering (TSC):
 In Thresholded Subspace Clustering (TSC) algorithm, data points are treated as nodes in a graph, which are then clustered using techniques from spectral graph theory. TSC algorithm is made up of three important matrices.
 Adjaceny Matrix ($A$) defines similarity between any two nodes in the dataset; Degree Matrix ($D$) represents the sum of the weights of all edges connected to a node; Laplacian Matrix($L$) captures the structure of the graph by combining information from the above two matrices. K-Means clustering is applied on the eigenvectors corresponding to the $K$ smallest eigenvalues of $L_{sym}$. 
 
@@ -84,6 +84,8 @@ $$L_{sym} = I - D^{-1/2}AD^{-1/2}$$
 - $A$: $A = Z + Z^{\top}$; $Z$ = thresholded version of $C$;
 $$C_{ij} = \exp \left[ -2 \cdot \arccos \left( \frac{\mathbf{y}_i^{\top} \mathbf{y}_j}{\|\mathbf{y}_i\|_2 \cdot \|\mathbf{y}_j\|_2} \right) \right], \quad \text{for } i,j = 1, \dots, MN.$$
 - $D$ = $\text{diag}(d), d_i = \sum_{j=1}^{MN}A_{ij} \quad \text{for } i = 1, \dots, MN$
+
+[**Pluto Notebook - TSC Implementation on Pavia Dataset**](https://cristy210.github.io/Hyperspectral-Image-Analysis/TSC_Pavia.html)
 
 #### Mean-based Classification:
 Mean-based classification classifies data points based on the nearest centroid, where each centroid ($\boldsymbol{\mu}_k$) is the mean of the data points in the corresponding class ($k$).
