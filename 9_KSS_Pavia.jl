@@ -33,9 +33,9 @@ input[type*="range"] {
 	width: calc(100% - 4rem);
 }
 main {
-    max-width: 96%;
+    max-width: 90%;
     margin-left: 0%;
-    margin-right: 2% !important;
+    margin-right: 7% !important;
 }
 """
 
@@ -144,6 +144,38 @@ with_theme() do
 	fig
 end
 
+# ╔═╡ 08dfce41-4866-4053-8fe7-0fda3a339a03
+md"""
+> ###### K-Subspaces (KSS) assumes that the data points lies in an union of low-dimensional subspaces present within the original feature space and each data point could be represented using other data points that are lying in the same subspace. 
+>
+>###### The basis vectors for each subspace are formed by the number of left singular vectors from the Singular Value Decomposition (SVD). 
+
+"""
+
+# ╔═╡ 8807a262-a444-4d57-86ae-f94260f9e29c
+md"""
+`` 
+\mathbf{U}_k^{\mathrm{dim}_k} = \hat{\mathbf{U}}[:, 1 : \mathrm{dim}_k]
+\quad \text{where} \quad 
+\mathcal{Y}_k = \hat{\mathbf{U}}\hat{\Sigma}\hat{\mathbf{V}}^{\top} 
+\ \text{is an SVD}, 
+\quad \text{for } k = 1, \ldots, K,
+\quad d = \{ \mathrm{dim}_1, \dots, \mathrm{dim}_k \} 
+ ``
+"""
+
+# ╔═╡ 2fcbe722-30d6-4552-86fc-dac3ba93a0a1
+md"""
+``
+\text{classify}(\mathbf{y}) =
+\underset{k \in \{1,\ldots,K\}}{\arg\min}
+\ \bigl\lVert \mathbf{y} -
+\mathbf{U}_k^{\mathrm{dim}_k}
+(\mathbf{U}_k^{\mathrm{dim}_k})^{\top}
+\mathbf{y} \bigr\rVert_2
+``
+"""
+
 # ╔═╡ 6d6d0675-bf03-4a80-b69f-963da7f3b1a3
 md"""
 ### K-Subspaces
@@ -205,9 +237,6 @@ function KSS(X, d; niters=100, Uinit=polar.(randn.(size(X, 1), collect(d))))
 
 	return U, c
 end
-
-# ╔═╡ e7f5b999-dc99-47f3-aeac-ab7e2ec81a24
-
 
 # ╔═╡ 3f0bc139-107e-4dcd-a58f-e41bd6e980f6
 function batch_KSS(X, d; niters=100, nruns=10)
@@ -284,18 +313,20 @@ with_theme() do
 	colors = Makie.Colors.distinguishable_colors(n_clusters + 1)
 	# colors_re = Makie.Colors.distinguishable_colors(length(re_labels))
 
+	# subgrid = fig[1, 1] = GridLayout()
+
 	# Show data
 	ax = Axis(fig[1,1]; aspect=DataAspect(), yreversed=true, title="Ground Truth", titlesize=20)
 	
-	hm = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, 9))
-	Colorbar(fig[2,1], hm, tellwidth=false, vertical=false)
+	hm1 = heatmap!(ax, permutedims(gt_data); colormap=Makie.Categorical(colors), colorrange=(0, 9))
+	Colorbar(fig[2,1], hm1, tellwidth=false, vertical=false)
 
 	# Show cluster map
 	ax = Axis(fig[1,2]; aspect=DataAspect(), yreversed=true, title="KSS Clustering Results", titlesize=20)
 	clustermap = fill(0, size(data)[1:2])
 	clustermap[mask] .= D_relabel
-	hm = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, 9))
-	Colorbar(fig[2,2], hm, tellwidth=false, vertical=false)
+	hm2 = heatmap!(ax, permutedims(clustermap); colormap=Makie.Categorical(colors), colorrange=(0, 9))
+	Colorbar(fig[2,2], hm2, tellwidth=false, vertical=false)
 	
 	fig
 end
@@ -392,7 +423,7 @@ end
 
 # ╔═╡ Cell order:
 # ╟─09d8cf22-3fc1-4c6f-9bc9-5bd7605c73f4
-# ╠═cec84524-bceb-4a8d-a30b-e82faca68cc7
+# ╟─cec84524-bceb-4a8d-a30b-e82faca68cc7
 # ╠═b17ad74a-e088-4a72-aa0e-eef3fa7f5ca3
 # ╠═5685a44c-81db-4b63-b9f1-60eb86009a9c
 # ╠═1a652c20-e339-4df3-9ccb-2ccd128ac56d
@@ -415,13 +446,15 @@ end
 # ╠═f8fe700a-9bfc-42d2-979d-60a500da4d6b
 # ╟─71afca57-43f1-45c7-b22d-9292db501a9e
 # ╟─6604b9b9-7a7a-4bed-8f72-86ed93e253f9
-# ╟─7d961694-fd3c-4de6-a546-2a96fd04a420
+# ╠═7d961694-fd3c-4de6-a546-2a96fd04a420
 # ╟─a9091d9c-5da0-418e-8978-19f509f5c875
 # ╠═2d9f470e-314e-4d97-b415-1b86d654df7e
+# ╠═08dfce41-4866-4053-8fe7-0fda3a339a03
+# ╟─8807a262-a444-4d57-86ae-f94260f9e29c
+# ╟─2fcbe722-30d6-4552-86fc-dac3ba93a0a1
 # ╟─6d6d0675-bf03-4a80-b69f-963da7f3b1a3
 # ╠═b8991416-ba95-46f2-907d-7a43edf6c890
 # ╠═62a83180-5565-4f6e-9210-89ee42fc6e6b
-# ╠═e7f5b999-dc99-47f3-aeac-ab7e2ec81a24
 # ╠═3f0bc139-107e-4dcd-a58f-e41bd6e980f6
 # ╠═02732d8e-171c-4b15-b5e7-b0e79941c999
 # ╠═77f09f83-eb68-4359-a1bf-5f30d002746c
